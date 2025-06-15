@@ -4,6 +4,6 @@
     <title>Greeting</title>
 </head>
 <body>
-<h1>Hello Spring MVC</h1>
+<h1>Hello Spring MVC Gia Khanh</h1>
 </body>
 </html>
