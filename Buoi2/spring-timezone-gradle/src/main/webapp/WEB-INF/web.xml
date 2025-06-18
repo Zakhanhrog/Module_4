@@ -7,7 +7,6 @@
 
     <display-name>Simple Spring MVC Gradle Application</display-name>
 
-    <!-- Cấu hình DispatcherServlet của Spring MVC -->
     <servlet>
         <servlet-name>dispatcher</servlet-name>
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
@@ -18,13 +17,11 @@
         <load-on-startup>1</load-on-startup>
     </servlet>
 
-    <!-- Map tất cả các request đến DispatcherServlet -->
     <servlet-mapping>
         <servlet-name>dispatcher</servlet-name>
         <url-pattern>/</url-pattern>
     </servlet-mapping>
 
-    <!-- (Optional) Cấu hình trang chào mừng -->
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
