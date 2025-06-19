@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+  <title th:text="#{login.title}"></title>
+</head>
+<body>
+<div layout:fragment="content">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+      <h2 class="text-center mb-4" th:text="#{login.title}">Login</h2>
+
+      <div th:if="${loginError}" class="alert alert-danger" th:text="${loginError}">
+        Login Error Message
+      </div>
+      <div th:if="${logoutMessage}" class="alert alert-success" th:text="${logoutMessage}">
+        Logout Success Message
+      </div>
+      <div th:if="${registrationSuccess}" class="alert alert-success" th:text="${registrationSuccess}">
+        Registration Success Message
+      </div>
+
+      <form th:action="@{/login}" method="post">
+        <div class="mb-3">
+          <label for="username" class="form-label" th:text="#{login.username}">Username</label>
+          <input type="text" class="form-control" id="username" name="username" th:placeholder="#{login.username.placeholder}" required autofocus>
+        </div>
+        <div class="mb-3">
+          <label for="password" class="form-label" th:text="#{login.password}">Password</label>
+          <input type="password" class="form-control" id="password" name="password" th:placeholder="#{login.password.placeholder}" required>
+        </div>
+        <div class="d-grid">
+          <button type="submit" class="btn btn-primary" th:text="#{login.submit}">Login</button>
+        </div>
+      </form>
+      <p class="mt-3 text-center">
+        <a th:href="@{/register}" th:text="#{login.register.link}">Don't have an account? Register.</a>
+      </p>
+    </div>
+  </div>
+</div>
+</body>
+</html>

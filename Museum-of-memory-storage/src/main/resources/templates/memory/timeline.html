@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layout/base}">
+<head>
+  <title th:text="#{${timelineTitle}}">Memory Timeline</title>
+</head>
+<body>
+<div layout:fragment="content">
+  <h2 th:text="#{${timelineTitle}}">My Memory Timeline</h2>
+
+  <div th:if="${memoryPage.empty}" class="alert alert-info" th:text="#{memory.empty}">
+    No memories yet.
+  </div>
+
+  <div th:each="memory : ${memoryPage.content}" class="card mb-3">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h5 class="card-title mb-0" th:text="${memory.title}">Memory Title</h5>
+      <small class="text-muted" th:text="${#temporals.format(memory.memoryDate, 'dd/MM/yyyy')}">Date</small>
+    </div>
+    <div class="card-body">
+      <p class="card-text" th:text="${memory.description != null && memory.description.length() > 200 ? memory.description.substring(0, 200) + '...' : memory.description}">
+        Memory description snippet...
+      </p>
+      <div th:if="${memory.emotionType != null}" class="mb-2">
+                    <span class="badge bg-info">
+                        <i th:if="${memory.emotionType.icon != null}" th:class="'fas ' + ${memory.emotionType.icon} + ' me-1'"></i>
+                        <span th:text="${#locale.language == 'en'} ? ${memory.emotionType.nameEn} : ${memory.emotionType.name}">Emotion</span>
+                    </span>
+      </div>
+      <div th:if="${memory.location != null && !memory.location.isBlank()}" class="mb-2">
+        <small class="text-muted"><i class="fas fa-map-marker-alt me-1"></i> <span th:text="${memory.location}">Location</span></small>
+      </div>
+      <div th:if="${!memory.files.isEmpty()}" class="mb-2">
+        <p><strong><span th:text="#{memory.files}">Attachments</span>:</strong></p>
+        <div class="row">
+          <div th:each="file : ${memory.files}" class="col-auto mb-2">
+            <!-- Basic preview for images -->
+            <div th:if="${file.filePath != null && (file.filePath.toLowerCase().endsWith('.png') || file.filePath.toLowerCase().endsWith('.jpg') || file.filePath.toLowerCase().endsWith('.jpeg') || file.filePath.toLowerCase().endsWith('.gif'))}" class="mt-2">
+              <a th:href="@{'/memories/files/' + ${memory.id} + '/' + ${#strings.substringAfterLast(file.filePath, '/')}}" target="_blank">
+                <img th:src="@{'/memories/files/' + ${memory.id} + '/' + ${#strings.substringAfterLast(file.filePath, '/')}}" th:alt="${file.originalFileName}" style="max-width: 100px; max-height: 100px; border:1px solid #ddd; margin-right: 5px;">
+              </a>
+            </div>
+            <div th:unless="${file.filePath != null && (file.filePath.toLowerCase().endsWith('.png') || file.filePath.toLowerCase().endsWith('.jpg') || file.filePath.toLowerCase().endsWith('.jpeg') || file.filePath.toLowerCase().endsWith('.gif'))}" class="mt-2">
+              <a th:href="@{'/memories/files/' + ${memory.id} + '/' + ${#strings.substringAfterLast(file.filePath, '/')}}" target="_blank" th:text="${file.originalFileName}"></a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <a th:href="@{'/memories/' + ${memory.id}}" class="btn btn-sm btn-outline-primary me-2" th:text="#{memory.view.details}">View Details</a>
+      <th:block sec:authorize="isAuthenticated()" th:if="${memory.user.username == #authentication.name or #authorization.expression('hasRole(''ADMIN'')')}">
+        <a th:href="@{'/memories/edit/' + ${memory.id}}" class="btn btn-sm btn-outline-secondary me-2" th:text="#{memory.action.edit}">Edit</a>
+        <form th:action="@{'/memories/delete/' + ${memory.id}}" method="post" class="d-inline" onsubmit="return confirm('[[#{memory.action.delete.confirm}]]');">
+          <button type="submit" class="btn btn-sm btn-outline-danger" th:text="#{memory.action.delete}">Delete</button>
+        </form>
+      </th:block>
+      <small class="text-muted float-end" th:if="${timelineTitle == 'memory.timeline.public'}" th:text="' '+#{memory.by}+' ' + ${memory.user.username}">by User</small>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <nav aria-label="Page navigation" th:if="${memoryPage.totalPages > 1}">
+    <ul class="pagination justify-content-center">
+      <li class="page-item" th:classappend="${memoryPage.first} ? 'disabled' : ''">
+        <a class="page-link" th:href="@{${#httpServletRequest.requestURI}(page=${memoryPage.number-1}, size=${memoryPage.size})}">Previous</a>
+      </li>
+      <li class="page-item" th:each="i : ${#numbers.sequence(0, memoryPage.totalPages - 1)}"
+          th:classappend="${i == memoryPage.number} ? 'active' : ''">
+        <a class="page-link" th:href="@{${#httpServletRequest.requestURI}(page=${i}, size=${memoryPage.size})}" th:text="${i+1}">1</a>
+      </li>
+      <li class="page-item" th:classappend="${memoryPage.last} ? 'disabled' : ''">
+        <a class="page-link" th:href="@{${#httpServletRequest.requestURI}(page=${memoryPage.number+1}, size=${memoryPage.size})}">Next</a>
+      </li>
+    </ul>
+  </nav>
+</div>
+</body>
+</html>

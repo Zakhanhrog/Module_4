@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Details</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="container">
+    <h1>User Details</h1>
+    <hr>
+    <div th:if="${user != null}" class="user-details">
+        <p><strong>Account:</strong> <span th:text="${user.account}">N/A</span></p>
+        <p><strong>Name:</strong> <span th:text="${user.name}">N/A</span></p>
+        <p><strong>Email:</strong> <span th:text="${user.email}">N/A</span></p>
+        <p><strong>Age:</strong> <span th:text="${user.age}">N/A</span></p>
+    </div>
+    <div th:if="${user == null}">
+        <p>User information not found.</p>
+    </div>
+    <br>
+    <a th:href="@{/login}" class="button">Logout (Back to Login)</a>
+</div>
+</body>
+</html>

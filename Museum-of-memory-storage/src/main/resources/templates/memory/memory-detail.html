@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layout/base}">
+<head>
+  <title th:text="${memory.title} + ' - ' + #{app.title}">Memory Detail</title>
+</head>
+<body>
+<div layout:fragment="content">
+  <div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h2 class="card-title mb-0" th:text="${memory.title}">Memory Title</h2>
+      <small class="text-muted" th:text="${#temporals.format(memory.memoryDate, 'dd MMMM yyyy')}">Date</small>
+    </div>
+    <div class="card-body">
+      <p class="card-text" style="white-space: pre-wrap;" th:text="${memory.description}">Memory Description</p>
+
+      <div class="row mt-3 mb-3">
+        <div class="col-md-6">
+          <strong><i class="fas fa-calendar-alt me-1"></i> <span th:text="#{memory.date}">Date</span>:</strong>
+          <span th:text="${#temporals.format(memory.memoryDate, 'dd MMMM yyyy')}">Date</span>
+        </div>
+        <div class="col-md-6" th:if="${memory.location != null && !memory.location.isBlank()}">
+          <strong><i class="fas fa-map-marker-alt me-1"></i> <span th:text="#{memory.location}">Location</span>:</strong>
+          <span th:text="${memory.location}">Location</span>
+        </div>
+      </div>
+      <div class="row mb-3">
+        <div class="col-md-6" th:if="${memory.emotionType != null}">
+          <strong><i class="fas fa-grin-beam me-1"></i> <span th:text="#{memory.emotion}">Emotion</span>:</strong>
+          <span class="badge bg-info">
+                            <i th:if="${memory.emotionType.icon != null}" th:class="'fas ' + ${memory.emotionType.icon} + ' me-1'"></i>
+                            <span th:text="${#locale.language == 'en'} ? ${memory.emotionType.nameEn} : ${memory.emotionType.name}">Emotion</span>
+                        </span>
+        </div>
+        <div class="col-md-6">
+          <strong><i class="fas fa-eye me-1"></i> <span th:text="#{memory.status}">Status</span>:</strong>
+          <span th:text="#{${'memory.status.' + memory.status.name().toLowerCase()}}">Status</span>
+        </div>
+      </div>
+
+      <div th:if="${!memory.files.isEmpty()}" class="mt-4">
+        <h4><span th:text="#{memory.files}">Attachments</span>:</h4>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+          <div th:each="file : ${memory.files}" class="col">
+            <div class="card shadow-sm">
+              <a th:href="@{'/memories/files/' + ${memory.id} + '/' + ${#strings.substringAfterLast(file.filePath, '/')}}" target="_blank">
+                <th:block th:if="${file.fileType != null && file.fileType.startsWith('image/')}">
+                  <img th:src="@{'/memories/files/' + ${memory.id} + '/' + ${#strings.substringAfterLast(file.filePath, '/')}}" class="bd-placeholder-img card-img-top" width="100%" height="225" role="img" th:aria-label="${file.originalFileName}" th:alt="${file.originalFileName}" style="object-fit: cover;">
+                </th:block>
+                <th:block th:if="${file.fileType != null && file.fileType.startsWith('video/')}">
+                  <div class="text-center p-3" style="height: 225px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-video fa-3x"></i>
+                  </div>
+                </th:block>
+                <th:block th:if="${file.fileType != null && file.fileType.startsWith('audio/')}">
+                  <div class="text-center p-3" style="height: 225px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-music fa-3x"></i>
+                  </div>
+                </th:block>
+                <th:block th:if="${file.fileType == null || (!file.fileType.startsWith('image/') && !file.fileType.startsWith('video/') && !file.fileType.startsWith('audio/'))}">
+                  <div class="text-center p-3" style="height: 225px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-file-alt fa-3x"></i>
+                  </div>
+                </th:block>
+              </a>
+              <div class="card-body">
+                <p class="card-text text-truncate" th:title="${file.originalFileName}" th:text="${file.originalFileName}">File Name</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-4">
+        <small class="text-muted" th:text="'Posted by: ' + ${memory.user.username} + ' on ' + ${#temporals.format(memory.createdAt, 'dd MMMM yyyy, HH:mm')}"></small>
+      </div>
+
+      <div class="mt-4" sec:authorize="isAuthenticated()" th:if="${memory.user.username == #authentication.name or #authorization.expression('hasRole(''ADMIN'')')}">
+        <a th:href="@{'/memories/edit/' + ${memory.id}}" class="btn btn-secondary me-2" th:text="#{memory.action.edit}">Edit</a>
+        <form th:action="@{'/memories/delete/' + ${memory.id}}" method="post" class="d-inline" onsubmit="return confirm('[[#{memory.action.delete.confirm}]]');">
+          <button type="submit" class="btn btn-danger" th:text="#{memory.action.delete}">Delete</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Comments section will go here -->
+  <div class="mt-5">
+    <h4>Comments</h4>
+    <!-- Placeholder for comments -->
+    <p>Comments feature coming soon.</p>
+  </div>
+
+</div>
+</body>
+</html>
