@@ -226,8 +226,6 @@ public class MemoryController {
     @GetMapping("/files/{memoryId}/{filename:.+}")
     @ResponseBody
     public ResponseEntity<Resource> serveFile(@PathVariable Long memoryId, @PathVariable String filename) {
-        // Basic security check: ensure the file belongs to a valid memory and is not trying to access parent directories.
-        // This is a simplified check. In a real app, ensure the user has rights to view this file.
         Optional<Memory> memoryOpt = memoryService.findById(memoryId);
         if(memoryOpt.isEmpty()){
             return ResponseEntity.notFound().build();
