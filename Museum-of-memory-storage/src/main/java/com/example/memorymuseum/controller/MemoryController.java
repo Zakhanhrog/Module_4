@@ -1,14 +1,8 @@
 package com.example.memorymuseum.controller;
 
 import com.example.memorymuseum.dto.MemoryDto;
-import com.example.memorymuseum.model.Memory;
-import com.example.memorymuseum.model.MemoryFile;
-import com.example.memorymuseum.model.MemoryStatus;
-import com.example.memorymuseum.model.User;
-import com.example.memorymuseum.service.EmotionTypeService;
-import com.example.memorymuseum.service.FileStorageService;
-import com.example.memorymuseum.service.MemoryService;
-import com.example.memorymuseum.service.UserService;
+import com.example.memorymuseum.model.*;
+import com.example.memorymuseum.service.*;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -42,15 +36,19 @@ public class MemoryController {
     private final EmotionTypeService emotionTypeService;
     private final FileStorageService fileStorageService;
     private static final String MEMORY_FILES_SUBFOLDER = "memories";
+    private final CommentService commentService;
 
 
     @Autowired
     public MemoryController(MemoryService memoryService, UserService userService,
-                            EmotionTypeService emotionTypeService, FileStorageService fileStorageService) {
+                            EmotionTypeService emotionTypeService, FileStorageService fileStorageService,
+                            CommentService commentService) {
         this.memoryService = memoryService;
         this.userService = userService;
         this.emotionTypeService = emotionTypeService;
         this.fileStorageService = fileStorageService;
+        this.commentService = commentService;
+
     }
 
     private User getCurrentUserOrThrow() {
@@ -220,6 +218,10 @@ public class MemoryController {
         }
 
         model.addAttribute("memory", memory);
+
+        List<Comment> comments = commentService.getCommentsForMemory(memory);
+        model.addAttribute("comments", comments);
+        model.addAttribute("newCommentContent", "");
         return "memory/memory-detail";
     }
 

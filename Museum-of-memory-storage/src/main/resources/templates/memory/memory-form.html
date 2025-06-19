@@ -3,93 +3,129 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/base}">
 <head>
-  <title th:text="#{${pageTitle}}">Memory Form</title>
+  <title th:text="#{${pageTitle}}"></title>
+  <th:block layout:fragment="styles">
+    <link rel="stylesheet" th:href="@{/css/form-pages.css}" /> <!-- CSS riêng cho các trang form nội dung -->
+    <!-- Nếu dùng Datepicker JS, link CSS của nó ở đây -->
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  </th:block>
 </head>
 <body>
 <div layout:fragment="content">
-  <h2 th:text="#{${pageTitle}}">Create/Edit Memory</h2>
-
-  <form th:action="${formAction}" th:object="${memoryDto}" method="post" enctype="multipart/form-data">
-    <input type="hidden" th:if="${memoryDto.id}" th:field="*{id}" />
-
-    <div class="mb-3">
-      <label for="title" class="form-label" th:text="#{memory.title}">Title</label>
-      <input type="text" class="form-control" id="title" th:field="*{title}"
-             th:classappend="${#fields.hasErrors('title')} ? 'is-invalid' : ''" required>
-      <div th:if="${#fields.hasErrors('title')}" class="invalid-feedback" th:errors="*{title}"></div>
-    </div>
-
-    <div class="mb-3">
-      <label for="description" class="form-label" th:text="#{memory.description}">Description</label>
-      <textarea class="form-control" id="description" th:field="*{description}" rows="5"></textarea>
-    </div>
-
-    <div class="row">
-      <div class="col-md-6 mb-3">
-        <label for="memoryDate" class="form-label" th:text="#{memory.date}">Date</label>
-        <input type="date" class="form-control" id="memoryDate" th:field="*{memoryDate}"
-               th:classappend="${#fields.hasErrors('memoryDate')} ? 'is-invalid' : ''" required>
-        <div th:if="${#fields.hasErrors('memoryDate')}" class="invalid-feedback" th:errors="*{memoryDate}"></div>
-      </div>
-      <div class="col-md-6 mb-3">
-        <label for="location" class="form-label" th:text="#{memory.location}">Location</label>
-        <input type="text" class="form-control" id="location" th:field="*{location}">
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-md-6 mb-3">
-        <label for="emotionTypeId" class="form-label" th:text="#{memory.emotion}">Emotion</label>
-        <select class="form-select" id="emotionTypeId" th:field="*{emotionTypeId}">
-          <option value="" th:text="'-- ' + #{memory.emotion} + ' --'"></option>
-          <option th:each="emotion : ${emotionTypes}"
-                  th:value="${emotion.id}"
-                  th:text="${#locale.language == 'en'} ? ${emotion.nameEn} : ${emotion.name}"></option>
-        </select>
-      </div>
-      <div class="col-md-6 mb-3">
-        <label for="status" class="form-label" th:text="#{memory.status}">Status</label>
-        <select class="form-select" id="status" th:field="*{status}" required>
-          <option th:each="s : ${T(com.example.memorymuseum.model.MemoryStatus).values()}"
-                  th:value="${s}"
-                  th:text="#{${'memory.status.' + s.name().toLowerCase()}}"></option>
-        </select>
-      </div>
-    </div>
-
-    <div class="mb-3">
-      <label for="files" class="form-label" th:text="#{memory.files}">Attachments</label>
-      <input type="file" class="form-control" id="files" name="files" multiple>
-      <small class="form-text text-muted" th:text="'(Upload new files. Max size per file: ' + ${@environment.getProperty('spring.servlet.multipart.max-file-size')} + ')'"></small>
-    </div>
-
-    <div th:if="${memoryDto.id != null && memoryDto.existingFiles != null && !memoryDto.existingFiles.isEmpty()}" class="mb-3">
-      <h5 th:text="#{memory.files.current}">Current Files</h5>
-      <div th:each="file, iterStat : *{existingFiles}" class="mb-2 p-2 border rounded">
-        <input type="hidden" th:name="'existingFiles[' + ${iterStat.index} + '].id'" th:value="${file.id}" />
-        <input type="hidden" th:name="'existingFiles[' + ${iterStat.index} + '].filePath'" th:value="${file.filePath}" />
-        <span th:text="${file.originalFileName}">filename.jpg</span>
-        -
-        <a th:href="${file.filePath}" target="_blank">View</a>
-        <div class="form-check form-check-inline float-end">
-          <input class="form-check-input" type="checkbox" th:id="'deleteFile' + ${file.id}" th:name="filesToDeleteIds" th:value="${file.id}">
-          <label class="form-check-label" th:for="'deleteFile' + ${file.id}" th:text="#{memory.files.delete}">Delete</label>
+  <div class="form-wrapper">
+    <div class="form-content">
+      <div class="form-card">
+        <div class="text-center mb-4">
+          <h2 class="form-title" th:text="#{${pageTitle}}"></h2>
+          <!-- Có thể thêm subtitle nếu cần -->
         </div>
-        <!-- Basic preview for images -->
-        <div th:if="${file.filePath != null && (file.filePath.endsWith('.png') || file.filePath.endsWith('.jpg') || file.filePath.endsWith('.jpeg') || file.filePath.endsWith('.gif'))}" class="mt-2">
-          <img th:src="${file.filePath}" alt="Preview" style="max-width: 100px; max-height: 100px;">
-        </div>
+
+        <form th:action="${formAction}" th:object="${memoryDto}" method="post" enctype="multipart/form-data" class="content-form">
+          <input type="hidden" th:if="*{id != null}" th:field="*{id}" />
+
+          <div class="mb-3">
+            <label for="title" class="form-label fw-medium" th:text="#{memory.title}"></label>
+            <input type="text" class="form-control form-control-lg" id="title" th:field="*{title}"
+                   th:classappend="${#fields.hasErrors('title')} ? 'is-invalid' : ''" required>
+            <div th:if="${#fields.hasErrors('title')}" class="invalid-feedback" th:errors="*{title}"></div>
+          </div>
+
+          <div class="mb-3">
+            <label for="description" class="form-label fw-medium" th:text="#{memory.description}"></label>
+            <textarea class="form-control" id="description" th:field="*{description}" rows="6"></textarea>
+            <!-- Có thể thêm trình soạn thảo Rich Text ở đây nếu muốn -->
+          </div>
+
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label for="memoryDate" class="form-label fw-medium" th:text="#{memory.date}"></label>
+              <input type="date" class="form-control" id="memoryDate" th:field="*{memoryDate}"
+                     th:classappend="${#fields.hasErrors('memoryDate')} ? 'is-invalid' : ''" required>
+              <div th:if="${#fields.hasErrors('memoryDate')}" class="invalid-feedback" th:errors="*{memoryDate}"></div>
+            </div>
+            <div class="col-md-6">
+              <label for="location" class="form-label fw-medium" th:text="#{memory.location}"></label>
+              <input type="text" class="form-control" id="location" th:field="*{location}">
+            </div>
+          </div>
+
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label for="emotionTypeId" class="form-label fw-medium" th:text="#{memory.emotion}"></label>
+              <select class="form-select" id="emotionTypeId" th:field="*{emotionTypeId}">
+                <option value="" th:text="'-- ' + #{memory.emotion.select} + ' --'"></option> <!-- Key mới -->
+                <option th:each="emotion : ${emotionTypes}"
+                        th:value="${emotion.id}"
+                        th:text="${#locale.language == 'en' && emotion.nameEn != null ? emotion.nameEn : emotion.name}"></option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label for="status" class="form-label fw-medium" th:text="#{memory.status}"></label>
+              <select class="form-select" id="status" th:field="*{status}" required>
+                <option th:each="s : ${T(com.example.memorymuseum.model.MemoryStatus).values()}"
+                        th:value="${s}"
+                        th:text="#{${'memory.status.' + s.name().toLowerCase()}}"></option>
+              </select>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label for="newFiles" class="form-label fw-medium" th:text="#{memory.files.add.new}"></label> <!-- Key mới -->
+            <input type="file" class="form-control" id="newFiles" name="newFiles" multiple accept="image/*,video/*,audio/*">
+            <div class="form-text" th:text="#{memory.files.upload.hint(${@environment.getProperty('spring.servlet.multipart.max-file-size')})}"></div> <!-- Key mới -->
+            <div id="newFilesPreview" class="mt-2 row g-2">
+              <!-- Preview cho file mới chọn sẽ được thêm vào đây bằng JS -->
+            </div>
+          </div>
+
+          <div th:if="*{id != null && existingFiles != null && !existingFiles.isEmpty()}" class="mb-4">
+            <h6 class="fw-medium mb-2" th:text="#{memory.files.current}"></h6>
+            <div id="existingFilesContainer" class="row g-2">
+              <div th:each="file, iterStat : *{existingFiles}" class="col-md-4 col-sm-6 mb-2 existing-file-item">
+                <div class="card h-100">
+                  <input type="hidden" th:name="'existingFiles[' + ${iterStat.index} + '].id'" th:value="${file.id}" />
+                  <input type="hidden" th:name="'existingFiles[' + ${iterStat.index} + '].filePath'" th:value="${file.filePath}" />
+
+                  <th:block th:if="${#strings.startsWith(file.originalFileName.toLowerCase(), 'image/')} or ${#strings.endsWith(file.originalFileName.toLowerCase(), '.png')} or ${#strings.endsWith(file.originalFileName.toLowerCase(), '.jpg')} or ${#strings.endsWith(file.originalFileName.toLowerCase(), '.jpeg')} or ${#strings.endsWith(file.originalFileName.toLowerCase(), '.gif')}">
+                    <img th:src="${file.filePath}" class="card-img-top existing-file-preview-img" th:alt="${file.originalFileName}">
+                  </th:block>
+                  <th:block th:unless="${#strings.startsWith(file.originalFileName.toLowerCase(), 'image/')} or ${#strings.endsWith(file.originalFileName.toLowerCase(), '.png')} or ${#strings.endsWith(file.originalFileName.toLowerCase(), '.jpg')} or ${#strings.endsWith(file.originalFileName.toLowerCase(), '.jpeg')} or ${#strings.endsWith(file.originalFileName.toLowerCase(), '.gif')}">
+                    <div class="existing-file-placeholder d-flex flex-column align-items-center justify-content-center">
+                      <i class="fas fa-file-alt fa-2x text-muted"></i>
+                      <small class="text-muted mt-1" th:text="${file.originalFileName}"></small>
+                    </div>
+                  </th:block>
+
+                  <div class="card-body p-2 text-center">
+                    <p class="card-text small text-truncate" th:title="${file.originalFileName}" th:text="${file.originalFileName}"></p>
+                  </div>
+                  <div class="card-footer p-1 text-center bg-light">
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="checkbox" th:id="'deleteFile' + ${file.id}" name="filesToDeleteIds" th:value="${file.id}">
+                      <label class="form-check-label small" th:for="'deleteFile' + ${file.id}" th:text="#{memory.files.delete}"></label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <hr class="my-4">
+
+          <div class="d-flex justify-content-end">
+            <a th:href="@{/memories/timeline}" class="btn btn-outline-secondary me-2 px-4" th:text="#{form.action.cancel}"></a>
+            <button type="submit" class="btn btn-primary px-4 btn-lg" th:text="*{id == null} ? #{memory.submit.create} : #{memory.submit.update}"></button>
+          </div>
+        </form>
       </div>
     </div>
-
-
-    <button type="submit" class="btn btn-primary" th:text="${memoryDto.id == null} ? #{memory.submit.create} : #{memory.submit.update}">Submit</button>
-    <a th:href="@{/memories/timeline}" class="btn btn-secondary">Cancel</a>
-  </form>
+  </div>
 </div>
 
 <th:block layout:fragment="scripts">
-  <!-- Add any page specific scripts here -->
+  <!-- Nếu dùng Datepicker JS, link JS của nó ở đây -->
+   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script th:src="@{/js/memory-form.js}"></script> <!-- JS cho preview file -->
 </th:block>
 </body>
 </html>

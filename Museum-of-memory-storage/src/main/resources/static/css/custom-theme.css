@@ -31,4 +31,5 @@
     --bs-body-bg: var(--light-bg);
     --bs-link-color: var(--primary-color);
     --bs-link-hover-color: #4c6692; /* Darken primary color for hover */
+    --dark-text-rgb: 46, 52, 64;
 }

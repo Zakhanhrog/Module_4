@@ -1,0 +1,234 @@
+/* src/main/resources/static/css/timeline.css */
+
+.memory-card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    display: flex;
+    flex-direction: column;
+}
+
+.memory-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(var(--dark-text-rgb, 46, 52, 64), 0.15) !important; /* Sử dụng dark-text-rgb */
+}
+
+.memory-card-img {
+    height: 200px; /* Chiều cao cố định cho ảnh thumbnail */
+    object-fit: cover; /* Đảm bảo ảnh vừa vặn và không bị méo */
+    border-top-left-radius: calc(0.5rem - 1px); /* Match card border-radius */
+    border-top-right-radius: calc(0.5rem - 1px);
+}
+.memory-card-img-placeholder {
+    height: 200px;
+    background-color: var(--light-bg, #ECEFF4); /* Màu nền cho placeholder */
+    border-top-left-radius: calc(0.5rem - 1px);
+    border-top-right-radius: calc(0.5rem - 1px);
+}
+.memory-card-img-placeholder .fas {
+    color: var(--border-color, #D8DEE9); /* Màu icon placeholder */
+}
+
+
+.memory-card .card-body {
+    padding: 1rem; /* Giảm padding một chút */
+}
+
+.memory-title a {
+    color: var(--dark-text, #2E3440);
+    font-weight: 700; /* Tăng độ đậm tiêu đề */
+    font-size: 1.15rem;
+}
+.memory-title a:hover {
+    color: var(--primary-color, #5E81AC);
+}
+
+.memory-description {
+    font-size: 0.9rem;
+    color: var(--medium-text, #4C566A);
+    line-height: 1.5;
+    margin-bottom: 1rem;
+}
+
+.memory-meta {
+    font-size: 0.8rem;
+}
+.memory-meta .fas {
+    color: var(--medium-text, #4C566A);
+}
+
+.emotion-badge {
+    font-size: 0.75rem;
+    padding: 0.3em 0.6em;
+    color: #fff; /* Đảm bảo text trên badge dễ đọc */
+    border-radius: 0.25rem;
+}
+/* Nếu icon của emotion là mã màu, sẽ dùng mã màu đó làm nền */
+
+.memory-author {
+    font-size: 0.8rem;
+    color: var(--medium-text);
+}
+
+.memory-card .card-footer {
+    padding: 0.75rem 1rem; /* Điều chỉnh padding footer của card */
+}
+.memory-card .card-footer .btn {
+    padding: 0.25rem 0.5rem; /* Nút nhỏ hơn */
+    font-size: 0.8rem;
+}
+
+/* Alert khi không có ký ức */
+.alert-light {
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+    color: var(--medium-text);
+}
+/* src/main/resources/static/css/timeline.css */
+
+.page-header .page-title {
+    font-weight: 700;
+    color: var(--dark-text);
+}
+
+.empty-timeline-alert {
+    background-color: var(--card-bg);
+    border: 1px dashed var(--border-color);
+}
+
+.memory-card {
+    transition: transform 0.25s ease-in-out, box-shadow 0.25s ease-in-out;
+    border: 1px solid var(--border-color); /* Thêm border rõ ràng hơn */
+}
+
+.memory-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 0.8rem 1.75rem rgba(var(--dark-text-rgb, 46, 52, 64), 0.1),
+    0 0.25rem 0.5rem rgba(var(--dark-text-rgb, 46, 52, 64), 0.08) !important;
+}
+
+.memory-card-image-link {
+    display: block; /* Đảm bảo link bao trọn ảnh/placeholder */
+    overflow: hidden; /* Để bo góc cho ảnh */
+    border-top-left-radius: calc(0.5rem - 1px);
+    border-top-right-radius: calc(0.5rem - 1px);
+}
+
+.memory-card-img {
+    height: 220px;
+    width: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease-in-out;
+}
+.memory-card:hover .memory-card-img {
+    transform: scale(1.05); /* Hiệu ứng zoom nhẹ khi hover */
+}
+
+.memory-card-img-placeholder {
+    height: 220px;
+    background-color: var(--light-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.memory-card-img-placeholder .fas {
+    color: var(--border-color);
+    opacity: 0.7;
+}
+
+.memory-card .card-body {
+    padding: 1.25rem;
+}
+
+.memory-title a {
+    color: var(--dark-text);
+    font-weight: 600;
+    font-size: 1.2rem;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Giới hạn tiêu đề 2 dòng */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    height: calc(1.2rem * 1.3 * 2); /* Chiều cao cố định cho 2 dòng tiêu đề */
+}
+.memory-title a:hover {
+    color: var(--primary-color);
+}
+
+.memory-meta {
+    font-size: 0.85rem;
+    color: var(--medium-text);
+}
+.memory-meta .fas, .memory-meta .far {
+    width: 16px; /* Căn chỉnh icon */
+    text-align: center;
+}
+.memory-meta .text-primary { /* Màu cho icon meta */
+    color: var(--primary-color) !important;
+}
+
+
+.memory-description {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: var(--medium-text);
+    margin-bottom: 1rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /* Giới hạn mô tả 3 dòng */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-height: calc(0.9rem * 1.6 * 3); /* Chiều cao tối thiểu cho 3 dòng mô tả */
+}
+
+.emotion-badge {
+    font-size: 0.78rem;
+    padding: 0.35em 0.65em;
+    font-weight: 500;
+    color: #fff;
+    border-radius: 50px; /* Bo tròn hơn */
+}
+.emotion-badge.bg-secondary { /* Fallback color */
+    background-color: var(--medium-text) !important;
+}
+
+.memory-card-footer {
+    border-top: 1px solid var(--border-color) !important;
+}
+
+.action-btn {
+    color: var(--medium-text);
+    padding: 0.3rem 0.6rem;
+}
+.action-btn:hover {
+    color: var(--dark-text);
+}
+.btn-outline-secondary:hover {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+    color: var(--dark-text);
+}
+.btn-outline-danger:hover {
+    color: #fff; /* Chữ trắng khi hover nút danger */
+}
+
+/* Pagination Styling */
+.pagination .page-item.active .page-link {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: #fff;
+}
+.pagination .page-link {
+    color: var(--primary-color);
+    border-radius: 0.25rem;
+    margin: 0 0.15rem;
+    border: 1px solid var(--border-color);
+}
+.pagination .page-link:hover {
+    background-color: var(--light-bg);
+    border-color: var(--border-color);
+}
+.pagination .page-item.disabled .page-link {
+    color: #6c757d;
+    background-color: transparent;
+    border-color: var(--border-color);
+}

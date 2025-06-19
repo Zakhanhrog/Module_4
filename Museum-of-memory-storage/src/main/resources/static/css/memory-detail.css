@@ -1,0 +1,157 @@
+/* src/main/resources/static/css/memory-detail.css */
+
+.memory-detail-card {
+    border-radius: 0.75rem;
+}
+
+.memory-detail-card .card-header {
+    border-top-left-radius: calc(0.75rem - 1px);
+    border-top-right-radius: calc(0.75rem - 1px);
+}
+
+.memory-title {
+    color: var(--dark-text);
+    font-weight: 700;
+}
+
+.memory-media-gallery .carousel-item {
+    max-height: 550px; /* Giới hạn chiều cao của carousel */
+    background-color: #f0f0f0; /* Nền cho các item không phải ảnh */
+}
+
+.memory-media-image {
+    object-fit: contain; /* Hiển thị toàn bộ ảnh, có thể để lại khoảng trống */
+    max-height: 550px; /* Giữ nguyên chiều cao với carousel-item */
+    border-radius: 0.25rem;
+}
+
+.memory-media-video {
+    max-height: 550px;
+    background-color: #000;
+    border-radius: 0.25rem;
+}
+.memory-media-audio-wrapper,
+.memory-media-file-placeholder {
+    min-height: 200px; /* Chiều cao tối thiểu cho audio/file placeholder */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.25rem;
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    background-color: rgba(0,0,0,0.3);
+    border-radius: 50%;
+    padding: 1.2rem; /* Tăng kích thước vùng click */
+    background-size: 50% 50%;
+}
+.carousel-indicators [data-bs-target] {
+    background-color: var(--primary-color);
+}
+
+
+.memory-meta-info {
+    font-size: 0.95rem;
+    color: var(--medium-text);
+}
+.memory-meta-info .fas, .memory-meta-info .far {
+    width: 20px;
+    text-align: center;
+}
+.memory-meta-info strong {
+    color: var(--dark-text);
+}
+
+.emotion-badge-detail {
+    font-size: 0.9rem;
+    padding: 0.4em 0.75em;
+    font-weight: 500;
+    color: #fff;
+}
+.emotion-badge-detail.bg-info { /* Fallback color */
+    background-color: var(--secondary-color) !important;
+}
+
+.memory-description-full h5 {
+    color: var(--dark-text);
+}
+.memory-description-full div {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: var(--medium-text);
+}
+
+.memory-authorship {
+    font-size: 0.85rem;
+}
+.memory-authorship .fas {
+    color: var(--primary-color);
+}
+
+.reaction-section, .comment-section {
+    border-radius: 0.5rem;
+}
+.reaction-section .card-title, .comment-section .card-header h5 {
+    color: var(--dark-text);
+    font-weight: 600;
+}/* Trong src/main/resources/static/css/memory-detail.css */
+.comment-section .card-header h5 {
+    font-size: 1.1rem;
+}
+.comment-section .badge {
+    font-size: 0.85rem;
+}
+
+.comment-form textarea {
+    resize: vertical; /* Cho phép thay đổi chiều cao textarea */
+}
+.comment-form button {
+    height: fit-content; /* Để nút vừa với nội dung */
+}
+
+.comment-list {
+    /* Không cần style gì đặc biệt ở đây nếu dùng list-unstyled */
+}
+
+.comment-item .comment-header strong {
+    color: var(--dark-text);
+}
+.comment-item .comment-header .text-muted {
+    font-size: 0.8rem;
+}
+.comment-item .comment-body {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--medium-text);
+}
+.delete-comment-btn:hover i {
+    transform: scale(1.2);
+}
+
+.reply-link {
+    text-decoration: none;
+}
+.reply-link:hover {
+    text-decoration: underline;
+}
+.reply-form-container textarea {
+    font-size: 0.9rem; /* Textarea trả lời nhỏ hơn */
+}
+
+
+
+.reaction-buttons .btn-reaction.active,
+.reaction-buttons .btn-reaction.btn-primary {
+    background-color: var(--primary-color) !important;
+    color: white !important;
+    border-color: var(--primary-color) !important;
+}
+.reaction-buttons .btn-reaction.active .reaction-icon,
+.reaction-buttons .btn-reaction.btn-primary .reaction-icon {
+}
+
+.reaction-buttons .btn-reaction:disabled {
+    opacity: 0.65;
+}

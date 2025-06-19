@@ -1,98 +1,321 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/base}">
 <head>
-  <title th:text="${memory.title} + ' - ' + #{app.title}">Memory Detail</title>
+  <title th:text="${memory.title} + ' - ' + #{app.title.short}"></title>
+  <th:block layout:fragment="styles">
+    <link rel="stylesheet" th:href="@{/css/memory-detail.css}" />
+    <!-- Ví dụ: <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" /> -->
+  </th:block>
 </head>
 <body>
 <div layout:fragment="content">
-  <div class="card">
-    <div class="card-header d-flex justify-content-between align-items-center">
-      <h2 class="card-title mb-0" th:text="${memory.title}">Memory Title</h2>
-      <small class="text-muted" th:text="${#temporals.format(memory.memoryDate, 'dd MMMM yyyy')}">Date</small>
-    </div>
-    <div class="card-body">
-      <p class="card-text" style="white-space: pre-wrap;" th:text="${memory.description}">Memory Description</p>
-
-      <div class="row mt-3 mb-3">
-        <div class="col-md-6">
-          <strong><i class="fas fa-calendar-alt me-1"></i> <span th:text="#{memory.date}">Date</span>:</strong>
-          <span th:text="${#temporals.format(memory.memoryDate, 'dd MMMM yyyy')}">Date</span>
-        </div>
-        <div class="col-md-6" th:if="${memory.location != null && !memory.location.isBlank()}">
-          <strong><i class="fas fa-map-marker-alt me-1"></i> <span th:text="#{memory.location}">Location</span>:</strong>
-          <span th:text="${memory.location}">Location</span>
-        </div>
-      </div>
-      <div class="row mb-3">
-        <div class="col-md-6" th:if="${memory.emotionType != null}">
-          <strong><i class="fas fa-grin-beam me-1"></i> <span th:text="#{memory.emotion}">Emotion</span>:</strong>
-          <span class="badge bg-info">
-                            <i th:if="${memory.emotionType.icon != null}" th:class="'fas ' + ${memory.emotionType.icon} + ' me-1'"></i>
-                            <span th:text="${#locale.language == 'en'} ? ${memory.emotionType.nameEn} : ${memory.emotionType.name}">Emotion</span>
-                        </span>
-        </div>
-        <div class="col-md-6">
-          <strong><i class="fas fa-eye me-1"></i> <span th:text="#{memory.status}">Status</span>:</strong>
-          <span th:text="#{${'memory.status.' + memory.status.name().toLowerCase()}}">Status</span>
-        </div>
-      </div>
-
-      <div th:if="${!memory.files.isEmpty()}" class="mt-4">
-        <h4><span th:text="#{memory.files}">Attachments</span>:</h4>
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-          <div th:each="file : ${memory.files}" class="col">
-            <div class="card shadow-sm">
-              <a th:href="@{'/memories/files/' + ${memory.id} + '/' + ${#strings.substringAfter(file.filePath, '/')}}" target="_blank">
-                <th:block th:if="${file.fileType != null && file.fileType.startsWith('image/')}">
-                  <img th:src="@{'/memories/files/' + ${memory.id} + '/' + ${#strings.substringAfter(file.filePath, '/')}}" class="bd-placeholder-img card-img-top" width="100%" height="225" role="img" th:aria-label="${file.originalFileName}" th:alt="${file.originalFileName}" style="object-fit: cover;">
-                </th:block>
-                <th:block th:if="${file.fileType != null && file.fileType.startsWith('video/')}">
-                  <div class="text-center p-3" style="height: 225px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
-                    <i class="fas fa-video fa-3x"></i>
-                  </div>
-                </th:block>
-                <th:block th:if="${file.fileType != null && file.fileType.startsWith('audio/')}">
-                  <div class="text-center p-3" style="height: 225px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
-                    <i class="fas fa-music fa-3x"></i>
-                  </div>
-                </th:block>
-                <th:block th:if="${file.fileType == null || (!file.fileType.startsWith('image/') && !file.fileType.startsWith('video/') && !file.fileType.startsWith('audio/'))}">
-                  <div class="text-center p-3" style="height: 225px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
-                    <i class="fas fa-file-alt fa-3x"></i>
-                  </div>
-                </th:block>
-              </a>
-              <div class="card-body">
-                <p class="card-text text-truncate" th:title="${file.originalFileName}" th:text="${file.originalFileName}">File Name</p>
-              </div>
-            </div>
+  <div class="memory-detail-container my-4">
+    <div class="card shadow-sm memory-detail-card">
+      <div class="card-header bg-light py-3">
+        <div class="d-flex justify-content-between align-items-center">
+          <h1 class="h3 mb-0 memory-title" th:text="${memory.title}"></h1>
+          <div sec:authorize="isAuthenticated()"
+               th:if="${#authentication.name == memory.user.username or #authorization.expression('hasRole(''ADMIN'')')}">
+            <a th:href="@{'/memories/edit/' + ${memory.id}}" class="btn btn-sm btn-outline-secondary me-2" data-bs-toggle="tooltip" th:title="#{memory.action.edit}">
+              <i class="fas fa-pencil-alt me-1"></i> <span th:text="#{memory.action.edit.short}"></span>
+            </a>
+            <form th:action="@{'/memories/delete/' + ${memory.id}}" method="post" class="d-inline" th:data-confirm-message="#{memory.action.delete.confirm}" onsubmit="return confirm(this.getAttribute('data-confirm-message'));">
+              <button type="submit" class="btn btn-sm btn-outline-danger" data-bs-toggle="tooltip" th:title="#{memory.action.delete}">
+                <i class="fas fa-trash-alt me-1"></i> <span th:text="#{memory.action.delete.short}"></span>
+              </button>
+            </form>
           </div>
         </div>
       </div>
 
-      <div class="mt-4">
-        <small class="text-muted" th:text="'Posted by: ' + ${memory.user.username} + ' on ' + ${#temporals.format(memory.createdAt, 'dd MMMM yyyy, HH:mm')}"></small>
-      </div>
+      <div class="card-body p-lg-4">
+        <div th:if="${!memory.files.isEmpty()}" class="mb-4 memory-media-gallery">
+          <div id="memoryMediaCarousel" class="carousel slide" data-bs-ride="carousel" th:if="${memory.files.size() > 0}">
+            <div class="carousel-indicators" th:if="${memory.files.size() > 1}">
+              <button type="button" data-bs-target="#memoryMediaCarousel" th:each="file, iterStat : ${memory.files}"
+                      th:data-bs-slide-to="${iterStat.index}" th:classappend="${iterStat.first} ? 'active'"
+                      th:aria-current="${iterStat.first} ? 'true'" th:aria-label="'Slide ' + ${iterStat.count}"></button>
+            </div>
+            <div class="carousel-inner">
+              <div class="carousel-item" th:each="file, iterStat : ${memory.files}" th:classappend="${iterStat.first} ? 'active'">
+                <th:block th:if="${file.fileType != null && file.fileType.startsWith('image/')}">
+                  <img th:src="@{'/memories/files/' + ${memory.id} + '/' + ${file.filePath.contains('/') ? file.filePath.substring(file.filePath.lastIndexOf('/') + 1) : file.filePath}}"
+                       class="d-block w-100 memory-media-image" th:alt="${file.originalFileName}">
+                </th:block>
+                <th:block th:if="${file.fileType != null && file.fileType.startsWith('video/')}">
+                  <video controls class="d-block w-100 memory-media-video">
+                    <source th:src="@{'/memories/files/' + ${memory.id} + '/' + ${#strings.substringAfterLast(file.filePath, '/')}}" th:type="${file.fileType}">
+                    Your browser does not support the video tag.
+                  </video>
+                </th:block>
+                <th:block th:if="${file.fileType != null && file.fileType.startsWith('audio/')}">
+                  <div class="memory-media-audio-wrapper text-center p-5 bg-light-subtle rounded">
+                    <i class="fas fa-music fa-3x mb-2 text-muted"></i>
+                    <p class="mb-2" th:text="${file.originalFileName}"></p>
+                    <audio controls class="d-block w-100">
+                      <source th:src="@{'/memories/files/' + ${memory.id} + '/' + ${#strings.substringAfterLast(file.filePath, '/')}}" th:type="${file.fileType}">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </div>
+                </th:block>
+                <th:block th:if="${file.fileType == null || (!file.fileType.startsWith('image/') && !file.fileType.startsWith('video/') && !file.fileType.startsWith('audio/'))}">
+                  <div class="memory-media-file-placeholder text-center p-5 bg-light-subtle rounded">
+                    <i class="fas fa-file-alt fa-3x mb-2 text-muted"></i>
+                    <p th:text="${file.originalFileName}"></p>
+                    <a th:href="@{'/memories/files/' + ${memory.id} + '/' + ${#strings.substringAfterLast(file.filePath, '/')}}" class="btn btn-sm btn-outline-primary" target="_blank" th:text="#{memory.file.download}"></a>
+                  </div>
+                </th:block>
+              </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#memoryMediaCarousel" data-bs-slide="prev" th:if="${memory.files.size() > 1}">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#memoryMediaCarousel" data-bs-slide="next" th:if="${memory.files.size() > 1}">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Next</span>
+            </button>
+          </div>
+        </div>
 
-      <div class="mt-4" sec:authorize="isAuthenticated()" th:if="${memory.user.username == #authentication.name or #authorization.expression('hasRole(''ADMIN'')')}">
-        <a th:href="@{'/memories/edit/' + ${memory.id}}" class="btn btn-secondary me-2" th:text="#{memory.action.edit}">Edit</a>
-        <form th:action="@{'/memories/delete/' + ${memory.id}}" method="post" class="d-inline" onsubmit="return confirm('[[#{memory.action.delete.confirm}]]');">
-          <button type="submit" class="btn btn-danger" th:text="#{memory.action.delete}">Delete</button>
-        </form>
+        <div class="row memory-meta-info mb-4">
+          <div class="col-md-6 mb-2 mb-md-0">
+            <i class="fas fa-calendar-day fa-fw text-primary me-2"></i>
+            <strong><span th:text="#{memory.date.event}"></span>:</strong>
+            <span th:text="${#temporals.format(memory.memoryDate, 'dd MMMM, yyyy')}"></span>
+          </div>
+          <div class="col-md-6" th:if="${memory.location != null && !memory.location.isBlank()}">
+            <i class="fas fa-map-marked-alt fa-fw text-primary me-2"></i>
+            <strong><span th:text="#{memory.location}"></span>:</strong>
+            <span th:text="${memory.location}"></span>
+          </div>
+        </div>
+        <div class="row memory-meta-info mb-4">
+          <div class="col-md-6 mb-2 mb-md-0" th:if="${memory.emotionType != null}">
+            <i class="fas fa-smile-beam fa-fw text-primary me-2"></i>
+            <strong><span th:text="#{memory.emotion}"></span>:</strong>
+            <span class="badge emotion-badge-detail"
+                  th:styleappend="${memory.emotionType.icon != null && #strings.startsWith(memory.emotionType.icon, '#') ? 'background-color:' + memory.emotionType.icon + ';' : ''}"
+                  th:classappend="${memory.emotionType.icon != null && #strings.startsWith(memory.emotionType.icon, '#') ? '' : 'bg-info'}">
+                            <i th:if="${memory.emotionType.icon != null && !#strings.startsWith(memory.emotionType.icon, '#')}"
+                               th:class="'fas ' + ${memory.emotionType.icon} + ' me-1'"></i>
+                            <span th:text="${#locale.language == 'en' && memory.emotionType.nameEn != null ? memory.emotionType.nameEn : memory.emotionType.name}"></span>
+                        </span>
+          </div>
+          <div class="col-md-6">
+            <i th:class="${memory.status.name() == 'PUBLIC' ? 'fas fa-globe-americas' : 'fas fa-lock'}" class="fa-fw text-primary me-2"></i>
+            <strong><span th:text="#{memory.status}"></span>:</strong>
+            <span class="badge"
+                  th:classappend="${memory.status.name() == 'PUBLIC' ? 'bg-success' : 'bg-warning text-dark'}"
+                  th:text="#{${'memory.status.' + memory.status.name().toLowerCase()}}"></span>
+          </div>
+        </div>
+
+        <div class="memory-description-full mb-4">
+          <h5 class="fw-medium" th:text="#{memory.description.title}"></h5>
+          <hr class="my-2">
+          <div style="white-space: pre-wrap;">
+            <span th:if="${memory.description != null && !memory.description.isEmpty()}" 
+                  th:text="${memory.description}"></span>
+            <span th:if="${memory.description == null || memory.description.isEmpty()}" 
+                  class="text-muted fst-italic" 
+                  th:text="#{memory.description.none}"></span>
+          </div>
+        </div>
+
+        <div class="memory-authorship text-muted border-top pt-3 mt-4">
+          <small>
+            <i class="fas fa-user-edit me-1"></i>
+            <span th:text="#{memory.posted.by(${memory.user.username})}"></span>
+            <i class="fas fa-clock ms-3 me-1"></i>
+            <span th:text="#{memory.posted.on(${#temporals.format(memory.createdAt, 'dd/MM/yyyy HH:mm')})}"></span>
+            <th:block th:if="${memory.updatedAt != null && !memory.updatedAt.equals(memory.createdAt)}">
+              <i class="fas fa-history ms-3 me-1"></i>
+              <span th:text="#{memory.updated.on(${#temporals.format(memory.updatedAt, 'dd/MM/yyyy HH:mm')})}"></span>
+            </th:block>
+          </small>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- Comments section will go here -->
-  <div class="mt-5">
-    <h4>Comments</h4>
-    <!-- Placeholder for comments -->
-    <p>Comments feature coming soon.</p>
-  </div>
+    <!-- PHẦN THẢ CẢM XÚC ĐƯỢC THÊM VÀO ĐÂY -->
+    <div class="card shadow-sm my-4 reaction-section" th:attr="data-memory-id=${memory.id}">
+      <div class="card-body text-center">
+        <h5 class="card-title mb-3" th:text="#{memory.reactions.title}"></h5>
+        <div class="reaction-buttons d-flex justify-content-center flex-wrap">
+          <th:block th:each="type : ${T(com.example.memorymuseum.model.ReactionType).values()}">
+            <button type="button" class="btn btn-outline-secondary btn-reaction m-1"
+                    th:attr="data-reaction-type=${type.name()}"
+                    th:title="${#messages.msg('memory.reaction.' + type.name().toLowerCase())}"
+                    data-bs-toggle="tooltip" data-bs-placement="top">
+              <i th:class="'reaction-icon reaction-icon-' + ${type.name().toLowerCase()}"></i>
+              <span class="reaction-count ms-1" th:id="'reaction-count-' + ${type.name()}">0</span>
+            </button>
+          </th:block>
+        </div>
+      </div>
+    </div>
+    <!-- KẾT THÚC PHẦN THẢ CẢM XÚC -->
 
+    <div class="card shadow-sm my-4 comment-section" id="comment-section">
+      <div class="card-header bg-light d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="fas fa-comments me-2"></i><span th:text="#{memory.comments.title}"></span></h5>
+        <span class="badge bg-primary rounded-pill"
+              th:text="${comments != null ? comments.size() : 0} + ' ' + (${comments != null && comments.size() == 1 ? #messages.msg('memory.comment.singular') : #messages.msg('memory.comments.plural')})">
+                </span>
+      </div>
+      <div class="card-body">
+        <div sec:authorize="isAuthenticated()" class="mb-4">
+          <form th:action="@{'/comments/add/' + ${memory.id}}" method="post" class="comment-form">
+            <div class="d-flex align-items-start">
+              <textarea name="content" class="form-control me-2" rows="2" th:placeholder="#{memory.comment.add.placeholder}" required th:value="${newCommentContent}"></textarea>
+              <button type="submit" class="btn btn-primary flex-shrink-0"><i class="fas fa-paper-plane"></i></button>
+            </div>
+          </form>
+        </div>
+
+        <div th:if="${comments == null || comments.isEmpty()}" class="text-center text-muted py-3">
+          <p th:text="#{memory.comments.none}"></p>
+        </div>
+
+        <ul class="list-unstyled comment-list" th:unless="${comments == null || comments.isEmpty()}">
+          <th:block th:each="comment : ${comments}" th:insert="~{fragments/comment-item :: commentDisplay(comment=${comment}, memoryId=${memory.id}, depth=0)}"></th:block>
+        </ul>
+      </div>
+    </div>
+
+  </div>
 </div>
+
+<th:block layout:fragment="scripts">
+  <!-- <script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script> -->
+  <script th:inline="javascript">
+    /*<![CDATA[*/
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+
+    var memoryMediaCarousel = document.getElementById('memoryMediaCarousel')
+    if (memoryMediaCarousel) {
+      var carousel = new bootstrap.Carousel(memoryMediaCarousel, {
+        interval: 5000,
+        wrap: true
+      })
+    }
+
+    document.querySelectorAll('.reply-link').forEach(function(link) {
+      link.addEventListener('click', function(event) {
+        event.preventDefault();
+        const commentId = this.dataset.commentId;
+        const replyFormContainer = document.getElementById('reply-form-' + commentId);
+        if (replyFormContainer) {
+          const isHidden = replyFormContainer.style.display === 'none' || replyFormContainer.style.display === '';
+          document.querySelectorAll('.reply-form-container').forEach(function(otherForm) {
+            if (otherForm !== replyFormContainer) {
+              otherForm.style.display = 'none';
+            }
+          });
+          replyFormContainer.style.display = isHidden ? 'block' : 'none';
+          if(isHidden){
+            replyFormContainer.querySelector('textarea').focus();
+          }
+        }
+      });
+    });
+
+    // PHẦN JAVASCRIPT CHO REACTION ĐƯỢC THÊM VÀO ĐÂY
+    const memoryIdForReaction = /*[[${memory.id}]]*/ null;
+    const reactionButtonsContainerEl = document.querySelector('.reaction-section .reaction-buttons');
+    const csrfTokenEl = /*[[${_csrf?.token}]]*/ null;
+    const csrfHeaderNameEl = /*[[${_csrf?.headerName}]]*/ null;
+    const isAuthenticatedForReaction = /*[[${#authorization.expression('isAuthenticated()')}]]*/ false;
+
+    function updateAllReactionCountsAndUserReaction(counts, userReactionType) {
+      document.querySelectorAll('.btn-reaction').forEach(btn => {
+        const type = btn.dataset.reactionType;
+        const countElement = btn.querySelector('.reaction-count');
+
+        if (counts && counts.hasOwnProperty(type)) {
+          countElement.textContent = counts[type];
+        } else {
+          countElement.textContent = '0';
+        }
+
+        if (isAuthenticatedForReaction) {
+          if (type === userReactionType) {
+            btn.classList.add('active', 'btn-primary');
+            btn.classList.remove('btn-outline-secondary');
+          } else {
+            btn.classList.remove('active', 'btn-primary');
+            btn.classList.add('btn-outline-secondary');
+          }
+          btn.disabled = false;
+          btn.style.cursor = 'pointer';
+        } else {
+          btn.disabled = true;
+          btn.style.cursor = 'not-allowed';
+        }
+      });
+    }
+
+    function fetchInitialReactions() {
+      if (!memoryIdForReaction) return;
+      fetch(`/api/reactions/memory/${memoryIdForReaction}`)
+              .then(response => response.json())
+              .then(data => {
+                updateAllReactionCountsAndUserReaction(data.counts, data.userReaction);
+              })
+              .catch(error => console.error('Error fetching initial reactions:', error));
+    }
+
+    if (reactionButtonsContainerEl && memoryIdForReaction) {
+      if (isAuthenticatedForReaction) {
+        reactionButtonsContainerEl.addEventListener('click', function(event) {
+          const button = event.target.closest('.btn-reaction');
+          if (!button) return;
+
+          const reactionType = button.dataset.reactionType;
+          const formData = new URLSearchParams();
+          formData.append('reactionTypeString', reactionType);
+
+          const fetchOptions = {
+            method: 'POST',
+            body: formData,
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            }
+          };
+
+          if (csrfTokenEl && csrfHeaderNameEl) {
+            fetchOptions.headers[csrfHeaderNameEl] = csrfTokenEl;
+          }
+
+          fetch(`/api/reactions/toggle/${memoryIdForReaction}`, fetchOptions)
+                  .then(response => {
+                    if (!response.ok) {
+                      return response.json().then(err => { throw new Error(err.error || 'Reaction toggle failed') });
+                    }
+                    return response.json();
+                  })
+                  .then(data => {
+                    if (data.success) {
+                      updateAllReactionCountsAndUserReaction(data.newCounts, data.userReaction);
+                    } else {
+                      console.error("Error toggling reaction from server:", data.error);
+                    }
+                  })
+                  .catch(error => {
+                    console.error('Error toggling reaction:', error);
+                  });
+        });
+      }
+      fetchInitialReactions();
+    }
+  </script>
+</th:block>
 </body>
 </html>

@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "reactions", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"memory_id", "user_id", "reaction_type"})
+        @UniqueConstraint(columnNames = {"memory_id", "user_id"}) // Một user chỉ có 1 reaction cho 1 memory
 })
 @Data
 @NoArgsConstructor
