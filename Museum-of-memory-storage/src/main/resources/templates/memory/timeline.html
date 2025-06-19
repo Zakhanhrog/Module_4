@@ -38,12 +38,12 @@
           <div th:each="file : ${memory.files}" class="col-auto mb-2">
             <!-- Basic preview for images -->
             <div th:if="${file.filePath != null && (file.filePath.toLowerCase().endsWith('.png') || file.filePath.toLowerCase().endsWith('.jpg') || file.filePath.toLowerCase().endsWith('.jpeg') || file.filePath.toLowerCase().endsWith('.gif'))}" class="mt-2">
-              <a th:href="@{'/memories/files/' + ${memory.id} + '/' + ${#strings.substringAfterLast(file.filePath, '/')}}" target="_blank">
-                <img th:src="@{'/memories/files/' + ${memory.id} + '/' + ${#strings.substringAfterLast(file.filePath, '/')}}" th:alt="${file.originalFileName}" style="max-width: 100px; max-height: 100px; border:1px solid #ddd; margin-right: 5px;">
+              <a th:href="@{'/memories/files/' + ${memory.id} + '/' + ${#strings.substringAfter(file.filePath, '/')}}" target="_blank">
+                <img th:src="@{'/memories/files/' + ${memory.id} + '/' + ${#strings.substringAfter(file.filePath, '/')}}" th:alt="${file.originalFileName}" style="max-width: 100px; max-height: 100px; border:1px solid #ddd; margin-right: 5px;">
               </a>
             </div>
             <div th:unless="${file.filePath != null && (file.filePath.toLowerCase().endsWith('.png') || file.filePath.toLowerCase().endsWith('.jpg') || file.filePath.toLowerCase().endsWith('.jpeg') || file.filePath.toLowerCase().endsWith('.gif'))}" class="mt-2">
-              <a th:href="@{'/memories/files/' + ${memory.id} + '/' + ${#strings.substringAfterLast(file.filePath, '/')}}" target="_blank" th:text="${file.originalFileName}"></a>
+              <a th:href="@{'/memories/files/' + ${memory.id} + '/' + ${#strings.substringAfter(file.filePath, '/')}}" target="_blank" th:text="${file.originalFileName}"></a>
             </div>
           </div>
         </div>

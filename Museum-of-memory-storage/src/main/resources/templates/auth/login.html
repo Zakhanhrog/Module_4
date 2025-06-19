@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      th:lang="${#locale.language}"
       layout:decorate="~{layout/base}">
 <head>
   <title th:text="#{login.title}"></title>
   <th:block layout:fragment="styles">
-    <link rel="stylesheet" th:href="@{/css/auth-pages.css}" /> <!-- CSS riêng cho trang auth -->
+    <link rel="stylesheet" th:href="@{/css/auth-pages.css}" />
   </th:block>
 </head>
 <body>
@@ -14,38 +15,28 @@
     <div class="auth-content">
       <div class="auth-card">
         <div class="text-center mb-4">
-          <!-- Có thể thêm logo ở đây -->
-          <!-- <img th:src="@{/images/logo-dark.png}" alt="logo" class="auth-logo mb-3"> -->
           <h2 class="auth-title" th:text="#{login.title}"></h2>
-          <p class="auth-subtitle" th:text="#{login.subtitle}">Please sign in to continue.</p> <!-- Thêm key này -->
+          <p class="auth-subtitle" th:text="#{login.subtitle}">Please sign in to continue.</p>
         </div>
 
-        <div th:if="${loginError}" class="alert alert-danger text-center py-2 mb-3" role="alert" th:text="${loginError}">
+        <div th:if="${param.error}" class="alert alert-danger text-center py-2 mb-3" role="alert">
+          <span th:text="#{login.error.badcredentials}">Invalid username or password.</span>
         </div>
-        <div th:if="${logoutMessage}" class="alert alert-success text-center py-2 mb-3" role="alert" th:text="${logoutMessage}">
+        <div th:if="${param.logout}" class="alert alert-success text-center py-2 mb-3" role="alert">
+          <span th:text="#{login.logout.success}">You have been logged out successfully.</span>
         </div>
         <div th:if="${registrationSuccess}" class="alert alert-info text-center py-2 mb-3" role="alert" th:text="${registrationSuccess}">
         </div>
 
         <form th:action="@{/login}" method="post" class="auth-form">
           <div class="mb-3 form-floating">
-            <input type="text" class="form-control" id="username" name="username" th:placeholder="#{login.username}" required autofocus>
+            <input type="text" class="form-control" id="username" name="username" placeholder=" " required autofocus>
             <label for="username" th:text="#{login.username}"></label>
           </div>
           <div class="mb-3 form-floating">
-            <input type="password" class="form-control" id="password" name="password" th:placeholder="#{login.password}" required>
+            <input type="password" class="form-control" id="password" name="password" placeholder=" " required>
             <label for="password" th:text="#{login.password}"></label>
           </div>
-          <!-- Có thể thêm checkbox "Remember me" nếu muốn -->
-          <!--
-          <div class="d-flex justify-content-between align-items-center mb-3">
-              <div class="form-check">
-                  <input class="form-check-input" type="checkbox" name="remember-me" id="rememberMe">
-                  <label class="form-check-label" for="rememberMe" th:text="#{login.rememberme}">Remember me</label>
-              </div>
-              <a href="#" class="form-text" th:text="#{login.forgotpassword}">Forgot password?</a>
-          </div>
-          -->
           <div class="d-grid mt-4">
             <button type="submit" class="btn btn-primary btn-lg auth-button" th:text="#{login.submit}"></button>
           </div>

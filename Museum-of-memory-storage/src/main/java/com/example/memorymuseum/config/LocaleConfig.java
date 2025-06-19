@@ -1,4 +1,4 @@
-package com.example.memorymuseum.config.i18n;
+package com.example.memorymuseum.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

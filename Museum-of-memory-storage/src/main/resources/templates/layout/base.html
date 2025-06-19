@@ -2,11 +2,10 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      lang="vi">
-<head>
+      th:lang="${#locale.language ?: 'en'}"> <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title th:text="#{app.title}"></title>
+  <title th:text="#{app.title}">Memory Museum</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
@@ -14,6 +13,7 @@
   <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.2/css/bootstrap.min.css}" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link rel="stylesheet" th:href="@{/css/custom-theme.css}" />
+  <link rel="stylesheet" th:href="@{/css/style.css}" />
 
   <th:block layout:fragment="styles"></th:block>
 </head>
@@ -31,14 +31,15 @@
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto align-items-center">
           <li class="nav-item">
-            <a class="nav-link" th:classappend="${(requestUri != null && (requestUri.startsWith('/home'))) ? 'active' : ''}" th:href="@{/home}" th:text="#{navbar.home}">Home</a>
+            <a class="nav-link" th:classappend="${(requestUri != null && (requestUri.startsWith('/home') || requestUri == '/')) ? 'active' : ''}" th:href="@{/home}" th:text="#{navbar.home}">Home</a>
           </li>
-<!--          <li class="nav-item" sec:authorize="isAuthenticated()">-->
-<!--            <a class="nav-link" th:classappend="${(#request != null && (request.requestURI.startsWith('/timeline'))) ? 'active' : ''}" th:href="@{/memories/timeline}" th:text="#{navbar.timeline}">Timeline</a>-->
-<!--          </li>-->
-<!--          <li class="nav-item">-->
-<!--            <a class="nav-link" th:classappend="${(#request != null && (request.requestURI.startsWith(@{/memories/public})) ? 'active' : ''}" th:href="@{/memories/public}" th:text="#{memory.timeline.public}">Public</a>-->
-<!--          </li>-->
+          <li class="nav-item" sec:authorize="isAuthenticated()">
+            <a class="nav-link" th:classappend="${(requestUri != null && requestUri.startsWith('/memories/timeline')) ? 'active' : ''}" th:href="@{/memories/timeline}" th:text="#{navbar.timeline}">Timeline</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" th:classappend="${(requestUri != null && requestUri.startsWith('/memories/public')) ? 'active' : ''}" th:href="@{/memories/public}" th:text="#{memory.timeline.public}">Public</a>
+          </li>
+
           <li class="nav-item" sec:authorize="isAuthenticated()">
             <a class="nav-link btn btn-primary text-white btn-sm px-3 ms-lg-2" th:href="@{/memories/new}">
               <i class="fas fa-plus me-1"></i> <span th:text="#{navbar.newMemory.short}">NewShort</span>
@@ -64,10 +65,10 @@
           </li>
 
           <li class="nav-item ms-lg-2" sec:authorize="!isAuthenticated()">
-            <a class="nav-link" th:href="@{/login}" th:text="#{navbar.login}">Login</a>
+            <a class="nav-link" th:classappend="${(requestUri != null && requestUri.startsWith('/login')) ? 'active' : ''}" th:href="@{/login}" th:text="#{navbar.login}">Login</a>
           </li>
           <li class="nav-item" sec:authorize="!isAuthenticated()">
-            <a class="nav-link btn btn-outline-primary btn-sm px-3" th:href="@{/register}" th:text="#{navbar.register}">Register</a>
+            <a class="nav-link btn btn-outline-primary btn-sm px-3" th:classappend="${(requestUri != null && requestUri.startsWith('/register')) ? 'active' : ''}" th:href="@{/register}" th:text="#{navbar.register}">Register</a>
           </li>
 
           <li class="nav-item dropdown ms-lg-3">
@@ -75,10 +76,11 @@
               <i class="fas fa-globe"></i>
             </a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
-<!--              <li><a class="dropdown-item" th:classappend="${(#locale != null && #locale.language == 'vi') ? 'active' : ''}" th:href="@{${(#request != null ? #request.requestURI : '/')} (lang='vi')}"><img th:src="@{/images/flags/vn.png}" alt="VN" class="me-2" style="width:20px;"> Tiếng Việt</a></li>-->
-<!--              <li><a class="dropdown-item" th:classappend="${(#locale != null && #locale.language == 'en') ? 'active' : ''}" th:href="@{${(#request != null ? #request.requestURI : '/')} (lang='en')}"><img th:src="@{/images/flags/gb.png}" alt="EN" class="me-2" style="width:20px;"> English</a></li>-->
+              <li><a class="dropdown-item" th:classappend="${(#locale != null && #locale.language == 'vi') ? 'active' : ''}" th:href="@{/(lang='vi')}"><img th:src="@{/images/flags/vi.png}" alt="VN" class="me-2" style="width:20px;"> Tiếng Việt</a></li>
+              <li><a class="dropdown-item" th:classappend="${(#locale != null && #locale.language == 'en') ? 'active' : ''}" th:href="@{/(lang='en')}"><img th:src="@{/images/flags/gb.png}" alt="EN" class="me-2" style="width:20px;"> English</a></li>
             </ul>
           </li>
+
         </ul>
       </div>
     </div>
@@ -108,14 +110,14 @@
       <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 
-    <div layout:fragment="content">
+    <div layout:fragment="content" class="page-content-wrapper">
     </div>
   </div>
 </main>
 
-<footer class="footer mt-auto py-4 bg-light site-footer">
+<footer class="footer mt-auto py-3 bg-light site-footer">
   <div class="container text-center">
-    <p class="mb-1" th:text="#{footer.copyright(${#dates.year(#dates.createNow())})}">Copyright Text</p>
+    <p class="mb-1" th:text="#{footer.copyright(${#dates.year(#dates.createNow())})}">© 2024 Memory Museum. All rights reserved.</p>
     <ul class="list-inline mb-0">
       <li class="list-inline-item"><a href="#" th:text="#{footer.privacy}">Privacy</a></li>
       <li class="list-inline-item"><a href="#" th:text="#{footer.terms}">Terms</a></li>
