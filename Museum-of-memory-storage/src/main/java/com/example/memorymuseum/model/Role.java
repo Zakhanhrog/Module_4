@@ -1,4 +1,4 @@
-package com.example.memorymuseum.model; // Đảm bảo đúng package
+package com.example.memorymuseum.model;
 
 public enum Role {
     USER,

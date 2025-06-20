@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layout/base}">
+<head>
+  <title th:text="#{profile.title}">Profile</title>
+  <th:block layout:fragment="styles">
+    <link rel="stylesheet" th:href="@{/css/profile-page.css}" />
+  </th:block>
+</head>
+<body>
+<div layout:fragment="content">
+  <div class="container-fluid py-4">
+    <div class="profile-wrapper">
+      <div class="row justify-content-center">
+        <!-- Cột trái: Avatar và thông tin cơ bản -->
+        <div class="col-xl-4 col-lg-5 col-md-6">
+          <div class="profile-sidebar">
+            <div class="profile-header">
+              <div class="avatar-section">
+                <div class="avatar-upload-container">
+                  <img th:src="${user.avatarUrl != null ? '/profile/avatar/' + user.id + '/' + user.avatarUrl : '/images/default-avatar.png'}"
+                       alt="Avatar" class="user-avatar" id="avatarPreview">
+                  <form th:action="@{/profile/avatar/upload}" method="post" enctype="multipart/form-data" id="avatarUploadForm">
+                    <label for="avatarFile" class="change-avatar-btn" title="Change Avatar">
+                      <i class="fas fa-camera"></i>
+                    </label>
+                    <input type="file" name="avatarFile" id="avatarFile" class="d-none" accept="image/*" aria-label="Upload avatar image">
+                  </form>
+                </div>
+                <div class="user-info">
+                  <h3 class="user-name" th:text="${user.fullName ?: user.username}">User Name</h3>
+                  <p class="user-email" th:text="${user.email}">user@email.com</p>
+                  <p class="member-since" th:text="#{profile.member.since(${#temporals.format(user.createdAt, 'MMMM yyyy')})}">Member since June 2025</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="profile-navigation">
+              <nav class="nav nav-pills nav-fill flex-column" role="tablist">
+                <a href="#updateProfileSection" class="nav-link active" data-bs-toggle="tab" role="tab">
+                  <i class="fas fa-user-edit me-2"></i>
+                  <span th:text="#{profile.nav.update}">Update Profile</span>
+                </a>
+                <a href="#changePasswordSection" class="nav-link" data-bs-toggle="tab" role="tab">
+                  <i class="fas fa-key me-2"></i>
+                  <span th:text="#{profile.nav.password}">Change Password</span>
+                </a>
+                <a th:href="@{/memories/timeline}" class="nav-link">
+                  <i class="fas fa-images me-2"></i>
+                  <span th:text="#{profile.nav.myMemories}">My Memories</span>
+                </a>
+              </nav>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cột phải: Các form cập nhật -->
+        <div class="col-xl-8 col-lg-7 col-md-6">
+          <div class="profile-content">
+            <div class="tab-content" id="profileTabContent">
+              <!-- Tab Cập nhật Hồ sơ -->
+              <div class="tab-pane fade show active" id="updateProfileSection" role="tabpanel">
+                <div class="content-card">
+                  <div class="card-header">
+                    <h4 class="card-title">
+                      <i class="fas fa-user-edit me-2"></i>
+                      <span th:text="#{profile.update.title}">Update Profile</span>
+                    </h4>
+                  </div>
+                  <div class="card-body">
+                    <form th:action="@{/profile/update}" th:object="${profileUpdateDto}" method="post" class="profile-form">
+                      <div class="form-group mb-4">
+                        <label for="fullName" class="form-label" th:text="#{register.fullname}">Full Name</label>
+                        <div class="input-wrapper">
+                          <i class="fas fa-user input-icon"></i>
+                          <input type="text" class="form-control" id="fullName" th:field="*{fullName}" 
+                                 placeholder="Enter your full name">
+                        </div>
+                        <div th:if="${#fields.hasErrors('fullName')}" class="invalid-feedback d-block" th:errors="*{fullName}"></div>
+                      </div>
+                      
+                      <div class="form-group mb-4">
+                        <label for="email" class="form-label" th:text="#{register.email}">Email Address</label>
+                        <div class="input-wrapper">
+                          <i class="fas fa-envelope input-icon"></i>
+                          <input type="email" class="form-control" id="email" th:field="*{email}" 
+                                 placeholder="Enter your email address" required>
+                        </div>
+                        <div th:if="${#fields.hasErrors('email')}" class="invalid-feedback d-block" th:errors="*{email}"></div>
+                      </div>
+                      
+                      <div class="form-actions">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                          <i class="fas fa-save me-2"></i>
+                          <span th:text="#{profile.action.save}">Save Changes</span>
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Tab Đổi mật khẩu -->
+              <div class="tab-pane fade" id="changePasswordSection" role="tabpanel">
+                <div class="content-card">
+                  <div class="card-header">
+                    <h4 class="card-title">
+                      <i class="fas fa-key me-2"></i>
+                      <span th:text="#{profile.password.title}">Change Password</span>
+                    </h4>
+                  </div>
+                  <div class="card-body">
+                    <form th:action="@{/profile/change-password}" th:object="${passwordChangeDto}" method="post" class="profile-form">
+                      <div class="form-group mb-4">
+                        <label for="currentPassword" class="form-label" th:text="#{profile.password.current}">Current Password</label>
+                        <div class="input-wrapper">
+                          <i class="fas fa-lock input-icon"></i>
+                          <input type="password" class="form-control" id="currentPassword" th:field="*{currentPassword}" 
+                                 placeholder="Enter your current password" required>
+                          <button class="btn-toggle-password" type="button" onclick="togglePassword('currentPassword')" title="Toggle password visibility">
+                            <i class="fas fa-eye"></i>
+                          </button>
+                        </div>
+                        <div th:if="${#fields.hasErrors('currentPassword')}" class="invalid-feedback d-block" th:errors="*{currentPassword}"></div>
+                      </div>
+                      
+                      <div class="row">
+                        <div class="col-md-6">
+                          <div class="form-group mb-4">
+                            <label for="newPassword" class="form-label" th:text="#{profile.password.new}">New Password</label>
+                            <div class="input-wrapper">
+                              <i class="fas fa-key input-icon"></i>
+                              <input type="password" class="form-control" id="newPassword" th:field="*{newPassword}" 
+                                     placeholder="Enter new password" required>
+                              <button class="btn-toggle-password" type="button" onclick="togglePassword('newPassword')" title="Toggle password visibility">
+                                <i class="fas fa-eye"></i>
+                              </button>
+                            </div>
+                            <div class="password-strength-meter">
+                              <div class="password-strength-bar" id="passwordStrengthBar"></div>
+                            </div>
+                            <div th:if="${#fields.hasErrors('newPassword')}" class="invalid-feedback d-block" th:errors="*{newPassword}"></div>
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <div class="form-group mb-4">
+                            <label for="confirmNewPassword" class="form-label" th:text="#{profile.password.confirmNew}">Confirm New Password</label>
+                            <div class="input-wrapper">
+                              <i class="fas fa-check-circle input-icon"></i>
+                              <input type="password" class="form-control" id="confirmNewPassword" th:field="*{confirmNewPassword}" 
+                                     placeholder="Confirm new password" required>
+                              <button class="btn-toggle-password" type="button" onclick="togglePassword('confirmNewPassword')" title="Toggle password visibility">
+                                <i class="fas fa-eye"></i>
+                              </button>
+                            </div>
+                            <div th:if="${#fields.hasErrors('confirmNewPassword')}" class="invalid-feedback d-block" th:errors="*{confirmNewPassword}"></div>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div class="form-actions">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                          <i class="fas fa-key me-2"></i>
+                          <span th:text="#{profile.action.changePassword}">Change Password</span>
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<th:block layout:fragment="scripts">
+  <script>
+    // Toggle password visibility
+    function togglePassword(fieldId) {
+      const field = document.getElementById(fieldId);
+      const button = field.parentElement.querySelector('.btn-toggle-password i');
+      
+      if (field.type === 'password') {
+        field.type = 'text';
+        button.classList.remove('fa-eye');
+        button.classList.add('fa-eye-slash');
+      } else {
+        field.type = 'password';
+        button.classList.remove('fa-eye-slash');
+        button.classList.add('fa-eye');
+      }
+    }
+
+    // Avatar upload functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const avatarFile = document.getElementById('avatarFile');
+      const avatarPreview = document.getElementById('avatarPreview');
+      const avatarUploadForm = document.getElementById('avatarUploadForm');
+
+      if (avatarFile && avatarPreview && avatarUploadForm) {
+        avatarFile.addEventListener('change', function(event) {
+          const file = event.target.files[0];
+          if (file) {
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+              alert('Please select an image file.');
+              return;
+            }
+            
+            // Validate file size (max 5MB)
+            if (file.size > 5 * 1024 * 1024) {
+              alert('File size should not exceed 5MB.');
+              return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+              avatarPreview.src = e.target.result;
+            }
+            reader.readAsDataURL(file);
+            
+            // Auto submit form
+            avatarUploadForm.submit();
+          }
+        });
+      }
+
+      // Tab navigation handling
+      const hash = window.location.hash;
+      if (hash) {
+        const triggerEl = document.querySelector('.nav-pills a[href="' + hash + '"]');
+        if (triggerEl) {
+          // Remove active class from all tabs
+          document.querySelectorAll('.nav-pills .nav-link').forEach(link => {
+            link.classList.remove('active');
+          });
+          document.querySelectorAll('.tab-pane').forEach(pane => {
+            pane.classList.remove('show', 'active');
+          });
+          
+          // Activate clicked tab
+          triggerEl.classList.add('active');
+          const targetPane = document.querySelector(hash);
+          if (targetPane) {
+            targetPane.classList.add('show', 'active');
+          }
+        }
+      }
+
+      // Save hash when switching tabs
+      const tabElms = document.querySelectorAll('.nav-pills a[data-bs-toggle="tab"]');
+      tabElms.forEach(function(tabElm) {
+        tabElm.addEventListener('click', function(event) {
+          event.preventDefault();
+          
+          // Remove active class from all tabs
+          document.querySelectorAll('.nav-pills .nav-link').forEach(link => {
+            link.classList.remove('active');
+          });
+          document.querySelectorAll('.tab-pane').forEach(pane => {
+            pane.classList.remove('show', 'active');
+          });
+          
+          // Activate clicked tab
+          this.classList.add('active');
+          const targetPane = document.querySelector(this.getAttribute('href'));
+          if (targetPane) {
+            targetPane.classList.add('show', 'active');
+          }
+          
+          // Update URL
+          history.pushState(null, null, this.getAttribute('href'));
+        });
+      });
+
+      // Password strength indicator
+      const newPasswordField = document.getElementById('newPassword');
+      if (newPasswordField) {
+        newPasswordField.addEventListener('input', function() {
+          const password = this.value;
+          const strengthBar = document.getElementById('passwordStrengthBar');
+          
+          if (strengthBar) {
+            let strength = 0;
+            if (password.length >= 8) strength += 20;
+            if (/[a-z]/.test(password)) strength += 20;
+            if (/[A-Z]/.test(password)) strength += 20;
+            if (/[0-9]/.test(password)) strength += 20;
+            if (/[^A-Za-z0-9]/.test(password)) strength += 20;
+            
+            strengthBar.style.width = strength + '%';
+          }
+        });
+      }
+
+      // Auto-hide alerts after 5 seconds
+      setTimeout(function() {
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(function(alert) {
+          alert.style.opacity = '0';
+          setTimeout(() => alert.remove(), 300);
+        });
+      }, 5000);
+
+      // Add smooth animations
+      const cards = document.querySelectorAll('.content-card, .profile-sidebar');
+      cards.forEach(card => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+      });
+
+      // Animate cards on load
+      setTimeout(() => {
+        cards.forEach((card, index) => {
+          setTimeout(() => {
+            card.style.transition = 'all 0.6s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+          }, index * 100);
+        });
+      }, 100);
+    });
+  </script>
+</th:block>
+        
+        let strength = 0;
+        if (password.length >= 8) strength++;
+        if (/[a-z]/.test(password)) strength++;
+        if (/[A-Z]/.test(password)) strength++;
+        if (/[0-9]/.test(password)) strength++;
+        if (/[^A-Za-z0-9]/.test(password)) strength++;
+        
+        if (strengthBar) {
+          strengthBar.className = 'password-strength strength-' + strength;
+          strengthBar.style.width = (strength * 20) + '%';
+        }
+      });
+    }
+
+    // Auto-hide alerts after 5 seconds
+    setTimeout(function() {
+      const alerts = document.querySelectorAll('.alert');
+      alerts.forEach(function(alert) {
+        const bsAlert = new bootstrap.Alert(alert);
+        bsAlert.close();
+      });
+    }, 5000);
+  </script>
+</th:block>
+</body>
+</html>

@@ -83,6 +83,11 @@
     color: var(--medium-text);
 }
 
+/* Memory description styling */
+.memory-description-content {
+    white-space: pre-wrap;
+}
+
 .memory-authorship {
     font-size: 0.85rem;
 }
@@ -112,7 +117,8 @@
 }
 
 .comment-list {
-    /* Không cần style gì đặc biệt ở đây nếu dùng list-unstyled */
+    margin: 0;
+    padding: 0;
 }
 
 .comment-item .comment-header strong {
@@ -150,8 +156,94 @@
 }
 .reaction-buttons .btn-reaction.active .reaction-icon,
 .reaction-buttons .btn-reaction.btn-primary .reaction-icon {
+    margin-right: 0.3rem;
+    font-size: 1em;
 }
 
 .reaction-buttons .btn-reaction:disabled {
     opacity: 0.65;
+}
+
+/* Fix carousel responsiveness */
+@media (max-width: 768px) {
+    .memory-media-gallery .carousel-item {
+        max-height: 400px;
+    }
+    
+    .memory-media-image {
+        max-height: 400px;
+    }
+    
+    .memory-media-video {
+        max-height: 400px;
+    }
+}
+
+@media (max-width: 576px) {
+    .memory-media-gallery .carousel-item {
+        max-height: 300px;
+    }
+    
+    .memory-media-image {
+        max-height: 300px;
+    }
+    
+    .memory-media-video {
+        max-height: 300px;
+    }
+    
+    .carousel-control-prev-icon,
+    .carousel-control-next-icon {
+        padding: 0.8rem;
+    }
+}
+
+/* Fix meta info layout */
+.memory-meta-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.memory-meta-info .col-md-6 {
+    min-width: 0; /* Prevent text overflow */
+}
+
+/* Comment section fixes */
+.comment-section .card-body {
+    padding: 1.5rem;
+}
+
+.comment-form .d-flex {
+    gap: 0.75rem;
+}
+
+@media (max-width: 576px) {
+    .comment-form .d-flex {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .comment-form .btn {
+        align-self: flex-end;
+        width: auto;
+    }
+}
+
+/* Fix button spacing in detail actions */
+.memory-detail-card .card-header .btn {
+    margin: 0.25rem;
+}
+
+@media (max-width: 576px) {
+    .memory-detail-card .card-header .d-flex {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .memory-detail-card .card-header .btn {
+        margin: 0.125rem;
+        font-size: 0.8rem;
+    }
 }

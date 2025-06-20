@@ -1,0 +1,452 @@
+/* ==========================================================================
+   Profile Page Styles - Clean & Modern Design
+   ========================================================================== */
+
+/* Container & Layout */
+.profile-wrapper {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+/* Profile Sidebar */
+.profile-sidebar {
+    background: linear-gradient(145deg, #667eea 0%, #764ba2 100%);
+    border-radius: 25px;
+    padding: 0;
+    box-shadow: 0 15px 35px rgba(102, 126, 234, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+    margin-bottom: 2rem;
+}
+
+.profile-header {
+    padding: 2rem;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.95);
+    margin: 1rem;
+    border-radius: 20px;
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+}
+
+/* Avatar Section */
+.avatar-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.avatar-upload-container {
+    position: relative;
+    display: inline-block;
+}
+
+.user-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #fff;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+}
+
+.user-avatar:hover {
+    transform: scale(1.05);
+}
+
+.change-avatar-btn {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: 2px solid white;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.change-avatar-btn:hover {
+    transform: scale(1.1);
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    color: white;
+}
+
+/* User Info */
+.user-info {
+    text-align: center;
+}
+
+.user-name {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
+}
+
+.user-email {
+    font-size: 1rem;
+    color: #7f8c8d;
+    margin-bottom: 0.25rem;
+    font-weight: 500;
+}
+
+.member-since {
+    font-size: 0.875rem;
+    color: #95a5a6;
+    margin: 0;
+    font-style: italic;
+}
+
+/* Navigation */
+.profile-navigation {
+    padding: 0 1rem 1rem;
+}
+
+.nav-pills .nav-link {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.9);
+    padding: 0.875rem 1.25rem;
+    margin-bottom: 0.5rem;
+    border-radius: 15px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.nav-pills .nav-link:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    transform: translateX(5px);
+}
+
+.nav-pills .nav-link.active {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.nav-pills .nav-link i {
+    width: 20px;
+    text-align: center;
+}
+
+/* Content Area */
+.profile-content {
+    padding-left: 1rem;
+}
+
+.content-card {
+    background: white;
+    border-radius: 25px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    margin-bottom: 2rem;
+}
+
+.content-card .card-header {
+    background: linear-gradient(135deg, #f8f9ff 0%, #e8eeff 100%);
+    border-bottom: 1px solid rgba(102, 126, 234, 0.1);
+    padding: 1.5rem 2rem;
+    border-radius: 0;
+}
+
+.content-card .card-title {
+    color: #2c3e50;
+    font-weight: 700;
+    font-size: 1.4rem;
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+.content-card .card-title i {
+    color: #667eea;
+    margin-right: 0.5rem;
+}
+
+.content-card .card-body {
+    padding: 2rem;
+}
+
+/* Form Styles */
+.profile-form {
+    max-width: 100%;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+    font-size: 0.95rem;
+    display: block;
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-icon {
+    position: absolute;
+    left: 1rem;
+    color: #7f8c8d;
+    font-size: 0.9rem;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.form-control {
+    border: 2px solid #e8eeff;
+    border-radius: 15px;
+    padding: 0.875rem 1.25rem 0.875rem 2.75rem;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    background-color: #f8f9ff;
+    width: 100%;
+    line-height: 1.5;
+}
+
+.form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.15);
+    background-color: white;
+    outline: none;
+}
+
+.form-control::placeholder {
+    color: #95a5a6;
+    font-size: 0.9rem;
+}
+
+/* Toggle Password Button */
+.btn-toggle-password {
+    position: absolute;
+    right: 1rem;
+    background: none;
+    border: none;
+    color: #7f8c8d;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    z-index: 2;
+}
+
+.btn-toggle-password:hover {
+    color: #667eea;
+    background: rgba(102, 126, 234, 0.1);
+}
+
+/* Password Strength Meter */
+.password-strength-meter {
+    margin-top: 0.5rem;
+    height: 4px;
+    background: #e8eeff;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.password-strength-bar {
+    height: 100%;
+    width: 0%;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+    background: linear-gradient(90deg, #e74c3c 0%, #f39c12 25%, #f1c40f 50%, #27ae60 75%, #2ecc71 100%);
+}
+
+/* Buttons */
+.form-actions {
+    padding-top: 1rem;
+    border-top: 1px solid #f0f0f0;
+    margin-top: 2rem;
+    text-align: right;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 15px;
+    padding: 0.875rem 2rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: white;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    display: inline-flex;
+    align-items: center;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    color: white;
+}
+
+.btn-primary:focus {
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    color: white;
+}
+
+.btn-lg {
+    padding: 1rem 2.5rem;
+    font-size: 1rem;
+}
+
+/* Error Messages */
+.invalid-feedback {
+    display: block;
+    color: #e74c3c;
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+    font-weight: 500;
+}
+
+/* Success Messages */
+.alert {
+    border: none;
+    border-radius: 15px;
+    padding: 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.alert-success {
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+    color: #155724;
+    border-left: 4px solid #27ae60;
+}
+
+.alert-danger {
+    background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+    color: #721c24;
+    border-left: 4px solid #e74c3c;
+}
+
+/* Responsive Design */
+@media (max-width: 1199.98px) {
+    .profile-content {
+        padding-left: 0;
+        margin-top: 1rem;
+    }
+}
+
+@media (max-width: 991.98px) {
+    .profile-wrapper {
+        padding: 0 10px;
+    }
+    
+    .content-card .card-body {
+        padding: 1.5rem;
+    }
+    
+    .content-card .card-header {
+        padding: 1.25rem 1.5rem;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .profile-header {
+        padding: 1.5rem;
+        margin: 0.75rem;
+    }
+    
+    .user-avatar {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .change-avatar-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 0.75rem;
+    }
+    
+    .user-name {
+        font-size: 1.25rem;
+    }
+    
+    .content-card .card-body {
+        padding: 1.25rem;
+    }
+    
+    .content-card .card-header {
+        padding: 1rem 1.25rem;
+    }
+    
+    .content-card .card-title {
+        font-size: 1.2rem;
+    }
+    
+    .form-control {
+        padding: 0.75rem 1rem 0.75rem 2.5rem;
+    }
+    
+    .input-icon {
+        left: 0.875rem;
+    }
+    
+    .btn-toggle-password {
+        right: 0.875rem;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .profile-wrapper {
+        padding: 0 5px;
+    }
+    
+    .profile-header {
+        padding: 1rem;
+        margin: 0.5rem;
+    }
+    
+    .profile-navigation {
+        padding: 0 0.5rem 0.5rem;
+    }
+    
+    .nav-pills .nav-link {
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .content-card .card-body {
+        padding: 1rem;
+    }
+    
+    .content-card .card-header {
+        padding: 0.875rem 1rem;
+    }
+    
+    .btn-primary {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .form-actions {
+        text-align: center;
+    }
+}

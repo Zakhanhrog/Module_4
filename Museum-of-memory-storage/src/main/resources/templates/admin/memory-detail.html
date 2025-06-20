@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}"
+      lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="#{admin.memory.detail.title}">Chi tiết ký ức</title>
+    <th:block layout:fragment="styles">
+        <link rel="stylesheet" th:href="@{/css/memory-detail.css}" />
+    </th:block>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="container-fluid mt-4">
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800" th:text="#{admin.memory.detail.title}">Chi tiết ký ức</h1>
+            <div>
+                <a th:href="@{/admin/memories/{id}/edit(id=${memory.id})}" class="btn btn-primary me-2">
+                    <i class="fas fa-edit me-1"></i><span th:text="#{admin.memory.action.edit}">Chỉnh sửa</span>
+                </a>
+                <form th:action="@{/admin/memories/{id}/delete(id=${memory.id})}" method="post" class="d-inline">
+                    <button type="submit" class="btn btn-danger me-2"
+                            th:onclick="'return confirm(\'' + #{admin.memory.delete.confirm} + '\')'"
+                            th:title="#{admin.memory.action.delete}" title="Xóa">
+                        <i class="fas fa-trash-alt me-1"></i><span th:text="#{admin.memory.action.delete}">Xóa</span>
+                    </button>
+                </form>
+                <a th:href="@{/admin/memories}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-1"></i><span th:text="#{admin.memory.back.to.dashboard}">Quay lại danh sách</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="alert alert-success alert-dismissible fade show" role="alert" th:if="${successMessage}">
+            <i class="fas fa-check-circle me-2"></i>
+            <span th:text="${successMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div class="alert alert-danger alert-dismissible fade show" role="alert" th:if="${errorMessage}">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <span th:text="${errorMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8">
+                <!-- Memory Details Card -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="m-0 font-weight-bold" th:text="#{admin.memory.metadata}">Thông tin ký ức</h5>
+                    </div>
+                    <div class="card-body">
+                        <h2 th:text="${memory.title}" class="mb-3"></h2>
+                        
+                        <!-- Memory Media Gallery -->
+                        <div th:if="${!memory.files.isEmpty()}" class="mb-4">
+                            <div id="memoryMediaCarousel" class="carousel slide" data-bs-ride="carousel">
+                                <div class="carousel-indicators" th:if="${memory.files.size() > 1}">
+                                    <button type="button" data-bs-target="#memoryMediaCarousel" th:each="file, iterStat : ${memory.files}"
+                                            th:data-bs-slide-to="${iterStat.index}" th:classappend="${iterStat.first} ? 'active'"
+                                            th:aria-current="${iterStat.first} ? 'true'" th:aria-label="'Slide ' + ${iterStat.count}"
+                                            th:title="'Slide ' + ${iterStat.count}"></button>
+                                </div>
+                                <div class="carousel-inner">
+                                    <div class="carousel-item" th:each="file, iterStat : ${memory.files}" th:classappend="${iterStat.first} ? 'active'">
+                                        <th:block th:if="${file.fileType != null && file.fileType.startsWith('image/')}">
+                                            <img th:src="@{'/memories/files/' + ${memory.id} + '/' + ${file.filePath.contains('/') ? file.filePath.substring(file.filePath.lastIndexOf('/') + 1) : file.filePath}}"
+                                                class="d-block w-100 memory-media-image" th:alt="${file.originalFileName}" th:title="${file.originalFileName}">
+                                        </th:block>
+                                        <th:block th:if="${file.fileType != null && file.fileType.startsWith('video/')}">
+                                            <video controls class="d-block w-100 memory-media-video">
+                                                <source th:src="@{'/memories/files/' + ${memory.id} + '/' + ${#strings.substringAfterLast(file.filePath, '/')}}" th:type="${file.fileType}">
+                                                Your browser does not support the video tag.
+                                            </video>
+                                        </th:block>
+                                        <th:block th:if="${file.fileType != null && file.fileType.startsWith('audio/')}">
+                                            <div class="memory-media-audio-wrapper text-center p-5 bg-light-subtle rounded">
+                                                <i class="fas fa-music fa-3x mb-2 text-muted"></i>
+                                                <p class="mb-2" th:text="${file.originalFileName}"></p>
+                                                <audio controls class="d-block w-100">
+                                                    <source th:src="@{'/memories/files/' + ${memory.id} + '/' + ${#strings.substringAfterLast(file.filePath, '/')}}" th:type="${file.fileType}">
+                                                    Your browser does not support the audio element.
+                                                </audio>
+                                            </div>
+                                        </th:block>
+                                        <th:block th:if="${file.fileType == null || (!file.fileType.startsWith('image/') && !file.fileType.startsWith('video/') && !file.fileType.startsWith('audio/'))}">
+                                            <div class="memory-media-file-placeholder text-center p-5 bg-light-subtle rounded">
+                                                <i class="fas fa-file-alt fa-3x mb-2 text-muted"></i>
+                                                <p th:text="${file.originalFileName}"></p>
+                                                <a th:href="@{'/memories/files/' + ${memory.id} + '/' + ${#strings.substringAfterLast(file.filePath, '/')}}" class="btn btn-sm btn-outline-primary" target="_blank">Tải xuống</a>
+                                            </div>
+                                        </th:block>
+                                    </div>
+                                </div>
+                                <button class="carousel-control-prev" type="button" data-bs-target="#memoryMediaCarousel" data-bs-slide="prev" th:if="${memory.files.size() > 1}">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Previous</span>
+                                </button>
+                                <button class="carousel-control-next" type="button" data-bs-target="#memoryMediaCarousel" data-bs-slide="next" th:if="${memory.files.size() > 1}">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Next</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="memory-description mb-4">
+                            <h5 class="fw-medium" th:text="#{admin.memory.content}">Nội dung</h5>
+                            <hr class="my-2">
+                            <div class="memory-description-content">
+                                <span th:if="${memory.description != null && !memory.description.isEmpty()}" 
+                                    th:text="${memory.description}"></span>
+                                <span th:if="${memory.description == null || memory.description.isEmpty()}" 
+                                    class="text-muted fst-italic" th:text="#{admin.memory.no.description}">Không có nội dung mô tả</span>
+                            </div>
+                        </div>
+
+                        <!-- Comments section if needed -->
+                        <div class="memory-comments mb-4" th:if="${!memory.comments.isEmpty()}">
+                            <h5 class="fw-medium">
+                                <i class="fas fa-comments me-2"></i><span th:text="#{admin.memory.comments}">Bình luận</span>
+                                <span class="badge bg-primary rounded-pill" th:text="${memory.comments.size()}"></span>
+                            </h5>
+                            <hr class="my-2">
+                            <div class="list-group">
+                                <div class="list-group-item list-group-item-action" th:each="comment : ${memory.comments}">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">
+                                            <a th:href="@{/admin/users/{id}/view(id=${comment.user.id})}" th:text="${comment.user.username}" class="text-primary"></a>
+                                        </h6>
+                                        <small th:text="${#temporals.format(comment.createdAt, 'dd/MM/yyyy HH:mm')}"></small>
+                                    </div>
+                                    <p class="mb-1" th:text="${comment.content}"></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Reactions section if needed -->
+                        <div class="memory-reactions mb-4" th:if="${!memory.reactions.isEmpty()}">
+                            <h5 class="fw-medium">
+                                <i class="fas fa-thumbs-up me-2"></i><span th:text="#{admin.memory.reactions}">Phản ứng</span>
+                                <span class="badge bg-primary rounded-pill" th:text="${memory.reactions.size()}"></span>
+                            </h5>
+                            <hr class="my-2">
+                            <div class="d-flex flex-wrap">
+                                <div class="badge bg-light text-dark m-1 p-2" th:each="reaction : ${memory.reactions}">
+                                    <i th:class="${reaction.reactionType.getIconClass() + ' me-1'}"></i>
+                                    <span th:text="${reaction.user.username}"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <!-- Memory Metadata Card -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-secondary text-white">
+                        <h5 class="m-0 font-weight-bold" th:text="#{admin.memory.metadata}">Thông tin chi tiết</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <i class="fas fa-user fa-fw text-secondary me-2"></i>
+                            <strong th:text="#{admin.memory.creator} + ':'">Người tạo:</strong>
+                            <a th:href="@{/admin/users/{id}/view(id=${memory.user.id})}" th:text="${memory.user.username}" class="text-primary"></a>
+                        </div>
+                        <div class="mb-3">
+                            <i class="fas fa-calendar-day fa-fw text-secondary me-2"></i>
+                            <strong th:text="#{admin.memory.date} + ':'">Ngày sự kiện:</strong>
+                            <span th:text="${#temporals.format(memory.memoryDate, 'dd MMMM, yyyy')}"></span>
+                        </div>
+                        <div class="mb-3" th:if="${memory.location != null && !memory.location.isEmpty()}">
+                            <i class="fas fa-map-marker-alt fa-fw text-secondary me-2"></i>
+                            <strong th:text="#{admin.memory.location} + ':'">Địa điểm:</strong>
+                            <span th:text="${memory.location}"></span>
+                        </div>
+                        <div class="mb-3">
+                            <i class="fas fa-calendar-plus fa-fw text-secondary me-2"></i>
+                            <strong th:text="#{admin.memory.create} + ':'">Ngày tạo:</strong>
+                            <span th:text="${#temporals.format(memory.createdAt, 'dd/MM/yyyy HH:mm')}"></span>
+                        </div>
+                        <div class="mb-3">
+                            <i class="fas fa-calendar-check fa-fw text-secondary me-2"></i>
+                            <strong th:text="#{admin.memory.updated} + ':'">Ngày cập nhật:</strong>
+                            <span th:text="${memory.updatedAt != null ? #temporals.format(memory.updatedAt, 'dd/MM/yyyy HH:mm') : #{admin.memory.not.updated}}"></span>
+                        </div>
+                        <div class="mb-3">
+                            <i th:class="${memory.status.name() == 'PUBLIC' ? 'fas fa-globe-americas' : 'fas fa-lock'} + ' fa-fw text-secondary me-2'"></i>
+                            <strong>Trạng thái:</strong>
+                            <span class="badge"
+                                th:classappend="${memory.status.name() == 'PUBLIC' ? 'bg-success' : 'bg-warning text-dark'}"
+                                th:text="${memory.status.name() == 'PUBLIC' ? 'Công khai' : 'Riêng tư'}"></span>
+                        </div>
+                        <div class="mb-3" th:if="${memory.emotionType != null}">
+                            <i class="fas fa-smile-beam fa-fw text-secondary me-2"></i>
+                            <strong>Cảm xúc:</strong>
+                            <span th:text="${memory.emotionType.name}"></span>
+                        </div>
+                        <div class="mb-3" th:if="${!memory.files.isEmpty()}">
+                            <i class="fas fa-paperclip fa-fw text-secondary me-2"></i>
+                            <strong>Tệp đính kèm:</strong>
+                            <span class="badge bg-primary" th:text="${memory.files.size()}"></span>
+                        </div>
+                        <div class="mb-3" th:if="${!memory.tags.isEmpty()}">
+                            <i class="fas fa-tags fa-fw text-secondary me-2"></i>
+                            <strong>Thẻ:</strong>
+                            <div class="d-inline-block">
+                                <span th:each="tag : ${memory.tags}" class="badge bg-info text-dark me-1 mb-1" th:text="${tag.name}"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Memory Actions Card -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="m-0 font-weight-bold">Thao tác</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <a th:href="@{/memories/{id}(id=${memory.id})}" target="_blank" class="btn btn-outline-primary">
+                                <i class="fas fa-external-link-alt me-2"></i>Xem trong giao diện người dùng
+                            </a>
+                            <a th:href="@{/admin/memories/{id}/edit(id=${memory.id})}" class="btn btn-outline-success">
+                                <i class="fas fa-edit me-2"></i>Chỉnh sửa
+                            </a>
+                            <form th:action="@{/admin/memories/{id}/delete(id=${memory.id})}" method="post">
+                                <button type="submit" class="btn btn-outline-danger w-100"
+                                        onclick="return confirm('Bạn có chắc chắn muốn xóa ký ức này?')">
+                                    <i class="fas fa-trash-alt me-2"></i>Xóa
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

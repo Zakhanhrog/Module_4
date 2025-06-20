@@ -4,62 +4,73 @@
       layout:decorate="~{layout/base}">
 <head>
     <title th:text="#{register.title}"></title>
+    <th:block layout:fragment="styles">
+        <link rel="stylesheet" th:href="@{/css/auth-pages.css}" />
+    </th:block>
 </head>
 <body>
 <div layout:fragment="content">
-    <div class="row justify-content-center">
-        <div class="col-md-6 col-lg-5 auth-form-container">
-            <h2 class="text-center mb-4" th:text="#{register.title}"></h2>
-
-            <form th:action="@{/register}" th:object="${userDto}" method="post">
-                <div class="mb-3">
-                    <label for="username" class="form-label" th:text="#{register.username}"></label>
-                    <input type="text" class="form-control" id="username" th:field="*{username}"
-                           th:classappend="${#fields.hasErrors('username')} ? 'is-invalid' : ''"
-                           th:placeholder="#{register.username.placeholder}" required>
-                    <div th:if="${#fields.hasErrors('username')}" class="invalid-feedback" th:errors="*{username}"></div>
-                </div>
-
-                <div class="mb-3">
-                    <label for="email" class="form-label" th:text="#{register.email}"></label>
-                    <input type="email" class="form-control" id="email" th:field="*{email}"
-                           th:classappend="${#fields.hasErrors('email')} ? 'is-invalid' : ''"
-                           th:placeholder="#{register.email.placeholder}" required>
-                    <div th:if="${#fields.hasErrors('email')}" class="invalid-feedback" th:errors="*{email}"></div>
-                </div>
-
-                <div class="mb-3">
-                    <label for="password" class="form-label" th:text="#{register.password}"></label>
-                    <input type="password" class="form-control" id="password" th:field="*{password}"
-                           th:classappend="${#fields.hasErrors('password')} ? 'is-invalid' : ''"
-                           th:placeholder="#{register.password.placeholder}" required>
-                    <div th:if="${#fields.hasErrors('password')}" class="invalid-feedback" th:errors="*{password}"></div>
-                </div>
-
-                <div class="mb-3">
-                    <label for="confirmPassword" class="form-label" th:text="#{register.confirmpassword}"></label>
-                    <input type="password" class="form-control" id="confirmPassword" th:field="*{confirmPassword}"
-                           th:classappend="${#fields.hasErrors('confirmPassword')} ? 'is-invalid' : ''"
-                           th:placeholder="#{register.confirmpassword.placeholder}" required>
-                    <div th:if="${#fields.hasErrors('confirmPassword')}" class="invalid-feedback" th:errors="*{confirmPassword}"></div>
-                </div>
-
-                <div class="mb-3">
-                    <label for="fullName" class="form-label" th:text="#{register.fullname}"></label>
-                    <input type="text" class="form-control" id="fullName" th:field="*{fullName}"
-                           th:placeholder="#{register.fullname.placeholder}">
-                    <div th:if="${#fields.hasErrors('fullName')}" class="invalid-feedback" th:errors="*{fullName}"></div>
-                </div>
-
-                <div class="d-grid">
-                    <button type="submit" class="btn btn-primary" th:text="#{register.submit}"></button>
-                </div>
-            </form>
-            <p class="mt-3 text-center">
-                <a th:href="@{/login}" th:text="#{register.login.link}"></a>
-            </p>
+  <div class="auth-wrapper">
+    <div class="auth-content">
+      <div class="auth-card">
+        <div class="text-center mb-4">
+          <h2 class="auth-title" th:text="#{register.title}"></h2>
+          <p class="auth-subtitle">Create your account to get started.</p>
         </div>
+
+        <form th:action="@{/register}" th:object="${userDto}" method="post" class="auth-form">
+          <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="username" th:field="*{username}"
+                   th:classappend="${#fields.hasErrors('username')} ? 'is-invalid' : ''"
+                   th:placeholder="#{register.username.placeholder}" required>
+            <label for="username" th:text="#{register.username}"></label>
+            <div th:if="${#fields.hasErrors('username')}" class="invalid-feedback" th:errors="*{username}" role="alert" aria-live="polite"></div>
+          </div>
+
+          <div class="form-floating mb-3">
+            <input type="email" class="form-control" id="email" th:field="*{email}"
+                   th:classappend="${#fields.hasErrors('email')} ? 'is-invalid' : ''"
+                   th:placeholder="#{register.email.placeholder}" required>
+            <label for="email" th:text="#{register.email}"></label>
+            <div th:if="${#fields.hasErrors('email')}" class="invalid-feedback" th:errors="*{email}" role="alert" aria-live="polite"></div>
+          </div>
+
+          <div class="form-floating mb-3">
+            <input type="password" class="form-control" id="password" th:field="*{password}"
+                   th:classappend="${#fields.hasErrors('password')} ? 'is-invalid' : ''"
+                   th:placeholder="#{register.password.placeholder}" required>
+            <label for="password" th:text="#{register.password}"></label>
+            <div th:if="${#fields.hasErrors('password')}" class="invalid-feedback" th:errors="*{password}" role="alert" aria-live="polite"></div>
+          </div>
+
+          <div class="form-floating mb-3">
+            <input type="password" class="form-control" id="confirmPassword" th:field="*{confirmPassword}"
+                   th:classappend="${#fields.hasErrors('confirmPassword')} ? 'is-invalid' : ''"
+                   th:placeholder="#{register.confirmpassword.placeholder}" required>
+            <label for="confirmPassword" th:text="#{register.confirmpassword}"></label>
+            <div th:if="${#fields.hasErrors('confirmPassword')}" class="invalid-feedback" th:errors="*{confirmPassword}" role="alert" aria-live="polite"></div>
+          </div>
+
+          <div class="form-floating mb-4">
+            <input type="text" class="form-control" id="fullName" th:field="*{fullName}"
+                   th:classappend="${#fields.hasErrors('fullName')} ? 'is-invalid' : ''"
+                   th:placeholder="#{register.fullname.placeholder}">
+            <label for="fullName" th:text="#{register.fullname}"></label>
+            <div th:if="${#fields.hasErrors('fullName')}" class="invalid-feedback" th:errors="*{fullName}" role="alert" aria-live="polite"></div>
+          </div>
+
+          <div class="d-grid mb-3">
+            <button type="submit" class="btn btn-primary auth-button" th:text="#{register.submit}">Register</button>
+          </div>
+        </form>
+
+        <div class="auth-alternative-action">
+          <span>Already have an account? </span>
+          <a th:href="@{/login}" th:text="#{login.title}">Sign in here</a>
+        </div>
+      </div>
     </div>
+  </div>
 </div>
 </body>
 </html>

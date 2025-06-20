@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+    <title th:text="#{admin.dashboard.title}"></title> <!-- Key mới -->
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="container-fluid mt-4">
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800" th:text="#{admin.dashboard.title}"></h1>
+        </div>
+
+        <div class="row">
+            <!-- Card thống kê Users -->
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-primary shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Tổng số người dùng</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${totalUsers ?: 0}">0</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-users fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card thống kê Admin -->
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-danger shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Quản trị viên</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">1+</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-user-shield fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card System Status -->
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-success shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Trạng thái hệ thống</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">Hoạt động</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-server fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card shadow">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Thao tác nhanh</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <!-- Quản lý người dùng -->
+                            <div class="col-md-3 mb-3">
+                                <div class="dropdown">
+                                    <button class="btn btn-primary dropdown-toggle w-100" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="fas fa-users me-2"></i>Quản lý người dùng
+                                    </button>
+                                    <ul class="dropdown-menu w-100" aria-labelledby="userDropdown">
+                                        <li><a class="dropdown-item" th:href="@{/admin/users}">
+                                            <i class="fas fa-list me-2"></i>Danh sách người dùng
+                                        </a></li>
+                                        <li><a class="dropdown-item" th:href="@{/admin/users/search}">
+                                            <i class="fas fa-search me-2"></i>Tìm kiếm người dùng
+                                        </a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <!-- Quản lý ký ức -->
+                            <div class="col-md-3 mb-3">
+                                <div class="dropdown">
+                                    <button class="btn btn-success dropdown-toggle w-100" type="button" id="memoryDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="fas fa-book-open me-2"></i>Quản lý ký ức
+                                    </button>
+                                    <ul class="dropdown-menu w-100" aria-labelledby="memoryDropdown">
+                                        <li><a class="dropdown-item" th:href="@{/admin/memories}">
+                                            <i class="fas fa-list me-2"></i>Danh sách ký ức
+                                        </a></li>
+                                        <li><a class="dropdown-item" th:href="@{/admin/memories/search}">
+                                            <i class="fas fa-search me-2"></i>Tìm kiếm ký ức
+                                        </a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <!-- Nhật ký hệ thống -->
+                            <div class="col-md-3 mb-3">
+                                <div class="dropdown">
+                                    <button class="btn btn-info dropdown-toggle w-100" type="button" id="logDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="fas fa-history me-2"></i>Nhật ký hệ thống
+                                    </button>
+                                    <ul class="dropdown-menu w-100" aria-labelledby="logDropdown">
+                                        <li><a class="dropdown-item" th:href="@{/admin/logs}">
+                                            <i class="fas fa-list me-2"></i>Xem nhật ký
+                                        </a></li>
+                                        <li><a class="dropdown-item" th:href="@{/admin/logs/search}">
+                                            <i class="fas fa-filter me-2"></i>Lọc nhật ký
+                                        </a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <!-- Truy cập nhanh -->
+                            <div class="col-md-3 mb-3">
+                                <div class="dropdown">
+                                    <button class="btn btn-secondary dropdown-toggle w-100" type="button" id="quickAccessDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="fas fa-link me-2"></i>Truy cập nhanh
+                                    </button>
+                                    <ul class="dropdown-menu w-100" aria-labelledby="quickAccessDropdown">
+                                        <li><a class="dropdown-item" th:href="@{/memories/timeline}">
+                                            <i class="fas fa-clock me-2"></i>Timeline
+                                        </a></li>
+                                        <li><a class="dropdown-item" th:href="@{/profile}">
+                                            <i class="fas fa-user-cog me-2"></i>Profile
+                                        </a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item text-danger" th:href="@{/logout}">
+                                            <i class="fas fa-sign-out-alt me-2"></i>Đăng xuất
+                                        </a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>

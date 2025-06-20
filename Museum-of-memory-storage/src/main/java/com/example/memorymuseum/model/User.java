@@ -58,6 +58,15 @@ public class User {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
+    @Column(nullable = false)
+    private boolean enabled = true;
+    
+    @Column(nullable = false)
+    private boolean deleted = false;
+    
+    @Column
+    private LocalDateTime deletedAt;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Memory> memories;
 

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}"
+      lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="#{admin.memory.list.title}">Quản lý bộ sưu tập ký ức</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="container-fluid mt-4">
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800" th:text="#{admin.memory.list.title}">Quản lý bộ sưu tập ký ức</h1>
+            <div>
+                <a th:href="@{/admin/memories/search}" class="btn btn-primary mr-2">
+                    <i class="fas fa-search me-2"></i><span th:text="#{admin.memory.advanced.search}">Tìm kiếm nâng cao</span>
+                </a>
+                <a th:href="@{/admin}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-2"></i><span th:text="#{admin.memory.back.to.dashboard}">Quay lại dashboard</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="alert alert-success alert-dismissible fade show" role="alert" th:if="${successMessage}">
+            <i class="fas fa-check-circle me-2"></i>
+            <span th:text="${successMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div class="alert alert-danger alert-dismissible fade show" role="alert" th:if="${errorMessage}">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <span th:text="${errorMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary" th:text="#{admin.memory.list.header}">Danh sách ký ức</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                        <tr>
+                            <th><a th:href="@{/admin/memories(page=${memoryPage.number}, size=${memoryPage.size}, sort='id,' + ${sortField == 'id' ? reverseSortDir : 'asc'})}" th:text="#{memory.id}">ID</a>
+                                <span th:if="${sortField == 'id'}" th:class="${sortDir == 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'}"></span></th>
+                            <th><a th:href="@{/admin/memories(page=${memoryPage.number}, size=${memoryPage.size}, sort='title,' + ${sortField == 'title' ? reverseSortDir : 'asc'})}" th:text="#{memory.title}">Tiêu đề</a>
+                                <span th:if="${sortField == 'title'}" th:class="${sortDir == 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'}"></span></th>
+                            <th><a th:href="@{/admin/memories(page=${memoryPage.number}, size=${memoryPage.size}, sort='user.username,' + ${sortField == 'user.username' ? reverseSortDir : 'asc'})}" th:text="#{memory.user}">Người dùng</a>
+                                <span th:if="${sortField == 'user.username'}" th:class="${sortDir == 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'}"></span></th>
+                            <th><a th:href="@{/admin/memories(page=${memoryPage.number}, size=${memoryPage.size}, sort='memoryDate,' + ${sortField == 'memoryDate' ? reverseSortDir : 'asc'})}" th:text="#{memory.date.event}">Ngày sự kiện</a>
+                                <span th:if="${sortField == 'memoryDate'}" th:class="${sortDir == 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'}"></span></th>
+                            <th><a th:href="@{/admin/memories(page=${memoryPage.number}, size=${memoryPage.size}, sort='status,' + ${sortField == 'status' ? reverseSortDir : 'asc'})}" th:text="#{memory.status}">Trạng thái</a>
+                                <span th:if="${sortField == 'status'}" th:class="${sortDir == 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'}"></span></th>
+                            <th><a th:href="@{/admin/memories(page=${memoryPage.number}, size=${memoryPage.size}, sort='createdAt,' + ${sortField == 'createdAt' ? reverseSortDir : 'asc'})}" th:text="#{memory.date.created}">Ngày tạo</a>
+                                <span th:if="${sortField == 'createdAt'}" th:class="${sortDir == 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'}"></span></th>
+                            <th th:text="#{actions}">Thao tác</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="memory : ${memoryPage.content}">
+                            <td th:text="${memory.id}"></td>
+                            <td>
+                                <a th:href="@{/admin/memories/{id}/view(id=${memory.id})}" th:text="${memory.title}" class="text-primary"></a>
+                            </td>
+                            <td>
+                                <a th:href="@{/admin/users/{id}/view(id=${memory.user.id})}" th:text="${memory.user.username}" class="text-primary"></a>
+                            </td>
+                            <td th:text="${#temporals.format(memory.memoryDate, 'dd/MM/yyyy')}"></td>
+                            <td>
+                                <span class="badge" th:classappend="${memory.status.name() == 'PUBLIC' ? 'bg-success' : 'bg-warning text-dark'}"
+                                      th:text="${memory.status.name() == 'PUBLIC' ? #{admin.memory.status.public} : #{admin.memory.status.private}}">Status</span>
+                            </td>
+                            <td th:text="${#temporals.format(memory.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+                            <td>
+                                <a th:href="@{/admin/memories/{id}/view(id=${memory.id})}" class="btn btn-sm btn-info" th:title="#{admin.memory.action.view}">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a th:href="@{/admin/memories/{id}/edit(id=${memory.id})}" class="btn btn-sm btn-primary" th:title="#{admin.memory.action.edit}">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <form th:action="@{/admin/memories/{id}/delete(id=${memory.id})}" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-danger" 
+                                            th:onclick="'return confirm(\'' + #{admin.memory.delete.confirm} + '\')'"
+                                            th:title="#{admin.memory.action.delete}">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        <tr th:if="${memoryPage.content.isEmpty()}">
+                            <td colspan="7" class="text-center" th:text="#{admin.memory.empty}">Không tìm thấy ký ức nào.</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div th:if="${memoryPage.totalPages > 1}" class="d-flex justify-content-center">
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination">
+                            <li class="page-item" th:classappend="${memoryPage.number == 0 ? 'disabled' : ''}">
+                                <a class="page-link" th:href="@{/admin/memories(page=${0}, size=${memoryPage.size}, sort=${sortField} + ',' + ${sortDir})}" aria-label="First">
+                                    <span aria-hidden="true">&laquo;&laquo;</span>
+                                </a>
+                            </li>
+                            <li class="page-item" th:classappend="${memoryPage.number == 0 ? 'disabled' : ''}">
+                                <a class="page-link" th:href="@{/admin/memories(page=${memoryPage.number - 1}, size=${memoryPage.size}, sort=${sortField} + ',' + ${sortDir})}" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                            <li class="page-item" th:each="i : ${#numbers.sequence(0, memoryPage.totalPages - 1)}"
+                                th:classappend="${i == memoryPage.number ? 'active' : ''}"
+                                th:if="${i >= memoryPage.number - 2 and i <= memoryPage.number + 2}">
+                                <a class="page-link" th:href="@{/admin/memories(page=${i}, size=${memoryPage.size}, sort=${sortField} + ',' + ${sortDir})}" th:text="${i + 1}"></a>
+                            </li>
+                            <li class="page-item" th:classappend="${memoryPage.number + 1 >= memoryPage.totalPages ? 'disabled' : ''}">
+                                <a class="page-link" th:href="@{/admin/memories(page=${memoryPage.number + 1}, size=${memoryPage.size}, sort=${sortField} + ',' + ${sortDir})}" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                            <li class="page-item" th:classappend="${memoryPage.number + 1 >= memoryPage.totalPages ? 'disabled' : ''}">
+                                <a class="page-link" th:href="@{/admin/memories(page=${memoryPage.totalPages - 1}, size=${memoryPage.size}, sort=${sortField} + ',' + ${sortDir})}" aria-label="Last">
+                                    <span aria-hidden="true">&raquo;&raquo;</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

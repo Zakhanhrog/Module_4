@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+    <title th:text="#{admin.user.detail.title}">Chi tiết người dùng</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="container-fluid mt-4">
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">Chi tiết người dùng</h1>
+            <div>
+                <a th:href="@{/admin/users}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Quay lại danh sách
+                </a>
+                <a th:href="@{/admin/users/{id}/edit(id=${user.id})}" class="btn btn-primary">
+                    <i class="fas fa-user-edit me-2"></i>Chỉnh sửa
+                </a>
+            </div>
+        </div>
+
+        <!-- Alert messages -->
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>
+            <span th:text="${successMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <span th:text="${errorMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Thông tin cá nhân</h6>
+                    </div>
+                    <div class="card-body text-center">
+                        <div class="mb-3">
+                            <img th:if="${user.avatarUrl}" th:src="@{/uploads/avatars/{userId}/{avatarFile}(userId=${user.id}, avatarFile=${user.avatarUrl})}" 
+                                class="rounded-circle img-fluid mx-auto" style="max-width: 150px;" alt="User avatar"/>
+                            <img th:unless="${user.avatarUrl}" th:src="@{/static/images/default-avatar.png}" 
+                                class="rounded-circle img-fluid mx-auto" style="max-width: 150px;" alt="Default avatar"/>
+                        </div>
+                        <h5 class="card-title" th:text="${user.fullName ?: user.username}">Tên người dùng</h5>
+                        <p class="card-text">
+                            <span class="badge" th:classappend="${user.role == T(com.example.memorymuseum.model.Role).ADMIN} ? 'bg-danger' : 'bg-primary'"
+                                  th:text="${user.role}">Role</span>
+                            <span class="badge ms-2" th:classappend="${user.enabled} ? 'bg-success' : 'bg-secondary'"
+                                  th:text="${user.enabled ? 'Hoạt động' : 'Bị khóa'}">Status</span>
+                            <span th:if="${user.deleted}" class="badge bg-dark ms-2">Đã xóa</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-8">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Thông tin chi tiết</h6>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-striped">
+                            <tr>
+                                <th style="width: 30%;">ID:</th>
+                                <td th:text="${user.id}">ID</td>
+                            </tr>
+                            <tr>
+                                <th>Tên đăng nhập:</th>
+                                <td th:text="${user.username}">Username</td>
+                            </tr>
+                            <tr>
+                                <th>Email:</th>
+                                <td th:text="${user.email}">Email</td>
+                            </tr>
+                            <tr>
+                                <th>Họ tên:</th>
+                                <td th:text="${user.fullName ?: 'Chưa cập nhật'}">Full Name</td>
+                            </tr>
+                            <tr>
+                                <th>Ngôn ngữ ưa thích:</th>
+                                <td th:text="${user.preferredLanguage == 'vi' ? 'Tiếng Việt' : 'English'}">Language</td>
+                            </tr>
+                            <tr>
+                                <th>Vai trò:</th>
+                                <td>
+                                    <span class="badge" th:classappend="${user.role == T(com.example.memorymuseum.model.Role).ADMIN} ? 'bg-danger' : 'bg-primary'"
+                                          th:text="${user.role}">Role</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Trạng thái:</th>
+                                <td>
+                                    <span class="badge" th:classappend="${user.enabled} ? 'bg-success' : 'bg-secondary'"
+                                          th:text="${user.enabled ? 'Hoạt động' : 'Bị khóa'}">Status</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Đã xóa:</th>
+                                <td>
+                                    <span th:if="${user.deleted}" class="badge bg-dark">Đã xóa ngày: 
+                                        <span th:text="${#temporals.format(user.deletedAt, 'dd/MM/yyyy HH:mm')}">Delete Date</span>
+                                    </span>
+                                    <span th:unless="${user.deleted}" class="text-success">
+                                        <i class="fas fa-check-circle"></i> Chưa xóa
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Ngày tạo:</th>
+                                <td th:text="${#temporals.format(user.createdAt, 'dd/MM/yyyy HH:mm')}">Created At</td>
+                            </tr>
+                            <tr>
+                                <th>Cập nhật lần cuối:</th>
+                                <td th:text="${#temporals.format(user.updatedAt, 'dd/MM/yyyy HH:mm')}">Updated At</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Thao tác quản trị</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex flex-wrap gap-2">
+                            <!-- Đổi vai trò -->
+                            <div class="dropdown me-3">
+                                <button class="btn btn-outline-primary dropdown-toggle" type="button" id="roleDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-user-tag me-1"></i> Đổi vai trò
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="roleDropdown">
+                                    <li>
+                                        <form th:action="@{/admin/users/{userId}/change-role(userId=${user.id})}" method="post" class="d-inline">
+                                            <input type="hidden" name="role" value="USER">
+                                            <button type="submit" class="dropdown-item" th:classappend="${user.role == T(com.example.memorymuseum.model.Role).USER} ? 'active' : ''"
+                                                    th:disabled="${user.role == T(com.example.memorymuseum.model.Role).USER}">
+                                                <i class="fas fa-user"></i> USER
+                                            </button>
+                                        </form>
+                                    </li>
+                                    <li>
+                                        <form th:action="@{/admin/users/{userId}/change-role(userId=${user.id})}" method="post" class="d-inline">
+                                            <input type="hidden" name="role" value="ADMIN">
+                                            <button type="submit" class="dropdown-item" th:classappend="${user.role == T(com.example.memorymuseum.model.Role).ADMIN} ? 'active' : ''"
+                                                    th:disabled="${user.role == T(com.example.memorymuseum.model.Role).ADMIN}">
+                                                <i class="fas fa-user-shield"></i> ADMIN
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+                            
+                            <!-- Toggle trạng thái -->
+                            <form th:action="@{/admin/users/{userId}/toggle-status(userId=${user.id})}" method="post" class="me-3">
+                                <button type="submit" class="btn" 
+                                        th:classappend="${user.enabled} ? 'btn-outline-warning' : 'btn-outline-success'"
+                                        onclick="return confirm('Bạn có chắc chắn muốn thay đổi trạng thái của người dùng này?')">
+                                    <i th:class="${user.enabled} ? 'fas fa-lock' : 'fas fa-unlock'" class="me-1"></i>
+                                    <span th:text="${user.enabled ? 'Khóa tài khoản' : 'Mở khóa tài khoản'}">Toggle</span>
+                                </button>
+                            </form>
+                            
+                            <!-- Xóa/Khôi phục -->
+                            <div th:if="${!user.deleted}">
+                                <form th:action="@{/admin/users/{userId}/delete(userId=${user.id})}" method="post">
+                                    <button type="submit" class="btn btn-outline-danger" 
+                                            onclick="return confirm('Bạn có chắc chắn muốn xóa người dùng này? Hành động này có thể khôi phục sau này.')">
+                                        <i class="fas fa-trash me-1"></i> Xóa người dùng
+                                    </button>
+                                </form>
+                            </div>
+                            <div th:if="${user.deleted}">
+                                <form th:action="@{/admin/users/{userId}/restore(userId=${user.id})}" method="post">
+                                    <button type="submit" class="btn btn-outline-info" 
+                                            onclick="return confirm('Bạn có chắc chắn muốn khôi phục người dùng này?')">
+                                        <i class="fas fa-trash-restore me-1"></i> Khôi phục người dùng
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

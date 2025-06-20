@@ -6,7 +6,7 @@
 <head>
   <title th:text="#{${timelineTitle}}"></title>
   <th:block layout:fragment="styles">
-    <link rel="stylesheet" th:href="@{/uploads/css/timeline.css}" />
+    <link rel="stylesheet" th:href="@{/css/timeline.css}" />
   </th:block>
 </head>
 <body>
@@ -106,6 +106,7 @@
             <form th:action="@{'/memories/delete/' + ${memory.id}}" method="post" class="d-inline" th:data-confirm-message="#{memory.action.delete.confirm}" onsubmit="return confirm(this.getAttribute('data-confirm-message'));">
               <button type="submit" class="btn btn-sm btn-outline-danger action-btn" data-bs-toggle="tooltip" data-bs-placement="top" th:title="#{memory.action.delete}">
                 <i class="fas fa-trash-alt"></i>
+                <span class="visually-hidden" th:text="#{memory.action.delete}">Delete</span>
               </button>
             </form>
           </div>
@@ -121,7 +122,7 @@
         <a class="page-link" th:href="@{(page=0, size=${memoryPage.size})}" aria-label="First">
           <span aria-hidden="true">««</span>
         </a>
-      </li><li class="page-item" th:classappend="${memoryPage.first} ? 'disabled' : ''">
+      </li>
       <li class="page-item" th:classappend="${memoryPage.first} ? 'disabled' : ''">
         <a class="page-link" th:href="@{(page=${memoryPage.number-1}, size=${memoryPage.size})}" th:text="#{pagination.previous}"></a>
       </li>

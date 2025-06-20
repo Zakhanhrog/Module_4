@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layout/base}">
+<head>
+  <title th:text="#{admin.users.title}"></title>
+</head>
+<body>
+<div layout:fragment="content">
+  <div class="container-fluid mt-4">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+      <h1 class="h3 mb-0 text-gray-800" th:text="#{admin.users.title}"></h1>
+    </div>
+
+    <!-- Alert messages -->
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+      <i class="fas fa-check-circle me-2"></i>
+      <span th:text="${successMessage}"></span>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+      <i class="fas fa-exclamation-triangle me-2"></i>
+      <span th:text="${errorMessage}"></span>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div class="card shadow mb-4">
+      <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary" th:text="#{admin.users.list}"></h6>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
+            <thead>
+            <tr>
+              <th><a th:href="@{/admin/users(size=${userPage.size}, sort='id', direction=${sortField == 'id' ? reverseSortDir : 'asc'})}" th:text="#{user.id}">ID</a>
+                <span th:if="${sortField == 'id'}" th:class="${sortDir == 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'}"></span></th>
+              <th><a th:href="@{/admin/users(size=${userPage.size}, sort='username', direction=${sortField == 'username' ? reverseSortDir : 'asc'})}" th:text="#{user.username}">Username</a>
+                <span th:if="${sortField == 'username'}" th:class="${sortDir == 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'}"></span></th>
+              <th><a th:href="@{/admin/users(size=${userPage.size}, sort='email', direction=${sortField == 'email' ? reverseSortDir : 'asc'})}" th:text="#{user.email}">Email</a>
+                <span th:if="${sortField == 'email'}" th:class="${sortDir == 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'}"></span></th>
+              <th th:text="#{user.fullName}">Full Name</th>
+              <th th:text="#{user.role}">Role</th>
+              <th><a th:href="@{/admin/users(size=${userPage.size}, sort='enabled', direction=${sortField == 'enabled' ? reverseSortDir : 'asc'})}" th:text="#{user.status}">Status</a>
+                <span th:if="${sortField == 'enabled'}" th:class="${sortDir == 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'}"></span></th>
+              <th th:text="#{user.createdAt}">Created At</th>
+              <th th:text="#{actions}">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="user : ${userPage.content}">
+              <td th:text="${user.id}"></td>
+              <td th:text="${user.username}"></td>
+              <td th:text="${user.email}"></td>
+              <td th:text="${user.fullName}"></td>
+              <td>
+                <span class="badge" th:classappend="${user.role == T(com.example.memorymuseum.model.Role).ADMIN} ? 'bg-danger' : 'bg-primary'"
+                      th:text="${user.role}">Role</span>
+              </td>
+              <td>
+                <span class="badge" th:classappend="${user.enabled} ? 'bg-success' : 'bg-secondary'"
+                      th:text="${user.enabled} ? 'Hoạt động' : 'Bị khóa'">Status</span>
+              </td>
+              <td th:text="${#temporals.format(user.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+              <td>
+                <!-- Dropdown để thay đổi vai trò -->
+                <div class="dropdown d-inline-block me-2">
+                  <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" 
+                          th:id="'roleDropdown' + ${user.id}" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-user-tag"></i> <span th:text="${user.role}">Role</span>
+                  </button>
+                  <ul class="dropdown-menu" th:aria-labelledby="'roleDropdown' + ${user.id}">
+                    <li>
+                      <form th:action="@{/admin/users/{userId}/change-role(userId=${user.id})}" method="post" class="d-inline">
+                        <input type="hidden" name="role" value="USER">
+                        <button type="submit" class="dropdown-item" th:classappend="${user.role == T(com.example.memorymuseum.model.Role).USER} ? 'active' : ''"
+                                th:disabled="${user.role == T(com.example.memorymuseum.model.Role).USER}">
+                          <i class="fas fa-user"></i> USER
+                        </button>
+                      </form>
+                    </li>
+                    <li>
+                      <form th:action="@{/admin/users/{userId}/change-role(userId=${user.id})}" method="post" class="d-inline">
+                        <input type="hidden" name="role" value="ADMIN">
+                        <button type="submit" class="dropdown-item" th:classappend="${user.role == T(com.example.memorymuseum.model.Role).ADMIN} ? 'active' : ''"
+                                th:disabled="${user.role == T(com.example.memorymuseum.model.Role).ADMIN}">
+                          <i class="fas fa-user-shield"></i> ADMIN
+                        </button>
+                      </form>
+                    </li>
+                  </ul>
+                </div>
+
+                <!-- Button toggle trạng thái enabled/disabled -->
+                <form th:action="@{/admin/users/{userId}/toggle-status(userId=${user.id})}" method="post" class="d-inline">
+                  <button type="submit" class="btn btn-sm" 
+                          th:classappend="${user.enabled} ? 'btn-outline-warning' : 'btn-outline-success'"
+                          onclick="return confirm('Bạn có chắc chắn muốn thay đổi trạng thái của người dùng này?')">
+                    <i th:class="${user.enabled} ? 'fas fa-lock' : 'fas fa-unlock'"></i>
+                    <span th:text="${user.enabled} ? 'Khóa' : 'Mở khóa'">Toggle</span>
+                  </button>
+                </form>
+              </td>
+            </tr>
+            <tr th:if="${userPage.content.isEmpty()}">
+              <td colspan="8" class="text-center" th:text="#{admin.users.empty}">No users found.</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div th:if="${userPage.totalPages > 0}" class="mt-3">
+          <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+              <li class="page-item" th:classappend="${userPage.first} ? 'disabled'">
+                <a class="page-link" th:href="@{/admin/users(size=${userPage.size}, page=0, sort=${sortField}, direction=${sortDir})}">««</a>
+              </li>
+              <li class="page-item" th:classappend="${userPage.first} ? 'disabled'">
+                <a class="page-link" th:href="@{/admin/users(size=${userPage.size}, page=${userPage.number-1}, sort=${sortField}, direction=${sortDir})}" th:text="#{pagination.previous}"></a>
+              </li>
+              <li class="page-item" th:each="i : ${#numbers.sequence( T(java.lang.Math).max(0, userPage.number - 2), T(java.lang.Math).min(userPage.totalPages - 1, userPage.number + 2) )}"
+                  th:classappend="${i == userPage.number} ? 'active'">
+                <a class="page-link" th:href="@{/admin/users(size=${userPage.size}, page=${i}, sort=${sortField}, direction=${sortDir})}" th:text="${i+1}"></a>
+              </li>
+              <li class="page-item" th:classappend="${userPage.last} ? 'disabled'">
+                <a class="page-link" th:href="@{/admin/users(size=${userPage.size}, page=${userPage.number+1}, sort=${sortField}, direction=${sortDir})}" th:text="#{pagination.next}"></a>
+              </li>
+              <li class="page-item" th:classappend="${userPage.last} ? 'disabled'">
+                <a class="page-link" th:href="@{/admin/users(size=${userPage.size}, page=${userPage.totalPages - 1}, sort=${sortField}, direction=${sortDir})}">»»</a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

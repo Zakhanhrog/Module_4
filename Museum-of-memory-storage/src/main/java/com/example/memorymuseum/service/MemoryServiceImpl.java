@@ -1,15 +1,20 @@
 package com.example.memorymuseum.service;
 
 import com.example.memorymuseum.dto.MemoryDto;
+import com.example.memorymuseum.dto.MemorySearchDto;
 import com.example.memorymuseum.model.EmotionType;
 import com.example.memorymuseum.model.Memory;
 import com.example.memorymuseum.model.MemoryFile;
+import com.example.memorymuseum.model.MemoryStatus;
 import com.example.memorymuseum.model.User;
 import com.example.memorymuseum.repository.EmotionTypeRepository;
 import com.example.memorymuseum.repository.MemoryFileRepository;
 import com.example.memorymuseum.repository.MemoryRepository;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -174,5 +179,125 @@ public class MemoryServiceImpl implements MemoryService {
         memoryRepository.delete(memory);
         // Also delete the memory subfolder if it's empty
         // fileStorageService.deleteSubfolderIfEmpty(MEMORY_FILES_SUBFOLDER + "/" + memoryId); // Cần implement
+    }
+
+    @Override
+    public Page<Memory> findAllMemories(Pageable pageable) {
+        return memoryRepository.findAll(pageable);
+    }
+
+    @Override
+    @Transactional
+    public Memory updateMemoryByAdmin(Long memoryId, MemoryDto memoryDto) {
+        Memory memory = memoryRepository.findById(memoryId)
+                .orElseThrow(() -> new IllegalArgumentException("Ký ức không tồn tại với ID: " + memoryId));
+
+        // Cập nhật các thông tin cơ bản
+        memory.setTitle(memoryDto.getTitle());
+        memory.setDescription(memoryDto.getDescription());
+        memory.setMemoryDate(memoryDto.getMemoryDate());
+        memory.setLocation(memoryDto.getLocation());
+        memory.setStatus(memoryDto.getStatus());
+
+        // Cập nhật loại cảm xúc
+        if (memoryDto.getEmotionTypeId() != null) {
+            EmotionType emotion = emotionTypeRepository.findById(memoryDto.getEmotionTypeId())
+                    .orElseThrow(() -> new IllegalArgumentException("Loại cảm xúc không hợp lệ với ID: " + memoryDto.getEmotionTypeId()));
+            memory.setEmotionType(emotion);
+        } else {
+            memory.setEmotionType(null);
+        }
+
+        return memoryRepository.save(memory);
+    }
+
+    @Override
+    @Transactional
+    public void deleteMemoryByAdmin(Long memoryId) {
+        Memory memory = memoryRepository.findById(memoryId)
+                .orElseThrow(() -> new IllegalArgumentException("Ký ức không tồn tại với ID: " + memoryId));
+
+        List<MemoryFile> filesToDelete = new ArrayList<>(memory.getFiles());
+        for (MemoryFile file : filesToDelete) {
+            fileStorageService.delete(Paths.get(file.getFilePath()).getFileName().toString(), MEMORY_FILES_SUBFOLDER + "/" + memoryId);
+        }
+        
+        memoryRepository.delete(memory);
+    }
+
+    @Override
+    public Page<Memory> searchMemories(MemorySearchDto searchDto, Pageable pageable) {
+        Specification<Memory> specification = (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            
+            // Tìm theo tiêu đề
+            if (searchDto.getTitle() != null && !searchDto.getTitle().isEmpty()) {
+                predicates.add(criteriaBuilder.like(
+                    criteriaBuilder.lower(root.get("title")), 
+                    "%" + searchDto.getTitle().toLowerCase() + "%")
+                );
+            }
+            
+            // Tìm theo mô tả
+            if (searchDto.getDescription() != null && !searchDto.getDescription().isEmpty()) {
+                predicates.add(criteriaBuilder.like(
+                    criteriaBuilder.lower(root.get("description")), 
+                    "%" + searchDto.getDescription().toLowerCase() + "%")
+                );
+            }
+            
+            // Tìm theo ID người dùng
+            if (searchDto.getUserId() != null) {
+                predicates.add(criteriaBuilder.equal(root.get("user").get("id"), searchDto.getUserId()));
+            }
+            
+            // Tìm theo username
+            if (searchDto.getUsername() != null && !searchDto.getUsername().isEmpty()) {
+                predicates.add(criteriaBuilder.like(
+                    criteriaBuilder.lower(root.get("user").get("username")), 
+                    "%" + searchDto.getUsername().toLowerCase() + "%")
+                );
+            }
+            
+            // Tìm theo địa điểm
+            if (searchDto.getLocation() != null && !searchDto.getLocation().isEmpty()) {
+                predicates.add(criteriaBuilder.like(
+                    criteriaBuilder.lower(root.get("location")), 
+                    "%" + searchDto.getLocation().toLowerCase() + "%")
+                );
+            }
+            
+            // Tìm theo trạng thái
+            if (searchDto.getStatus() != null) {
+                predicates.add(criteriaBuilder.equal(root.get("status"), searchDto.getStatus()));
+            }
+            
+            // Tìm theo khoảng thời gian
+            if (searchDto.getFromDate() != null) {
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("memoryDate"), searchDto.getFromDate()));
+            }
+            
+            if (searchDto.getToDate() != null) {
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("memoryDate"), searchDto.getToDate()));
+            }
+            
+            // Tìm theo loại cảm xúc
+            if (searchDto.getEmotionTypeId() != null) {
+                predicates.add(criteriaBuilder.equal(root.get("emotionType").get("id"), searchDto.getEmotionTypeId()));
+            }
+            
+            // Tìm theo tag (cần join với bảng tags)
+            if (searchDto.getTagName() != null && !searchDto.getTagName().isEmpty()) {
+                Join<Object, Object> tagsJoin = root.join("tags");
+                predicates.add(criteriaBuilder.like(
+                    criteriaBuilder.lower(tagsJoin.get("name")),
+                    "%" + searchDto.getTagName().toLowerCase() + "%")
+                );
+            }
+            
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        };
+        
+        return memoryRepository.findAll(specification, pageable);
     }
 }

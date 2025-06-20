@@ -117,7 +117,7 @@
         <div class="memory-description-full mb-4">
           <h5 class="fw-medium" th:text="#{memory.description.title}"></h5>
           <hr class="my-2">
-          <div style="white-space: pre-wrap;">
+          <div class="memory-description-content">
             <span th:if="${memory.description != null && !memory.description.isEmpty()}" 
                   th:text="${memory.description}"></span>
             <span th:if="${memory.description == null || memory.description.isEmpty()}" 
@@ -141,7 +141,6 @@
       </div>
     </div>
 
-    <!-- PHẦN THẢ CẢM XÚC ĐƯỢC THÊM VÀO ĐÂY -->
     <div class="card shadow-sm my-4 reaction-section" th:attr="data-memory-id=${memory.id}">
       <div class="card-body text-center">
         <h5 class="card-title mb-3" th:text="#{memory.reactions.title}"></h5>
@@ -151,14 +150,14 @@
                     th:attr="data-reaction-type=${type.name()}"
                     th:title="${#messages.msg('memory.reaction.' + type.name().toLowerCase())}"
                     data-bs-toggle="tooltip" data-bs-placement="top">
-              <i th:class="'reaction-icon reaction-icon-' + ${type.name().toLowerCase()}"></i>
+              <!-- THAY ĐỔI Ở ĐÂY: Sử dụng iconClass từ Enum -->
+              <i th:class="${type.getIconClass()} + ' reaction-icon'"></i>
               <span class="reaction-count ms-1" th:id="'reaction-count-' + ${type.name()}">0</span>
             </button>
           </th:block>
         </div>
       </div>
     </div>
-    <!-- KẾT THÚC PHẦN THẢ CẢM XÚC -->
 
     <div class="card shadow-sm my-4 comment-section" id="comment-section">
       <div class="card-header bg-light d-flex justify-content-between align-items-center">
@@ -171,8 +170,12 @@
         <div sec:authorize="isAuthenticated()" class="mb-4">
           <form th:action="@{'/comments/add/' + ${memory.id}}" method="post" class="comment-form">
             <div class="d-flex align-items-start">
-              <textarea name="content" class="form-control me-2" rows="2" th:placeholder="#{memory.comment.add.placeholder}" required th:value="${newCommentContent}"></textarea>
-              <button type="submit" class="btn btn-primary flex-shrink-0"><i class="fas fa-paper-plane"></i></button>
+              <label for="commentContent" class="visually-hidden">Add a comment</label>
+              <textarea id="commentContent" name="content" class="form-control me-2" rows="2" th:placeholder="#{memory.comment.add.placeholder}" required th:value="${newCommentContent}"></textarea>
+              <button type="submit" class="btn btn-primary flex-shrink-0" title="Send comment">
+                <i class="fas fa-paper-plane"></i>
+                <span class="visually-hidden">Send comment</span>
+              </button>
             </div>
           </form>
         </div>
@@ -181,9 +184,11 @@
           <p th:text="#{memory.comments.none}"></p>
         </div>
 
-        <ul class="list-unstyled comment-list" th:unless="${comments == null || comments.isEmpty()}">
-          <th:block th:each="comment : ${comments}" th:insert="~{fragments/comment-item :: commentDisplay(comment=${comment}, memoryId=${memory.id}, depth=0)}"></th:block>
-        </ul>
+        <div th:unless="${comments == null || comments.isEmpty()}">
+          <th:block th:each="comment : ${comments}">
+            <div th:insert="~{fragments/comment-item :: commentDisplay(comment=${comment}, memoryId=${memory.id}, depth=0)}"></div>
+          </th:block>
+        </div>
       </div>
     </div>
 

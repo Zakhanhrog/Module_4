@@ -96,3 +96,59 @@
     border-color: var(--medium-text);
     color: var(--card-bg);
 }
+
+/* Responsive fixes for forms */
+@media (max-width: 768px) {
+    .form-wrapper {
+        padding: 1rem 0;
+        min-height: calc(100vh - 60px - 100px - 2rem);
+    }
+    
+    .form-card {
+        padding: 2rem 1.5rem;
+        margin: 0 1rem;
+    }
+    
+    .form-title {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .form-card {
+        padding: 1.5rem 1rem;
+        margin: 0 0.5rem;
+        border-radius: 0.5rem;
+    }
+    
+    .form-title {
+        font-size: 1.25rem;
+    }
+    
+    .content-form .row.g-3 {
+        margin: 0 -0.5rem;
+    }
+    
+    .content-form .row.g-3 > * {
+        padding: 0 0.5rem;
+    }
+}
+
+/* File upload preview fixes */
+#newFilesPreview {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+@media (max-width: 576px) {
+    #newFilesPreview .col-md-4,
+    #existingFilesContainer .col-md-4 {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+    
+    .new-file-preview-img,
+    .existing-file-preview-img {
+        max-height: 80px;
+    }
+}

@@ -48,7 +48,7 @@
       </div>
 
       <!-- Hiển thị các bình luận trả lời (đệ quy) -->
-      <ul class="list-unstyled comment-list mt-2" th:if="${!comment.replies.isEmpty()}">
+      <ul class="list-unstyled comment-list mt-2" th:if="${comment.replies != null && !comment.replies.isEmpty()}">
         <th:block th:each="reply : ${comment.replies}" th:insert="~{this :: commentDisplay(comment=${reply}, memoryId=${memoryId}, depth=${depth + 1})}"></th:block>
       </ul>
     </div>

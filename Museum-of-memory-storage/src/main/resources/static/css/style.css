@@ -214,3 +214,108 @@ h1, h2, h3, h4, h5, h6 {
     border-top: 1px solid var(--border-color, #D8DEE9);
     padding: 0.75rem 1.25rem;
 }
+
+/* Responsive Layout Fixes */
+@media (max-width: 768px) {
+    body {
+        padding-top: 60px; /* Reduce navbar padding on mobile */
+    }
+    
+    .main-navbar {
+        padding: 0.5rem 0;
+    }
+    
+    .main-content {
+        padding: 1rem 0;
+    }
+    
+    .card {
+        margin-bottom: 1rem;
+    }
+    
+    .memory-card .card-body {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .main-navbar .navbar-brand {
+        font-size: 1.2rem;
+    }
+    
+    .navbar-nav .nav-link {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.9rem;
+    }
+    
+    .btn-sm {
+        padding: 0.375rem 0.75rem;
+        font-size: 0.8rem;
+    }
+}
+
+/* Prevent content overlap */
+.page-content-wrapper {
+    position: relative;
+    z-index: 1;
+}
+
+.main-navbar {
+    z-index: 1030; /* Bootstrap navbar z-index */
+}
+
+/* Fix dropdown positioning issues */
+.dropdown-menu {
+    z-index: 1031;
+}
+
+/* Ensure cards don't overlap */
+.card {
+    position: relative;
+    z-index: 1;
+}
+
+/* Fix carousel control positioning */
+.carousel-control-prev,
+.carousel-control-next {
+    z-index: 5;
+}
+
+/* Memory detail responsive fixes */
+.memory-detail-container {
+    position: relative;
+}
+
+.memory-media-gallery {
+    overflow: hidden;
+    border-radius: 0.5rem;
+}
+
+/* Profile page responsive fixes */
+@media (max-width: 991.98px) {
+    .profile-content {
+        margin-top: 2rem;
+    }
+    
+    .profile-sidebar {
+        margin-bottom: 1.5rem;
+    }
+}
+
+/* Timeline grid responsive fixes */
+.row-cols-lg-3 .col {
+    flex: 0 0 auto;
+    width: 33.333333%;
+}
+
+@media (max-width: 991.98px) {
+    .row-cols-lg-3 .col {
+        width: 50%;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .row-cols-lg-3 .col {
+        width: 100%;
+    }
+}

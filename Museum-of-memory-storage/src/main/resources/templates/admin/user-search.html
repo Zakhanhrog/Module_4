@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}"
+      lang="vi">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<head>
+    <title th:text="#{admin.user.search.title}">Tìm kiếm người dùng</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="container-fluid mt-4">
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">Tìm kiếm người dùng</h1>
+            <a th:href="@{/admin/users}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Quay lại danh sách
+            </a>
+        </div>
+
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Bộ lọc tìm kiếm</h6>
+            </div>
+            <div class="card-body">
+                <form th:action="@{/admin/users/search}" method="get" th:object="${searchDto}">
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label for="username" class="form-label">Tên đăng nhập</label>
+                            <input type="text" class="form-control" id="username" th:field="*{username}" placeholder="Nhập tên đăng nhập...">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" th:field="*{email}" placeholder="Nhập email...">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="fullName" class="form-label">Họ tên</label>
+                            <input type="text" class="form-control" id="fullName" th:field="*{fullName}" placeholder="Nhập họ tên...">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label for="role" class="form-label">Vai trò</label>
+                            <select class="form-select" id="role" th:field="*{role}">
+                                <option value="">-- Tất cả vai trò --</option>
+                                <option th:each="role : ${roleValues}" th:value="${role}" th:text="${role}">ROLE</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="enabled" class="form-label">Trạng thái</label>
+                            <select class="form-select" id="enabled" th:field="*{enabled}">
+                                <option value="">-- Tất cả trạng thái --</option>
+                                <option value="true">Hoạt động</option>
+                                <option value="false">Bị khóa</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="deleted" class="form-label">Trạng thái xóa</label>
+                            <select class="form-select" id="deleted" th:field="*{deleted}">
+                                <option value="">-- Tất cả --</option>
+                                <option value="false">Chưa xóa</option>
+                                <option value="true">Đã xóa</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a th:href="@{/admin/users/search}" class="btn btn-secondary me-md-2">Reset</a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search me-2"></i>Tìm kiếm
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Kết quả tìm kiếm</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                        <tr>
+                            <th><a th:href="@{/admin/users/search(username=${searchDto.username}, email=${searchDto.email}, fullName=${searchDto.fullName}, role=${searchDto.role}, enabled=${searchDto.enabled}, deleted=${searchDto.deleted}, size=${userPage.size}, sort='id', direction=${sortField == 'id' ? reverseSortDir : 'asc'})}" th:text="#{user.id}">ID</a>
+                                <span th:if="${sortField == 'id'}" th:class="${sortDir == 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'}"></span></th>
+                            <th><a th:href="@{/admin/users/search(username=${searchDto.username}, email=${searchDto.email}, fullName=${searchDto.fullName}, role=${searchDto.role}, enabled=${searchDto.enabled}, deleted=${searchDto.deleted}, size=${userPage.size}, sort='username', direction=${sortField == 'username' ? reverseSortDir : 'asc'})}" th:text="#{user.username}">Username</a>
+                                <span th:if="${sortField == 'username'}" th:class="${sortDir == 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'}"></span></th>
+                            <th><a th:href="@{/admin/users/search(username=${searchDto.username}, email=${searchDto.email}, fullName=${searchDto.fullName}, role=${searchDto.role}, enabled=${searchDto.enabled}, deleted=${searchDto.deleted}, size=${userPage.size}, sort='email', direction=${sortField == 'email' ? reverseSortDir : 'asc'})}" th:text="#{user.email}">Email</a>
+                                <span th:if="${sortField == 'email'}" th:class="${sortDir == 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'}"></span></th>
+                            <th th:text="#{user.fullName}">Full Name</th>
+                            <th th:text="#{user.role}">Role</th>
+                            <th><a th:href="@{/admin/users/search(username=${searchDto.username}, email=${searchDto.email}, fullName=${searchDto.fullName}, role=${searchDto.role}, enabled=${searchDto.enabled}, deleted=${searchDto.deleted}, size=${userPage.size}, sort='enabled', direction=${sortField == 'enabled' ? reverseSortDir : 'asc'})}" th:text="#{user.status}">Status</a>
+                                <span th:if="${sortField == 'enabled'}" th:class="${sortDir == 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'}"></span></th>
+                            <th><a th:href="@{/admin/users/search(username=${searchDto.username}, email=${searchDto.email}, fullName=${searchDto.fullName}, role=${searchDto.role}, enabled=${searchDto.enabled}, deleted=${searchDto.deleted}, size=${userPage.size}, sort='deleted', direction=${sortField == 'deleted' ? reverseSortDir : 'asc'})}" th:text="#{user.deleted}">Deleted</a>
+                                <span th:if="${sortField == 'deleted'}" th:class="${sortDir == 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'}"></span></th>
+                            <th th:text="#{actions}">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="user : ${userPage.content}">
+                            <td th:text="${user.id}"></td>
+                            <td th:text="${user.username}"></td>
+                            <td th:text="${user.email}"></td>
+                            <td th:text="${user.fullName ?: '-'}"></td>
+                            <td>
+                                <span class="badge" th:classappend="${user.role == T(com.example.memorymuseum.model.Role).ADMIN} ? 'bg-danger' : 'bg-primary'"
+                                      th:text="${user.role}">Role</span>
+                            </td>
+                            <td>
+                                <span class="badge" th:classappend="${user.enabled} ? 'bg-success' : 'bg-secondary'"
+                                      th:text="${user.enabled ? 'Hoạt động' : 'Bị khóa'}">Status</span>
+                            </td>
+                            <td>
+                                <span th:if="${user.deleted}" class="badge bg-dark">
+                                    <i class="fas fa-check"></i>
+                                    <span th:text="${#temporals.format(user.deletedAt, 'dd/MM/yyyy')}">Delete Date</span>
+                                </span>
+                                <span th:unless="${user.deleted}">-</span>
+                            </td>
+                            <td>
+                                <a th:href="@{/admin/users/{id}/view(id=${user.id})}" class="btn btn-sm btn-info">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a th:href="@{/admin/users/{id}/edit(id=${user.id})}" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <div th:if="${!user.deleted}" class="d-inline-block">
+                                    <form th:action="@{/admin/users/{userId}/delete(userId=${user.id})}" method="post" class="d-inline">
+                                        <button type="submit" class="btn btn-sm btn-danger" 
+                                                onclick="return confirm('Bạn có chắc chắn muốn xóa người dùng này?')"
+                                                title="Xóa người dùng">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                                <div th:if="${user.deleted}" class="d-inline-block">
+                                    <form th:action="@{/admin/users/{userId}/restore(userId=${user.id})}" method="post" class="d-inline">
+                                        <button type="submit" class="btn btn-sm btn-success" 
+                                                onclick="return confirm('Bạn có chắc chắn muốn khôi phục người dùng này?')"
+                                                title="Khôi phục người dùng">
+                                            <i class="fas fa-trash-restore"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${userPage.content.isEmpty()}">
+                            <td colspan="8" class="text-center" th:text="#{admin.users.empty}">Không tìm thấy người dùng nào.</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div th:if="${userPage.totalPages > 0}" class="mt-3">
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item" th:classappend="${userPage.first} ? 'disabled'">
+                                <a class="page-link" th:href="@{/admin/users/search(username=${searchDto.username}, email=${searchDto.email}, fullName=${searchDto.fullName}, role=${searchDto.role}, enabled=${searchDto.enabled}, deleted=${searchDto.deleted}, size=${userPage.size}, page=0, sort=${sortField}, direction=${sortDir})}">««</a>
+                            </li>
+                            <li class="page-item" th:classappend="${userPage.first} ? 'disabled'">
+                                <a class="page-link" th:href="@{/admin/users/search(username=${searchDto.username}, email=${searchDto.email}, fullName=${searchDto.fullName}, role=${searchDto.role}, enabled=${searchDto.enabled}, deleted=${searchDto.deleted}, size=${userPage.size}, page=${userPage.number-1}, sort=${sortField}, direction=${sortDir})}" th:text="#{pagination.previous}">Previous</a>
+                            </li>
+                            <li class="page-item" th:each="i : ${#numbers.sequence(T(java.lang.Math).max(0, userPage.number - 2), T(java.lang.Math).min(userPage.totalPages - 1, userPage.number + 2))}"
+                                th:classappend="${i == userPage.number} ? 'active'">
+                                <a class="page-link" th:href="@{/admin/users/search(username=${searchDto.username}, email=${searchDto.email}, fullName=${searchDto.fullName}, role=${searchDto.role}, enabled=${searchDto.enabled}, deleted=${searchDto.deleted}, size=${userPage.size}, page=${i}, sort=${sortField}, direction=${sortDir})}" th:text="${i+1}">Page</a>
+                            </li>
+                            <li class="page-item" th:classappend="${userPage.last} ? 'disabled'">
+                                <a class="page-link" th:href="@{/admin/users/search(username=${searchDto.username}, email=${searchDto.email}, fullName=${searchDto.fullName}, role=${searchDto.role}, enabled=${searchDto.enabled}, deleted=${searchDto.deleted}, size=${userPage.size}, page=${userPage.number+1}, sort=${sortField}, direction=${sortDir})}" th:text="#{pagination.next}">Next</a>
+                            </li>
+                            <li class="page-item" th:classappend="${userPage.last} ? 'disabled'">
+                                <a class="page-link" th:href="@{/admin/users/search(username=${searchDto.username}, email=${searchDto.email}, fullName=${searchDto.fullName}, role=${searchDto.role}, enabled=${searchDto.enabled}, deleted=${searchDto.deleted}, size=${userPage.size}, page=${userPage.totalPages - 1}, sort=${sortField}, direction=${sortDir})}">»»</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

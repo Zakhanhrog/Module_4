@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}"
+      lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="#{admin.memory.edit.title}">Chỉnh sửa ký ức</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="container-fluid mt-4">
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">Chỉnh sửa ký ức</h1>
+            <div>
+                <a th:href="@{/admin/memories/{id}/view(id=${memory.id})}" class="btn btn-info me-2">
+                    <i class="fas fa-eye me-1"></i>Xem chi tiết
+                </a>
+                <a th:href="@{/admin/memories}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>Quay lại danh sách
+                </a>
+            </div>
+        </div>
+
+        <div class="alert alert-success alert-dismissible fade show" role="alert" th:if="${successMessage}">
+            <i class="fas fa-check-circle me-2"></i>
+            <span th:text="${successMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div class="alert alert-danger alert-dismissible fade show" role="alert" th:if="${errorMessage}">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <span th:text="${errorMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-edit me-2"></i>Biểu mẫu chỉnh sửa ký ức
+                </h6>
+            </div>
+            <div class="card-body">
+                <form th:action="@{/admin/memories/{id}/edit(id=${memory.id})}" th:object="${memoryDto}" method="post">
+                    <input type="hidden" th:if="*{id != null}" th:field="*{id}" />
+                    
+                    <div class="mb-3">
+                        <label for="title" class="form-label fw-medium">Tiêu đề <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control form-control-lg" id="title" th:field="*{title}"
+                               th:classappend="${#fields.hasErrors('title')} ? 'is-invalid' : ''" required>
+                        <div th:if="${#fields.hasErrors('title')}" class="invalid-feedback" th:errors="*{title}"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label fw-medium">Mô tả</label>
+                        <textarea class="form-control" id="description" th:field="*{description}" rows="6"></textarea>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="memoryDate" class="form-label fw-medium">Ngày sự kiện <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="memoryDate" th:field="*{memoryDate}"
+                                th:classappend="${#fields.hasErrors('memoryDate')} ? 'is-invalid' : ''" required>
+                            <div th:if="${#fields.hasErrors('memoryDate')}" class="invalid-feedback" th:errors="*{memoryDate}"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="location" class="form-label fw-medium">Địa điểm</label>
+                            <input type="text" class="form-control" id="location" th:field="*{location}"
+                                placeholder="Nhập địa điểm diễn ra sự kiện">
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="emotionTypeId" class="form-label fw-medium">Cảm xúc</label>
+                            <select class="form-select" id="emotionTypeId" th:field="*{emotionTypeId}">
+                                <option value="">-- Chọn cảm xúc --</option>
+                                <option th:each="type : ${T(com.example.memorymuseum.model.EmotionType).values()}" 
+                                        th:value="${type.id}" 
+                                        th:text="${type.name}">
+                                    Cảm xúc
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="status" class="form-label fw-medium">Trạng thái <span class="text-danger">*</span></label>
+                            <select class="form-select" id="status" th:field="*{status}" required>
+                                <option th:each="status : ${T(com.example.memorymuseum.model.MemoryStatus).values()}" 
+                                        th:value="${status}" 
+                                        th:text="${status == T(com.example.memorymuseum.model.MemoryStatus).PUBLIC ? 'Công khai' : 'Riêng tư'}">
+                                    Status
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <p class="fw-medium mb-2">Lưu ý:</p>
+                        <ul class="text-muted small">
+                            <li>Chỉnh sửa qua trang admin không cho phép thay đổi tệp đính kèm.</li>
+                            <li>Các trường đánh dấu <span class="text-danger">*</span> là bắt buộc.</li>
+                            <li>Nếu muốn chỉnh sửa tệp đính kèm, vui lòng sử dụng giao diện người dùng thông thường.</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a th:href="@{/admin/memories/{id}/view(id=${memory.id})}" class="btn btn-secondary me-md-2">
+                            <i class="fas fa-times me-1"></i>Hủy
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>Lưu thay đổi
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
