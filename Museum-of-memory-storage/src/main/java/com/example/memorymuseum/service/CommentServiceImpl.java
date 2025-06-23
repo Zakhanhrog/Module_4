@@ -53,8 +53,6 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public List<Comment> getCommentsForMemory(Memory memory) {
-        // Lấy các bình luận gốc (parentComment is null) và sắp xếp theo thời gian tạo
-        // Các bình luận trả lời (replies) sẽ được lazy-load khi cần
         return commentRepository.findByMemoryAndParentCommentIsNullOrderByCreatedAtAsc(memory);
     }
 
@@ -64,8 +62,6 @@ public class CommentServiceImpl implements CommentService {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("Comment not found with ID: " + commentId));
 
-        // Chỉ chủ sở hữu bình luận hoặc admin mới có quyền xóa
-        // Hoặc chủ sở hữu của Ký Ức cũng có thể xóa bình luận trên ký ức của họ
         boolean canDelete = currentUser.getId().equals(comment.getUser().getId()) ||
                 currentUser.getRole() == com.example.memorymuseum.model.Role.ADMIN ||
                 currentUser.getId().equals(comment.getMemory().getUser().getId());
