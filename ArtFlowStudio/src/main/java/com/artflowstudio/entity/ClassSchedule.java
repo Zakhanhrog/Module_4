@@ -25,11 +25,11 @@ public class ClassSchedule {
     private Long id;
 
     @NotNull(message = "Khóa học không được để trống")
-    @ManyToOne(fetch = FetchType.LAZY) // Mối quan hệ nhiều-một với Course
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "course_id", nullable = false)
     private Course course;
 
-    @ManyToOne(fetch = FetchType.LAZY) // Mối quan hệ nhiều-một với Instructor (có thể null nếu không có giảng viên cụ thể)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "instructor_id")
     private Instructor instructor;
 
@@ -43,7 +43,7 @@ public class ClassSchedule {
     @NotNull(message = "Giờ kết thúc không được để trống")
     private LocalTime endTime;
 
-    @Column(length = 100) // Ví dụ: "Thứ 2, Thứ 4, Thứ 6" hoặc "T2-T4-T6"
+    @Column(length = 100)
     private String daysOfWeek;
 
     @NotNull(message = "Số buổi học không được để trống")
@@ -56,7 +56,7 @@ public class ClassSchedule {
 
     @Min(value = 0)
     @Column(nullable = false, columnDefinition = "INT DEFAULT 0")
-    private Integer currentStudents = 0; // Số học viên hiện tại đã đăng ký
+    private Integer currentStudents = 0;
 
     @OneToMany(mappedBy = "classSchedule", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<BookingRequest> bookingRequests = new HashSet<>();
@@ -65,7 +65,7 @@ public class ClassSchedule {
     private Set<Enrollment> enrollments = new HashSet<>();
 
     public int getAvailableSlots() {
-        if (maxStudents == null) return 0; // Hoặc một giá trị mặc định nào đó
+        if (maxStudents == null) return 0;
         return maxStudents - currentStudents;
     }
 }

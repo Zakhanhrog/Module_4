@@ -37,10 +37,24 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests((authorize) ->
                         authorize
-                                .requestMatchers("/", "/index", "/guest/**", "/courses/**", "/schedule/**", "/book/**").permitAll()
-                                .requestMatchers("/css/**", "/js/**", "/images/**", "/webjars/**", "/favicon.ico").permitAll()
-                                .requestMatchers("/templates/admin/**").hasRole("ADMIN")
-                                .requestMatchers("/templates/learner/**").hasRole("LEARNER")
+                                .requestMatchers(
+                                        new AntPathRequestMatcher("/"),
+                                        new AntPathRequestMatcher("/index"),
+                                        new AntPathRequestMatcher("/guest/**"),
+                                        new AntPathRequestMatcher("/courses/**"),
+                                        new AntPathRequestMatcher("/schedule/**"),
+                                        new AntPathRequestMatcher("/book/**"),
+                                        new AntPathRequestMatcher("/error/**")
+                                ).permitAll()
+                                .requestMatchers(
+                                        new AntPathRequestMatcher("/css/**"),
+                                        new AntPathRequestMatcher("/js/**"),
+                                        new AntPathRequestMatcher("/images/**"),
+                                        new AntPathRequestMatcher("/webjars/**"),
+                                        new AntPathRequestMatcher("/favicon.ico")
+                                ).permitAll()
+                                .requestMatchers(new AntPathRequestMatcher("/admin/**")).hasRole("ADMIN")
+                                .requestMatchers(new AntPathRequestMatcher("/learner/**")).hasRole("LEARNER")
                                 .anyRequest().authenticated()
                 ).formLogin(
                         form -> form

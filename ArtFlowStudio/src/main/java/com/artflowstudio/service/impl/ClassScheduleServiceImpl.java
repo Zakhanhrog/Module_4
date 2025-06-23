@@ -23,19 +23,18 @@ public class ClassScheduleServiceImpl implements ClassScheduleService {
     @Override
     @Transactional(readOnly = true)
     public List<ClassSchedule> findAllSchedules() {
-        // Chỉ lấy các lịch sắp diễn ra hoặc đang diễn ra
-        return classScheduleRepository.findAllUpcomingSchedules(LocalDate.now());
+        return classScheduleRepository.findAllUpcomingSchedulesWithDetails(LocalDate.now());
     }
 
     @Override
     @Transactional(readOnly = true)
     public Optional<ClassSchedule> findScheduleById(Long id) {
-        return classScheduleRepository.findById(id);
+        return classScheduleRepository.findByIdWithDetails(id);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<ClassSchedule> findSchedulesByCourseId(Long courseId) {
-        return classScheduleRepository.findByCourseId(courseId);
+        return classScheduleRepository.findByCourseIdWithCourse(courseId);
     }
 }

@@ -1,10 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/header :: header(pageTitle=${pageTitle})}"></head>
 <body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
 
+<main class="container mt-4 flex-grow-1">
+    <h1>Admin Dashboard</h1>
+    <p>Chào mừng, <span sec:authentication="principal.username"></span>!</p>
+    <hr>
+    <div class="list-group">
+        <a th:href="@{/admin/courses}" class="list-group-item list-group-item-action">Quản lý Khóa học</a>
+        <a th:href="@{/admin/class-schedules}" class="list-group-item list-group-item-action">Quản lý Lớp học (Sắp làm)</a>
+        <a th:href="@{/admin/booking-requests}" class="list-group-item list-group-item-action">Duyệt Đăng ký (Sắp làm)</a>
+        <a th:href="@{/admin/learners}" class="list-group-item list-group-item-action">Quản lý Học viên (Sắp làm)</a>
+    </div>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>
