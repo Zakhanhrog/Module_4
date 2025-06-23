@@ -1,10 +1,58 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header(pageTitle=${pageTitle})}"></head>
 <body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
 
+<main class="container mt-4 flex-grow-1">
+    <div class="row">
+        <div class="col-md-8">
+            <h1 th:text="${course.name}">Tên Khóa học</h1>
+            <img th:src="${course.imageUrl ?: @{/images/course_placeholder.png}}" class="img-fluid rounded mb-3" th:alt="${course.name}" style="max-height: 400px; width: auto;">
+
+            <h4>Mô tả chi tiết</h4>
+            <p th:utext="${#strings.replace(course.description, T(java.lang.System).getProperty('line.separator'), '<br/>')} ?: 'Chưa có mô tả chi tiết cho khóa học này.'">Mô tả đầy đủ.</p>
+
+            <hr>
+            <h4>Thông tin khóa học</h4>
+            <ul class="list-unstyled">
+                <li><strong>Học phí:</strong> <span th:text="${course.tuitionFee != null ? #numbers.formatDecimal(course.tuitionFee, 0, 'COMMA', 0, 'POINT') + ' VNĐ' : 'Liên hệ'}"></span></li>
+                <li><strong>Đối tượng:</strong> <span th:text="${course.targetAudience ?: 'Mọi lứa tuổi'}"></span></li>
+                <li><strong>Thời lượng:</strong> <span th:text="${course.duration ?: 'N/A'}"></span></li>
+            </ul>
+        </div>
+        <div class="col-md-4">
+            <h4>Các lớp đang mở</h4>
+            <div th:if="${#lists.isEmpty(schedules)}" class="alert alert-info" role="alert">
+                Hiện tại chưa có lớp nào được mở cho khóa học này.
+            </div>
+            <div class="list-group" th:if="${not #lists.isEmpty(schedules)}">
+                <div th:each="schedule : ${schedules}" class="list-group-item list-group-item-action flex-column align-items-start mb-2 shadow-sm">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1" th:text="${schedule.course.name} + ' - Lớp ' + ${schedule.id}">Lớp học</h5>
+                        <small th:text="${#temporals.format(schedule.startDate, 'dd/MM/yyyy')}"></small>
+                    </div>
+                    <p class="mb-1">
+                        <strong>Giờ học:</strong> <span th:text="${#temporals.format(schedule.startTime, 'HH:mm')} + ' - ' + ${#temporals.format(schedule.endTime, 'HH:mm')}"></span><br>
+                        <strong>Ngày học:</strong> <span th:text="${schedule.daysOfWeek ?: 'Theo lịch'}"></span><br>
+                        <span th:if="${schedule.instructor != null}"><strong>Giảng viên:</strong> <span th:text="${schedule.instructor.name}"></span><br></span>
+                        <strong>Số buổi:</strong> <span th:text="${schedule.numberOfSessions}"></span>
+                    </p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small th:text="'Còn lại: ' + ${schedule.availableSlots} + '/' + ${schedule.maxStudents} + ' chỗ'"
+                               th:classappend="${schedule.availableSlots > 0 ? 'text-success' : 'text-danger'}"></small>
+                        <a th:if="${schedule.availableSlots > 0}" th:href="@{/book/{classScheduleId}(classScheduleId=${schedule.id})}" class="btn btn-sm btn-success">Đăng ký ngay</a>
+                        <button th:if="${schedule.availableSlots <= 0}" class="btn btn-sm btn-secondary" disabled>Hết chỗ</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="mt-3">
+        <a th:href="@{/courses}" class="btn btn-outline-secondary">Quay lại danh sách khóa học</a>
+    </div>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>

@@ -1,10 +1,45 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header(pageTitle=${pageTitle})}"></head>
 <body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
 
+<main class="container mt-4 flex-grow-1">
+    <h1 th:text="${pageTitle}">Lịch học tổng quan</h1>
+
+    <div th:if="${#lists.isEmpty(schedules)}" class="alert alert-info mt-3" role="alert">
+        Hiện tại chưa có lịch học nào sắp diễn ra.
+    </div>
+
+    <div class="accordion" id="scheduleAccordion" th:if="${not #lists.isEmpty(schedules)}">
+        <div th:each="schedule, iterStat : ${schedules}" class="accordion-item">
+            <h2 class="accordion-header" th:id="'heading' + ${iterStat.count}">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" th:data-bs-target="'#collapse' + ${iterStat.count}" aria-expanded="false" th:aria-controls="'collapse' + ${iterStat.count}">
+                    <strong th:text="${schedule.course.name}"></strong> - Khai giảng: <span th:text="${#temporals.format(schedule.startDate, 'dd/MM/yyyy')}"></span>
+                    <span th:if="${schedule.instructor}" class="ms-auto me-3 badge bg-secondary" th:text="'GV: ' + ${schedule.instructor.name}"></span>
+                </button>
+            </h2>
+            <div th:id="'collapse' + ${iterStat.count}" class="accordion-collapse collapse" th:aria-labelledby="'heading' + ${iterStat.count}" data-bs-parent="#scheduleAccordion">
+                <div class="accordion-body">
+                    <p><strong>Khóa học:</strong> <a th:href="@{/courses/{id}(id=${schedule.course.id})}" th:text="${schedule.course.name}"></a></p>
+                    <p><strong>Lịch học chi tiết:</strong></p>
+                    <ul>
+                        <li><strong>Ngày khai giảng:</strong> <span th:text="${#temporals.format(schedule.startDate, 'dd/MM/yyyy')}"></span></li>
+                        <li><strong>Giờ học:</strong> <span th:text="${#temporals.format(schedule.startTime, 'HH:mm')} + ' - ' + ${#temporals.format(schedule.endTime, 'HH:mm')}"></span></li>
+                        <li><strong>Thứ trong tuần:</strong> <span th:text="${schedule.daysOfWeek ?: 'Theo lịch'}"></span></li>
+                        <li th:if="${schedule.instructor}"><strong>Giảng viên:</strong> <span th:text="${schedule.instructor.name}"></span></li>
+                        <li><strong>Số buổi:</strong> <span th:text="${schedule.numberOfSessions}"></span></li>
+                        <li><strong>Sĩ số tối đa:</strong> <span th:text="${schedule.maxStudents}"></span></li>
+                        <li><strong>Số chỗ còn trống:</strong> <strong th:text="${schedule.availableSlots}" th:classappend="${schedule.availableSlots > 0 ? 'text-success' : 'text-danger'}"></strong></li>
+                    </ul>
+                    <a th:if="${schedule.availableSlots > 0}" th:href="@{/book/{classScheduleId}(classScheduleId=${schedule.id})}" class="btn btn-success">Đăng ký ngay</a>
+                    <button th:if="${schedule.availableSlots <= 0}" class="btn btn-secondary" disabled>Hết chỗ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>

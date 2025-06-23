@@ -7,6 +7,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.HashSet;
@@ -20,6 +21,7 @@ public class ArtFlowStudioApplication {
     }
 
     @Bean
+    @DependsOn("entityManagerFactory")
     CommandLineRunner run(UserService userService, PasswordEncoder passwordEncoder) {
         return args -> {
             if (userService.findByUsername("admin@artflow.com").isEmpty()) {
@@ -35,6 +37,8 @@ public class ArtFlowStudioApplication {
 
                 userService.saveUser(adminUser);
                 System.out.println("Admin user created: admin@artflow.com / admin123");
+            } else {
+                System.out.println("Admin user 'admin@artflow.com' already exists.");
             }
         };
     }

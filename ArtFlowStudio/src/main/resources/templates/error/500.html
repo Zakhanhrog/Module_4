@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header(pageTitle=${pageTitle} ?: 'Lỗi 500 - Lỗi Máy Chủ')}"></head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+<main class="container mt-5 flex-grow-1 text-center">
+    <h1 class="display-1">500</h1>
+    <h2 th:text="${pageTitle} ?: 'Lỗi Máy Chủ Nội Bộ'"></h2>
+    <p class="lead" th:text="${errorMessage} ?: 'Đã có lỗi xảy ra ở phía máy chủ. Vui lòng thử lại sau.'"></p>
+    <a th:href="@{/}" class="btn btn-primary">Về Trang Chủ</a>
+</main>
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

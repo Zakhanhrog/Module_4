@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header(pageTitle=${pageTitle} ?: 'Lỗi 404 - Không tìm thấy trang')}"></head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+<main class="container mt-5 flex-grow-1 text-center">
+  <h1 class="display-1">404</h1>
+  <h2 th:text="${pageTitle} ?: 'Không tìm thấy trang'"></h2>
+  <p class="lead" th:text="${errorMessage} ?: 'Xin lỗi, trang bạn đang tìm kiếm không tồn tại.'"></p>
+  <a th:href="@{/}" class="btn btn-primary">Về Trang Chủ</a>
+</main>
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

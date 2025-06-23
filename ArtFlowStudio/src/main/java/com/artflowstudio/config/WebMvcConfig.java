@@ -1,4 +1,30 @@
 package com.artflowstudio.config;
 
-public class WebMvcConfig {
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.lang.NonNull;
+import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+@Configuration
+public class WebMvcConfig implements WebMvcConfigurer {
+
+    @Override
+    public void addInterceptors(@NonNull InterceptorRegistry registry) {
+        registry.addInterceptor(new HandlerInterceptor() {
+            @Override
+            public void postHandle(@NonNull HttpServletRequest request,
+                                   @NonNull HttpServletResponse response,
+                                   @NonNull Object handler,
+                                   ModelAndView modelAndView) throws Exception {
+                if (modelAndView != null) { // Chỉ thêm vào Model nếu có ModelAndView (tránh lỗi với API calls)
+                    modelAndView.addObject("currentUri", request.getRequestURI());
+                    modelAndView.addObject("contextPath", request.getContextPath());
+                }
+            }
+        });
+    }
 }

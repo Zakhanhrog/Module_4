@@ -1,10 +1,66 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header(pageTitle=${pageTitle})}"></head>
 <body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
 
+<main class="container mt-4 flex-grow-1">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <h1 th:text="${pageTitle}">Đặt chỗ Lớp học</h1>
+            <hr>
+            <h4>Thông tin lớp học:</h4>
+            <p><strong>Khóa học:</strong> <span th:text="${classSchedule.course.name}"></span></p>
+            <p><strong>Ngày khai giảng:</strong> <span th:text="${#temporals.format(classSchedule.startDate, 'dd/MM/yyyy')}"></span></p>
+            <p><strong>Giờ học:</strong> <span th:text="${#temporals.format(classSchedule.startTime, 'HH:mm')} + ' - ' + ${#temporals.format(classSchedule.endTime, 'HH:mm')}"></span></p>
+            <p><strong>Còn lại:</strong> <span th:text="${classSchedule.availableSlots}" class="fw-bold text-success"></span> chỗ</p>
+            <hr>
+
+            <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+            <form th:action="@{/book}" th:object="${bookingRequestDto}" method="post">
+                <input type="hidden" name="classScheduleId" th:value="${classSchedule.id}" />
+
+                <div class="mb-3">
+                    <label for="fullName" class="form-label">Họ tên người học <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="fullName" th:field="*{fullName}"
+                           th:classappend="${#fields.hasErrors('fullName') ? 'is-invalid' : ''}">
+                    <div th:if="${#fields.hasErrors('fullName')}" class="invalid-feedback" th:errors="*{fullName}"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="age" class="form-label">Tuổi <span class="text-danger">*</span></label>
+                    <input type="number" class="form-control" id="age" th:field="*{age}"
+                           th:classappend="${#fields.hasErrors('age') ? 'is-invalid' : ''}">
+                    <div th:if="${#fields.hasErrors('age')}" class="invalid-feedback" th:errors="*{age}"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                    <input type="email" class="form-control" id="email" th:field="*{email}"
+                           th:classappend="${#fields.hasErrors('email') ? 'is-invalid' : ''}">
+                    <div th:if="${#fields.hasErrors('email')}" class="invalid-feedback" th:errors="*{email}"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="phoneNumber" class="form-label">Số điện thoại <span class="text-danger">*</span></label>
+                    <input type="tel" class="form-control" id="phoneNumber" th:field="*{phoneNumber}"
+                           th:classappend="${#fields.hasErrors('phoneNumber') ? 'is-invalid' : ''}">
+                    <div th:if="${#fields.hasErrors('phoneNumber')}" class="invalid-feedback" th:errors="*{phoneNumber}"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="message" class="form-label">Lời nhắn (nếu có)</label>
+                    <textarea class="form-control" id="message" th:field="*{message}" rows="3"></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Gửi Đăng ký</button>
+                <a th:href="@{/courses/{id}(id=${classSchedule.course.id})}" class="btn btn-secondary">Hủy</a>
+            </form>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>

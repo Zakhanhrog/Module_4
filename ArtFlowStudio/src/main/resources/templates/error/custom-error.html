@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header(pageTitle=${pageTitle} ?: 'Thông báo lỗi')}"></head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+<main class="container mt-5 flex-grow-1">
+  <div class="alert alert-danger text-center">
+    <h4 class="alert-heading" th:text="${pageTitle} ?: 'Có lỗi xảy ra!'"></h4>
+    <p th:text="${errorMessage} ?: 'Vui lòng kiểm tra lại thông tin và thử lại.'"></p>
+  </div>
+  <div class="text-center">
+    <a th:href="@{/}" class="btn btn-primary">Về Trang Chủ</a>
+    <a th:href="@{/courses}" class="btn btn-secondary">Xem Khóa Học</a>
+  </div>
+</main>
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

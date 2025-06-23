@@ -1,10 +1,43 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/header :: header(pageTitle=${pageTitle})}"></head>
 <body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
 
+<main class="container mt-4 flex-grow-1">
+    <div class="p-5 mb-4 bg-light rounded-3">
+        <div class="container-fluid py-5">
+            <h1 class="display-5 fw-bold">Chào mừng đến với ArtFlow Studio!</h1>
+            <p class="col-md-8 fs-4">Nơi khơi nguồn sáng tạo và đam mê nghệ thuật. Khám phá các khóa học mỹ thuật đa dạng và chất lượng của chúng tôi.</p>
+            <a th:href="@{/courses}" class="btn btn-primary btn-lg" type="button">Xem Khóa Học</a>
+        </div>
+    </div>
+
+    <div class="row align-items-md-stretch">
+        <div class="col-md-6 mb-3">
+            <div class="h-100 p-5 text-white bg-dark rounded-3">
+                <h2>Lịch học linh hoạt</h2>
+                <p>Chúng tôi cung cấp nhiều khung giờ học phù hợp với mọi đối tượng, từ trẻ em đến người lớn.</p>
+                <a th:href="@{/schedule}" class="btn btn-outline-light" type="button">Xem Lịch Học</a>
+            </div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <div class="h-100 p-5 bg-light border rounded-3">
+                <h2>Đội ngũ Giảng viên</h2>
+                <p>Giảng viên giàu kinh nghiệm, tận tâm và đầy nhiệt huyết sẽ đồng hành cùng bạn trên con đường nghệ thuật.</p>
+                <!-- <button class="btn btn-outline-secondary" type="button">Tìm hiểu thêm</button> -->
+            </div>
+        </div>
+    </div>
+
+    <div sec:authorize="isAuthenticated()" class="mt-4">
+        <h4>Thông tin người dùng đang đăng nhập:</h4>
+        <p>Xin chào, <strong sec:authentication="principal.username"></strong>!</p>
+        <p>Vai trò: <span th:each="auth : ${#authentication.getAuthorities()}" th:text="${auth.getAuthority().replace('ROLE_', '') + ' '}" class="badge bg-info me-1"></span></p>
+    </div>
+
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>
