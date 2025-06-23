@@ -7,6 +7,6 @@ import java.util.Optional;
 public interface InstructorService {
     List<Instructor> findAllInstructors();
     Optional<Instructor> findById(Long id);
-    Instructor saveInstructor(Instructor instructor);
+    Instructor saveInstructor(Instructor instructor); // Dùng cho cả create và update
     void deleteInstructor(Long id);
 }

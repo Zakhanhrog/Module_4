@@ -1,10 +1,35 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header(pageTitle=${pageTitle})}"></head>
 <body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
 
+<main class="container mt-4 flex-grow-1">
+    <h1 th:text="${pageTitle}">Thêm/Sửa Giảng viên</h1>
+    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+    <form th:action="@{/admin/instructors/save}" th:object="${instructor}" method="post">
+        <input type="hidden" th:field="*{id}" />
+
+        <div class="mb-3">
+            <label for="name" class="form-label">Tên Giảng viên <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="name" th:field="*{name}" required
+                   th:classappend="${#fields.hasErrors('name') ? 'is-invalid' : ''}">
+            <div th:if="${#fields.hasErrors('name')}" class="invalid-feedback" th:errors="*{name}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="specialization" class="form-label">Chuyên môn</label>
+            <input type="text" class="form-control" id="specialization" th:field="*{specialization}"
+                   th:classappend="${#fields.hasErrors('specialization') ? 'is-invalid' : ''}">
+            <div th:if="${#fields.hasErrors('specialization')}" class="invalid-feedback" th:errors="*{specialization}"></div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Lưu Giảng viên</button>
+        <a th:href="@{/admin/instructors}" class="btn btn-secondary">Hủy</a>
+    </form>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>

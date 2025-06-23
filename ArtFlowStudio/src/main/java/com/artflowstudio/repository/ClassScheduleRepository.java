@@ -25,4 +25,6 @@ public interface ClassScheduleRepository extends JpaRepository<ClassSchedule, Lo
     @Query("SELECT cs FROM ClassSchedule cs JOIN FETCH cs.course c LEFT JOIN FETCH cs.instructor i WHERE cs.id = :id")
     Optional<ClassSchedule> findByIdWithDetails(@Param("id") Long id);
 
+    @Query("SELECT DISTINCT cs FROM ClassSchedule cs LEFT JOIN FETCH cs.course c LEFT JOIN FETCH cs.instructor i ORDER BY cs.startDate DESC, cs.id DESC")
+    List<ClassSchedule> findAllWithDetailsForAdmin(); // PHƯƠNG THỨC MỚI
 }

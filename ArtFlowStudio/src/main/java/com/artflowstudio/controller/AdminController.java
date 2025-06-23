@@ -1,9 +1,13 @@
 package com.artflowstudio.controller;
 
 import com.artflowstudio.dto.ClassScheduleDto;
+import com.artflowstudio.entity.BookingRequest;
 import com.artflowstudio.entity.ClassSchedule;
 import com.artflowstudio.entity.Course;
+import com.artflowstudio.entity.Instructor;
+import com.artflowstudio.enums.BookingStatus;
 import com.artflowstudio.exception.ResourceNotFoundException;
+import com.artflowstudio.service.BookingRequestService;
 import com.artflowstudio.service.ClassScheduleService;
 import com.artflowstudio.service.CourseService;
 import com.artflowstudio.service.InstructorService;
@@ -27,14 +31,18 @@ public class AdminController {
     private final CourseService courseService;
     private final ClassScheduleService classScheduleService; // Thêm vào
     private final InstructorService instructorService;
+    private final BookingRequestService bookingRequestService;
 
     @Autowired
     public AdminController(CourseService courseService,
                            ClassScheduleService classScheduleService,
-                           InstructorService instructorService) {
+                           InstructorService instructorService,
+                           BookingRequestService bookingRequestService) {
         this.courseService = courseService;
         this.classScheduleService = classScheduleService;
         this.instructorService = instructorService;
+        this.bookingRequestService = bookingRequestService;
+
     }
 
     @GetMapping("/dashboard")
@@ -203,5 +211,95 @@ public class AdminController {
             redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi xóa lớp học: " + e.getMessage());
         }
         return "redirect:/admin/class-schedules";
+    }
+
+    @GetMapping("/instructors")
+    public String listInstructors(Model model) {
+        model.addAttribute("instructors", instructorService.findAllInstructors());
+        model.addAttribute("pageTitle", "Quản lý Giảng viên");
+        return "admin/instructors/list";
+    }
+
+    @GetMapping("/instructors/new")
+    public String newInstructorForm(Model model) {
+        model.addAttribute("instructor", new Instructor());
+        model.addAttribute("pageTitle", "Thêm Giảng viên Mới");
+        return "admin/instructors/form";
+    }
+
+    @PostMapping("/instructors/save")
+    public String saveInstructor(@Valid @ModelAttribute("instructor") Instructor instructor,
+                                 BindingResult result,
+                                 RedirectAttributes redirectAttributes, Model model) {
+        if (result.hasErrors()) {
+            model.addAttribute("pageTitle", (instructor.getId() == null ? "Thêm" : "Sửa") + " Giảng viên - Lỗi");
+            return "admin/instructors/form";
+        }
+        try {
+            instructorService.saveInstructor(instructor);
+            redirectAttributes.addFlashAttribute("successMessage", "Giảng viên đã được lưu thành công!");
+        } catch (Exception e) {
+            model.addAttribute("pageTitle", (instructor.getId() == null ? "Thêm" : "Sửa") + " Giảng viên - Lỗi");
+            model.addAttribute("errorMessage", "Đã có lỗi xảy ra: " + e.getMessage());
+            return "admin/instructors/form";
+        }
+        return "redirect:/admin/instructors";
+    }
+
+    @GetMapping("/instructors/edit/{id}")
+    public String editInstructorForm(@PathVariable("id") Long id, Model model, RedirectAttributes redirectAttributes) {
+        Optional<Instructor> instructorOpt = instructorService.findById(id);
+        if (instructorOpt.isPresent()) {
+            model.addAttribute("instructor", instructorOpt.get());
+            model.addAttribute("pageTitle", "Sửa Giảng viên: " + instructorOpt.get().getName());
+            return "admin/instructors/form";
+        } else {
+            redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy giảng viên với ID: " + id);
+            return "redirect:/admin/instructors";
+        }
+    }
+
+    @GetMapping("/instructors/delete/{id}")
+    public String deleteInstructor(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
+        try {
+            instructorService.deleteInstructor(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Giảng viên đã được xóa thành công.");
+        } catch (Exception e) {
+            // Ví dụ: DataIntegrityViolationException nếu giảng viên đang dạy lớp
+            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi xóa giảng viên: " + e.getMessage() + ". Có thể giảng viên đang được gán cho một lớp học.");
+        }
+        return "redirect:/admin/instructors";
+    }
+
+    @GetMapping("/booking-requests")
+    public String listPendingBookingRequests(Model model) {
+        List<BookingRequest> pendingRequests = bookingRequestService.findByStatus(BookingStatus.PENDING);
+        model.addAttribute("bookingRequests", pendingRequests);
+        model.addAttribute("pageTitle", "Duyệt Đăng ký Học viên");
+        return "admin/booking-requests/list";
+    }
+
+    @PostMapping("/booking-requests/approve/{id}")
+    public String approveBookingRequest(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
+        try {
+            bookingRequestService.approveBooking(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Đăng ký đã được duyệt thành công và email đã được gửi.");
+        } catch (Exception e) {
+            // Log e.printStackTrace();
+            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi duyệt đăng ký: " + e.getMessage());
+        }
+        return "redirect:/admin/booking-requests";
+    }
+
+    @PostMapping("/booking-requests/reject/{id}")
+    public String rejectBookingRequest(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
+        try {
+            bookingRequestService.rejectBooking(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Đăng ký đã được từ chối.");
+        } catch (Exception e) {
+            // Log e.printStackTrace();
+            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi từ chối đăng ký: " + e.getMessage());
+        }
+        return "redirect:/admin/booking-requests";
     }
 }

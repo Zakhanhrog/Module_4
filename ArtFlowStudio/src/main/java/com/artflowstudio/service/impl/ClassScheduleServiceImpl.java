@@ -22,7 +22,7 @@ public class ClassScheduleServiceImpl implements ClassScheduleService {
 
     private final ClassScheduleRepository classScheduleRepository;
     private final CourseRepository courseRepository;
-    private final InstructorRepository instructorRepository; // Inject InstructorRepository
+    private final InstructorRepository instructorRepository;
 
     @Autowired
     public ClassScheduleServiceImpl(ClassScheduleRepository classScheduleRepository,
@@ -42,25 +42,19 @@ public class ClassScheduleServiceImpl implements ClassScheduleService {
     @Override
     @Transactional(readOnly = true)
     public List<ClassSchedule> findAllSchedulesForAdmin() {
-        // Admin có thể muốn xem tất cả lịch, kể cả lịch cũ
-        // Cần một query khác trong repository nếu muốn fetch details, ví dụ:
-        // return classScheduleRepository.findAllWithDetails();
-        // Hoặc đơn giản là:
-        return classScheduleRepository.findAll(); // Sẽ lazy load nếu truy cập course/instructor trong view
-        // Để đơn giản, tạm thời dùng findAll(), sẽ tối ưu sau nếu cần
+        return classScheduleRepository.findAllWithDetailsForAdmin(); // SỬ DỤNG PHƯƠNG THỨC MỚI
     }
-
 
     @Override
     @Transactional(readOnly = true)
     public Optional<ClassSchedule> findScheduleById(Long id) {
-        return classScheduleRepository.findByIdWithDetails(id); // Dùng query có JOIN FETCH
+        return classScheduleRepository.findByIdWithDetails(id);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<ClassSchedule> findSchedulesByCourseId(Long courseId) {
-        return classScheduleRepository.findByCourseIdWithCourse(courseId); // Dùng query có JOIN FETCH
+        return classScheduleRepository.findByCourseIdWithCourse(courseId);
     }
 
     @Override
@@ -109,7 +103,6 @@ public class ClassScheduleServiceImpl implements ClassScheduleService {
         entity.setNumberOfSessions(dto.getNumberOfSessions());
         entity.setMaxStudents(dto.getMaxStudents());
     }
-
 
     @Override
     @Transactional

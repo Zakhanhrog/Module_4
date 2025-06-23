@@ -1,10 +1,56 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header(pageTitle=${pageTitle})}"></head>
 <body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
 
+<main class="container mt-4 flex-grow-1">
+    <h1 th:text="${pageTitle}">Duyệt Đăng ký Học viên</h1>
+
+    <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+    <div th:if="${#lists.isEmpty(bookingRequests)}" class="alert alert-info mt-3">
+        Không có yêu cầu đăng ký nào đang chờ duyệt.
+    </div>
+
+    <table class="table table-striped table-hover" th:unless="${#lists.isEmpty(bookingRequests)}">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Họ tên Người học</th>
+            <th>Email</th>
+            <th>SĐT</th>
+            <th>Lớp đăng ký</th>
+            <th>Ngày ĐK</th>
+            <th>Lời nhắn</th>
+            <th>Hành động</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="request : ${bookingRequests}">
+            <td th:text="${request.id}">1</td>
+            <td th:text="${request.fullName}">Họ tên</td>
+            <td th:text="${request.email}">Email</td>
+            <td th:text="${request.phoneNumber}">SĐT</td>
+            <td th:text="${request.classSchedule.course.name} + ' (ID Lớp: ' + ${request.classSchedule.id} + ')'">Lớp</td>
+            <td th:text="${#temporals.format(request.requestDate, 'dd/MM/yyyy HH:mm')}">Ngày ĐK</td>
+            <td th:text="${#strings.abbreviate(request.message, 50)}">Lời nhắn</td>
+            <td>
+                <form th:action="@{/admin/booking-requests/approve/{id}(id=${request.id})}" method="post" class="d-inline">
+                    <button type="submit" class="btn btn-sm btn-success me-1"
+                            onclick="return confirm('Bạn có chắc muốn DUYỆT đăng ký này?');">Duyệt</button>
+                </form>
+                <form th:action="@{/admin/booking-requests/reject/{id}(id=${request.id})}" method="post" class="d-inline">
+                    <button type="submit" class="btn btn-sm btn-danger"
+                            onclick="return confirm('Bạn có chắc muốn TỪ CHỐI đăng ký này?');">Từ chối</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>

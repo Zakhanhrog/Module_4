@@ -42,9 +42,8 @@ public class InstructorServiceImpl implements InstructorService {
     @Override
     @Transactional
     public void deleteInstructor(Long id) {
-        if(!instructorRepository.existsById(id)){
-            throw new ResourceNotFoundException("Instructor not found with id: " + id);
-        }
-        instructorRepository.deleteById(id);
+        Instructor instructor = instructorRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Instructor not found with id: " + id));
+        instructorRepository.delete(instructor);
     }
 }
