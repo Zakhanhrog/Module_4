@@ -1,10 +1,85 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header(pageTitle=${pageTitle})}"></head>
 <body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
 
+<main class="container mt-4 flex-grow-1">
+    <h1 th:text="${pageTitle}">Thêm/Sửa Lớp học</h1>
+    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+    <form th:action="@{/admin/class-schedules/save}" th:object="${classScheduleDto}" method="post">
+        <input type="hidden" th:field="*{id}" />
+
+        <div class="mb-3">
+            <label for="courseId" class="form-label">Khóa học <span class="text-danger">*</span></label>
+            <select class="form-select" id="courseId" th:field="*{courseId}" required
+                    th:classappend="${#fields.hasErrors('courseId') ? 'is-invalid' : ''}">
+                <option value="">-- Chọn Khóa học --</option>
+                <option th:each="course : ${courses}" th:value="${course.id}" th:text="${course.name}"></option>
+            </select>
+            <div th:if="${#fields.hasErrors('courseId')}" class="invalid-feedback" th:errors="*{courseId}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="instructorId" class="form-label">Giảng viên</label>
+            <select class="form-select" id="instructorId" th:field="*{instructorId}"
+                    th:classappend="${#fields.hasErrors('instructorId') ? 'is-invalid' : ''}">
+                <option value="">-- Chọn Giảng viên (nếu có) --</option>
+                <option th:each="instructor : ${instructors}" th:value="${instructor.id}" th:text="${instructor.name}"></option>
+            </select>
+            <div th:if="${#fields.hasErrors('instructorId')}" class="invalid-feedback" th:errors="*{instructorId}"></div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label for="startDate" class="form-label">Ngày bắt đầu <span class="text-danger">*</span></label>
+                <input type="date" class="form-control" id="startDate" th:field="*{startDate}" required
+                       th:classappend="${#fields.hasErrors('startDate') ? 'is-invalid' : ''}">
+                <div th:if="${#fields.hasErrors('startDate')}" class="invalid-feedback" th:errors="*{startDate}"></div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label for="startTime" class="form-label">Giờ bắt đầu <span class="text-danger">*</span></label>
+                <input type="time" class="form-control" id="startTime" th:field="*{startTime}" required
+                       th:classappend="${#fields.hasErrors('startTime') ? 'is-invalid' : ''}">
+                <div th:if="${#fields.hasErrors('startTime')}" class="invalid-feedback" th:errors="*{startTime}"></div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label for="endTime" class="form-label">Giờ kết thúc <span class="text-danger">*</span></label>
+                <input type="time" class="form-control" id="endTime" th:field="*{endTime}" required
+                       th:classappend="${#fields.hasErrors('endTime') ? 'is-invalid' : ''}">
+                <div th:if="${#fields.hasErrors('endTime')}" class="invalid-feedback" th:errors="*{endTime}"></div>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="daysOfWeek" class="form-label">Ngày trong tuần</label>
+            <input type="text" class="form-control" id="daysOfWeek" th:field="*{daysOfWeek}" placeholder="VD: Thứ 2, Thứ 4, Thứ 6">
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="numberOfSessions" class="form-label">Số buổi học <span class="text-danger">*</span></label>
+                <input type="number" class="form-control" id="numberOfSessions" th:field="*{numberOfSessions}" required min="1"
+                       th:classappend="${#fields.hasErrors('numberOfSessions') ? 'is-invalid' : ''}">
+                <div th:if="${#fields.hasErrors('numberOfSessions')}" class="invalid-feedback" th:errors="*{numberOfSessions}"></div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="maxStudents" class="form-label">Sĩ số tối đa <span class="text-danger">*</span></label>
+                <input type="number" class="form-control" id="maxStudents" th:field="*{maxStudents}" required min="1"
+                       th:classappend="${#fields.hasErrors('maxStudents') ? 'is-invalid' : ''}">
+                <div th:if="${#fields.hasErrors('maxStudents')}" class="invalid-feedback" th:errors="*{maxStudents}"></div>
+            </div>
+        </div>
+
+        <input type="hidden" th:field="*{currentStudents}" />
+
+
+        <button type="submit" class="btn btn-primary">Lưu Lớp học</button>
+        <a th:href="@{/admin/class-schedules}" class="btn btn-secondary">Hủy</a>
+    </form>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>
