@@ -79,10 +79,7 @@ public class BookingRequestServiceImpl implements BookingRequestService {
     @Override
     @Transactional(readOnly = true)
     public List<BookingRequest> findByStatus(BookingStatus status) {
-        // Sẽ tốt hơn nếu JOIN FETCH ClassSchedule và Course ở đây
-        // return bookingRequestRepository.findByStatusOrderByRequestDateDesc(status);
-        // Tạm thời để repository xử lý, có thể tối ưu sau
-        return bookingRequestRepository.findByStatusOrderByRequestDateDesc(status);
+        return bookingRequestRepository.findByStatusWithDetails(status);
     }
 
     @Override

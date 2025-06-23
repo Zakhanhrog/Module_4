@@ -1,16 +1,11 @@
 package com.artflowstudio.controller;
 
 import com.artflowstudio.dto.ClassScheduleDto;
-import com.artflowstudio.entity.BookingRequest;
-import com.artflowstudio.entity.ClassSchedule;
-import com.artflowstudio.entity.Course;
-import com.artflowstudio.entity.Instructor;
+import com.artflowstudio.dto.GradeDto;
+import com.artflowstudio.entity.*;
 import com.artflowstudio.enums.BookingStatus;
 import com.artflowstudio.exception.ResourceNotFoundException;
-import com.artflowstudio.service.BookingRequestService;
-import com.artflowstudio.service.ClassScheduleService;
-import com.artflowstudio.service.CourseService;
-import com.artflowstudio.service.InstructorService;
+import com.artflowstudio.service.*;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -32,24 +27,31 @@ public class AdminController {
     private final ClassScheduleService classScheduleService; // Thêm vào
     private final InstructorService instructorService;
     private final BookingRequestService bookingRequestService;
+    private final UserService userService;
+    private final EnrollmentService enrollmentService; // Thêm
+    private final GradeService gradeService;
 
     @Autowired
     public AdminController(CourseService courseService,
                            ClassScheduleService classScheduleService,
                            InstructorService instructorService,
-                           BookingRequestService bookingRequestService) {
+                           BookingRequestService bookingRequestService,
+                           UserService userService,
+                           EnrollmentService enrollmentService,
+                           GradeService gradeService) {
         this.courseService = courseService;
         this.classScheduleService = classScheduleService;
         this.instructorService = instructorService;
         this.bookingRequestService = bookingRequestService;
-
+        this.userService = userService;
+        this.enrollmentService = enrollmentService;
+        this.gradeService = gradeService;
     }
 
     @GetMapping("/dashboard")
     public String adminDashboard(Model model) {
         model.addAttribute("pageTitle", "Admin Dashboard");
-        // Có thể thêm các thống kê, thông tin nhanh ra đây
-        return "admin/dashboard"; // Sẽ tạo view này
+        return "admin/dashboard";
     }
 
     @GetMapping("/courses")
@@ -57,14 +59,14 @@ public class AdminController {
         List<Course> courses = courseService.findAllCourses();
         model.addAttribute("courses", courses);
         model.addAttribute("pageTitle", "Quản lý Khóa học");
-        return "admin/courses/list"; // Sẽ tạo view này
+        return "admin/courses/list";
     }
 
     @GetMapping("/courses/new")
     public String newCourseForm(Model model) {
         model.addAttribute("course", new Course());
         model.addAttribute("pageTitle", "Thêm Khóa học Mới");
-        return "admin/courses/form"; // Sẽ tạo view này
+        return "admin/courses/form";
     }
 
     @PostMapping("/courses/save")
@@ -301,5 +303,102 @@ public class AdminController {
             redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi từ chối đăng ký: " + e.getMessage());
         }
         return "redirect:/admin/booking-requests";
+    }
+
+    @GetMapping("/learners")
+    public String listLearners(Model model) {
+        model.addAttribute("learners", userService.findAllLearners());
+        model.addAttribute("pageTitle", "Quản lý Học viên");
+        return "admin/learners/list";
+    }
+
+    @GetMapping("/learners/view/{id}")
+    public String viewLearner(@PathVariable("id") Long id, Model model, RedirectAttributes redirectAttributes) {
+        Optional<User> learnerOpt = userService.findById(id);
+        if (learnerOpt.isPresent() && learnerOpt.get().getRoles().contains(com.artflowstudio.enums.Role.LEARNER)) {
+            model.addAttribute("learner", learnerOpt.get());
+            model.addAttribute("pageTitle", "Chi tiết Học viên: " + learnerOpt.get().getFullName());
+            return "admin/learners/view";
+        } else {
+            redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy học viên hoặc người dùng không phải là học viên.");
+            return "redirect:/admin/learners";
+        }
+    }
+
+    @PostMapping("/learners/toggle-status/{id}")
+    public String toggleLearnerStatus(@PathVariable("id") Long id, @RequestParam("enable") boolean enable, RedirectAttributes redirectAttributes) {
+        try {
+            userService.updateUserStatus(id, enable);
+            redirectAttributes.addFlashAttribute("successMessage", "Trạng thái học viên đã được cập nhật.");
+        } catch (ResourceNotFoundException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi cập nhật trạng thái học viên: " + e.getMessage());
+        }
+        return "redirect:/admin/learners";
+    }
+    @GetMapping("/grades/manage")
+    public String listEnrollmentsForGrading(Model model) {
+        List<Enrollment> enrollments = enrollmentService.findAllEnrollmentsForGrading();
+        model.addAttribute("enrollments", enrollments);
+        model.addAttribute("pageTitle", "Quản lý Điểm/Đánh giá Học viên");
+        return "admin/grades/list-enrollments";
+    }
+
+    @GetMapping("/grades/form/{enrollmentId}")
+    public String gradeForm(@PathVariable("enrollmentId") Long enrollmentId, Model model, RedirectAttributes redirectAttributes) {
+        Optional<Enrollment> enrollmentOpt = enrollmentService.findEnrollmentByIdWithDetails(enrollmentId);
+        if (enrollmentOpt.isEmpty()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy thông tin đăng ký học.");
+            return "redirect:/admin/grades/manage";
+        }
+
+        Enrollment enrollment = enrollmentOpt.get();
+        GradeDto gradeDto = new GradeDto();
+        gradeDto.setEnrollmentId(enrollmentId);
+
+        Optional<Grade> existingGradeOpt = gradeService.getGradeByEnrollmentId(enrollmentId);
+        if (existingGradeOpt.isPresent()) {
+            Grade existingGrade = existingGradeOpt.get();
+            gradeDto.setScore(existingGrade.getScore());
+            gradeDto.setFeedback(existingGrade.getFeedback());
+        }
+
+        model.addAttribute("gradeDto", gradeDto);
+        model.addAttribute("enrollment", enrollment); // Để hiển thị thông tin học viên/lớp
+        model.addAttribute("pageTitle", "Nhập Điểm/Đánh giá cho: " + enrollment.getUser().getFullName() + " - Lớp: " + enrollment.getClassSchedule().getCourse().getName());
+        return "admin/grades/form";
+    }
+
+    @PostMapping("/grades/save")
+    public String saveGrade(@Valid @ModelAttribute("gradeDto") GradeDto gradeDto,
+                            BindingResult result,
+                            Model model,
+                            RedirectAttributes redirectAttributes) {
+
+        if (result.hasErrors()) {
+            Optional<Enrollment> enrollmentOpt = enrollmentService.findEnrollmentByIdWithDetails(gradeDto.getEnrollmentId());
+            if (enrollmentOpt.isPresent()) {
+                model.addAttribute("enrollment", enrollmentOpt.get());
+                model.addAttribute("pageTitle", "Nhập Điểm/Đánh giá cho: " + enrollmentOpt.get().getUser().getFullName() + " - Lớp: " + enrollmentOpt.get().getClassSchedule().getCourse().getName() + " - Lỗi");
+            } else { // Should not happen if form is correct
+                model.addAttribute("pageTitle", "Nhập Điểm/Đánh giá - Lỗi");
+            }
+            return "admin/grades/form";
+        }
+
+        try {
+            gradeService.saveOrUpdateGrade(gradeDto);
+            redirectAttributes.addFlashAttribute("successMessage", "Điểm/Đánh giá đã được lưu thành công!");
+            return "redirect:/admin/grades/manage";
+        } catch (Exception e) {
+            Optional<Enrollment> enrollmentOpt = enrollmentService.findEnrollmentByIdWithDetails(gradeDto.getEnrollmentId());
+            if (enrollmentOpt.isPresent()) {
+                model.addAttribute("enrollment", enrollmentOpt.get());
+                model.addAttribute("pageTitle", "Nhập Điểm/Đánh giá cho: " + enrollmentOpt.get().getUser().getFullName() + " - Lớp: " + enrollmentOpt.get().getClassSchedule().getCourse().getName() + " - Lỗi");
+            }
+            model.addAttribute("errorMessage", "Đã có lỗi xảy ra khi lưu điểm/đánh giá: " + e.getMessage());
+            return "admin/grades/form";
+        }
     }
 }

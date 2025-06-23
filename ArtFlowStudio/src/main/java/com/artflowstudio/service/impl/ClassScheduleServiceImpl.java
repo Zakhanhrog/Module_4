@@ -54,7 +54,7 @@ public class ClassScheduleServiceImpl implements ClassScheduleService {
     @Override
     @Transactional(readOnly = true)
     public List<ClassSchedule> findSchedulesByCourseId(Long courseId) {
-        return classScheduleRepository.findByCourseIdWithCourse(courseId);
+        return classScheduleRepository.findByCourseIdWithCourseAndInstructor(courseId);
     }
 
     @Override

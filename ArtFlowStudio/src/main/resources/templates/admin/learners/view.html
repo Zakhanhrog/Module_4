@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header(pageTitle=${pageTitle})}"></head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<main class="container mt-4 flex-grow-1">
+  <h1 th:text="${pageTitle}">Chi tiết Học viên</h1>
+
+  <div th:if="${learner}" class="card">
+    <div class="card-header">
+      Thông tin Học viên ID: <span th:text="${learner.id}"></span>
+    </div>
+    <div class="card-body">
+      <p><strong>Họ tên:</strong> <span th:text="${learner.fullName}"></span></p>
+      <p><strong>Email (Username):</strong> <span th:text="${learner.username}"></span></p>
+      <p><strong>Số điện thoại:</strong> <span th:text="${learner.phoneNumber ?: 'N/A'}"></span></p>
+      <p><strong>Tuổi:</strong> <span th:text="${learner.age ?: 'N/A'}"></span></p>
+      <p><strong>Trạng thái tài khoản:</strong>
+        <span th:if="${learner.enabled}" class="badge bg-success">Hoạt động</span>
+        <span th:unless="${learner.enabled}" class="badge bg-danger">Vô hiệu hóa</span>
+      </p>
+      <p><strong>Vai trò:</strong>
+        <span th:each="role : ${learner.roles}" th:text="${role}" class="badge bg-info me-1"></span>
+      </p>
+
+      <h4>Các khóa học đã tham gia:</h4>
+      <ul th:if="${enrollments != null && !#lists.isEmpty(enrollments)}">
+          <li th:each="enrollment : ${enrollments}">
+              <span th:text="${enrollment.classSchedule.course.name}"></span> -
+              Ngày đăng ký: <span th:text="${#temporals.format(enrollment.enrollmentDate, 'dd/MM/yyyy')}"></span>
+          </li>
+      </ul>
+
+      <p th:if="${enrollments == null || #lists.isEmpty(enrollments)}">Chưa tham gia khóa học nào.</p>
+    </div>
+    <div class="card-footer">
+      <a th:href="@{/admin/learners}" class="btn btn-secondary">Quay lại Danh sách</a>
+    </div>
+  </div>
+  <div th:unless="${learner}" class="alert alert-warning">
+    Không tìm thấy thông tin học viên.
+  </div>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

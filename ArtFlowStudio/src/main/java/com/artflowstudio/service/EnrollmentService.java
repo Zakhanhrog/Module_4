@@ -1,4 +1,10 @@
 package com.artflowstudio.service;
 
-public class EnrollmentService {
+import com.artflowstudio.entity.Enrollment;
+import java.util.List;
+import java.util.Optional;
+
+public interface EnrollmentService {
+    List<Enrollment> findAllEnrollmentsForGrading();
+    Optional<Enrollment> findEnrollmentByIdWithDetails(Long enrollmentId);
 }

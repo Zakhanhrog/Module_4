@@ -1,10 +1,57 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header(pageTitle=${pageTitle})}"></head>
 <body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
 
+<main class="container mt-4 flex-grow-1">
+    <h1 th:text="${pageTitle}">Quản lý Học viên</h1>
+
+    <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+    <table class="table table-striped table-hover">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Họ tên</th>
+            <th>Email (Username)</th>
+            <th>Điện thoại</th>
+            <th>Tuổi</th>
+            <th>Trạng thái</th>
+            <th>Hành động</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="learner : ${learners}">
+            <td th:text="${learner.id}">1</td>
+            <td th:text="${learner.fullName}">Họ tên</td>
+            <td th:text="${learner.username}">Email</td>
+            <td th:text="${learner.phoneNumber}">Điện thoại</td>
+            <td th:text="${learner.age}">Tuổi</td>
+            <td>
+                <span th:if="${learner.enabled}" class="badge bg-success">Hoạt động</span>
+                <span th:unless="${learner.enabled}" class="badge bg-danger">Vô hiệu hóa</span>
+            </td>
+            <td>
+                <a th:href="@{/admin/learners/view/{id}(id=${learner.id})}" class="btn btn-sm btn-info me-1">Xem</a>
+                <form th:action="@{/admin/learners/toggle-status/{id}(id=${learner.id})}" method="post" class="d-inline">
+                    <input type="hidden" name="enable" th:value="${!learner.enabled}" />
+                    <button type="submit" class="btn btn-sm"
+                            th:classappend="${learner.enabled ? 'btn-warning' : 'btn-success'}"
+                            th:text="${learner.enabled ? 'Vô hiệu hóa' : 'Kích hoạt'}"
+                            th:onclick="'return confirm(\'Bạn có chắc muốn ' + (${learner.enabled} ? 'VÔ HIỆU HÓA' : 'KÍCH HOẠT') + ' tài khoản này không?\');'">
+                    </button>
+                </form>
+            </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(learners)}">
+            <td colspan="7" class="text-center">Không có học viên nào.</td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>

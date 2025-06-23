@@ -13,18 +13,22 @@ import java.util.Optional;
 @Repository
 public interface ClassScheduleRepository extends JpaRepository<ClassSchedule, Long> {
 
-    @Query("SELECT cs FROM ClassSchedule cs JOIN FETCH cs.course c WHERE cs.course.id = :courseId ORDER BY cs.startDate, cs.startTime")
-    List<ClassSchedule> findByCourseIdWithCourse(@Param("courseId") Long courseId);
+    @Query("SELECT cs FROM ClassSchedule cs JOIN FETCH cs.course c LEFT JOIN FETCH cs.instructor i WHERE cs.course.id = :courseId ORDER BY cs.startDate ASC, cs.startTime ASC")
+    List<ClassSchedule> findByCourseIdWithCourseAndInstructor(@Param("courseId") Long courseId);
 
-    @Query("SELECT cs FROM ClassSchedule cs JOIN FETCH cs.course c LEFT JOIN FETCH cs.instructor i WHERE cs.startDate >= :today ORDER BY cs.startDate, cs.startTime")
+    @Query("SELECT cs FROM ClassSchedule cs JOIN FETCH cs.course c LEFT JOIN FETCH cs.instructor i WHERE cs.startDate >= :today ORDER BY cs.startDate ASC, cs.startTime ASC")
     List<ClassSchedule> findAllUpcomingSchedulesWithDetails(@Param("today") LocalDate today);
 
-    @Query("SELECT cs FROM ClassSchedule cs JOIN FETCH cs.course c LEFT JOIN FETCH cs.instructor i WHERE cs.instructor.id = :instructorId ORDER BY cs.startDate, cs.startTime")
+    @Query("SELECT cs FROM ClassSchedule cs JOIN FETCH cs.course c LEFT JOIN FETCH cs.instructor i WHERE cs.instructor.id = :instructorId ORDER BY cs.startDate ASC, cs.startTime ASC")
     List<ClassSchedule> findByInstructorIdWithDetails(@Param("instructorId") Long instructorId);
 
     @Query("SELECT cs FROM ClassSchedule cs JOIN FETCH cs.course c LEFT JOIN FETCH cs.instructor i WHERE cs.id = :id")
     Optional<ClassSchedule> findByIdWithDetails(@Param("id") Long id);
 
     @Query("SELECT DISTINCT cs FROM ClassSchedule cs LEFT JOIN FETCH cs.course c LEFT JOIN FETCH cs.instructor i ORDER BY cs.startDate DESC, cs.id DESC")
-    List<ClassSchedule> findAllWithDetailsForAdmin(); // PHƯƠNG THỨC MỚI
+    List<ClassSchedule> findAllWithDetailsForAdmin();
+
+    List<ClassSchedule> findByCourseId(Long courseId);
+
+    List<ClassSchedule> findByInstructorId(Long instructorId);
 }

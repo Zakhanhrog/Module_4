@@ -1,10 +1,45 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header(pageTitle=${pageTitle})}"></head>
 <body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
 
+<main class="container mt-4 flex-grow-1">
+    <h1 th:text="${pageTitle}">Nhập Điểm/Đánh giá</h1>
+
+    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+    <div class="card mb-3">
+        <div class="card-header">Thông tin Đăng ký</div>
+        <div class="card-body">
+            <p><strong>Học viên:</strong> <span th:text="${enrollment.user.fullName}"></span> (<span th:text="${enrollment.user.username}"></span>)</p>
+            <p><strong>Khóa học:</strong> <span th:text="${enrollment.classSchedule.course.name}"></span></p>
+            <p><strong>Lớp ID:</strong> <span th:text="${enrollment.classSchedule.id}"></span> - <strong>Khai giảng:</strong> <span th:text="${#temporals.format(enrollment.classSchedule.startDate, 'dd/MM/yyyy')}"></span></p>
+        </div>
+    </div>
+
+    <form th:action="@{/admin/grades/save}" th:object="${gradeDto}" method="post">
+        <input type="hidden" th:field="*{enrollmentId}" />
+
+        <div class="mb-3">
+            <label for="score" class="form-label">Điểm số (Từ 0 đến 10)</label>
+            <input type="number" step="0.1" class="form-control" id="score" th:field="*{score}" min="0" max="10"
+                   th:classappend="${#fields.hasErrors('score') ? 'is-invalid' : ''}">
+            <div th:if="${#fields.hasErrors('score')}" class="invalid-feedback" th:errors="*{score}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="feedback" class="form-label">Nhận xét/Đánh giá</label>
+            <textarea class="form-control" id="feedback" th:field="*{feedback}" rows="5"
+                      th:classappend="${#fields.hasErrors('feedback') ? 'is-invalid' : ''}"></textarea>
+            <div th:if="${#fields.hasErrors('feedback')}" class="invalid-feedback" th:errors="*{feedback}"></div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Lưu Điểm/Đánh giá</button>
+        <a th:href="@{/admin/grades/manage}" class="btn btn-secondary">Hủy</a>
+    </form>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>

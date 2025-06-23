@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header(pageTitle=${pageTitle})}"></head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<main class="container mt-4 flex-grow-1">
+  <h1 th:text="${pageTitle}">Quản lý Điểm/Đánh giá</h1>
+
+  <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+  <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+  <table class="table table-striped table-hover">
+    <thead>
+    <tr>
+      <th>ID Đăng ký</th>
+      <th>Học viên</th>
+      <th>Khóa học</th>
+      <th>Lớp (ID)</th>
+      <th>Ngày Khai giảng</th>
+      <th>Điểm hiện tại</th>
+      <th>Hành động</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="enrollment : ${enrollments}">
+      <td th:text="${enrollment.id}"></td>
+      <td th:text="${enrollment.user.fullName}"></td>
+      <td th:text="${enrollment.classSchedule.course.name}"></td>
+      <td th:text="${enrollment.classSchedule.id}"></td>
+      <td th:text="${#temporals.format(enrollment.classSchedule.startDate, 'dd/MM/yyyy')}"></td>
+      <td>
+        <span th:if="${enrollment.grade != null}" th:text="${enrollment.grade.score}"></span>
+        <span th:unless="${enrollment.grade != null}" class="text-muted">Chưa có</span>
+      </td>
+      <td>
+        <a th:href="@{/admin/grades/form/{enrollmentId}(enrollmentId=${enrollment.id})}" class="btn btn-sm btn-primary">
+          <span th:if="${enrollment.grade != null}">Sửa Điểm</span>
+          <span th:unless="${enrollment.grade != null}">Nhập Điểm</span>
+        </a>
+      </td>
+    </tr>
+    <tr th:if="${#lists.isEmpty(enrollments)}">
+      <td colspan="7" class="text-center">Không có đăng ký học nào để nhập điểm.</td>
+    </tr>
+    </tbody>
+  </table>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>
