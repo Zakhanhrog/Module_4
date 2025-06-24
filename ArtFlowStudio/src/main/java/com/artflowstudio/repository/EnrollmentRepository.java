@@ -17,15 +17,37 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
     List<Enrollment> findByUserId(Long userId);
     List<Enrollment> findByClassScheduleId(Long classScheduleId);
 
-    @Query("SELECT e FROM Enrollment e JOIN FETCH e.user u JOIN FETCH e.classSchedule cs JOIN FETCH cs.course c WHERE e.user.id = :userId AND cs.startDate >= :currentDate ORDER BY cs.startDate, cs.startTime")
+    @Query("SELECT e FROM Enrollment e " +
+            "JOIN FETCH e.user u " +
+            "JOIN FETCH e.classSchedule cs " +
+            "JOIN FETCH cs.course c " +
+            "LEFT JOIN FETCH cs.instructor i " +
+            "WHERE e.user.id = :userId AND cs.startDate >= :currentDate " +
+            "ORDER BY cs.startDate ASC, cs.startTime ASC")
     List<Enrollment> findActiveEnrollmentsForUser(@Param("userId") Long userId, @Param("currentDate") LocalDate currentDate);
 
-    @Query("SELECT e FROM Enrollment e JOIN FETCH e.user u JOIN FETCH e.classSchedule cs JOIN FETCH cs.course c WHERE (:userId IS NULL OR e.user.id = :userId) ORDER BY cs.startDate DESC, u.fullName ASC")
-    List<Enrollment> findEnrollmentsWithDetailsByUserId(@Param("userId") Long userId); // Giữ lại để dùng cho Learner
+    @Query("SELECT e FROM Enrollment e " +
+            "JOIN FETCH e.user u " +
+            "JOIN FETCH e.classSchedule cs " +
+            "JOIN FETCH cs.course c " +
+            "LEFT JOIN FETCH cs.instructor i " +
+            "WHERE (:userId IS NULL OR e.user.id = :userId) " +
+            "ORDER BY cs.startDate DESC, u.fullName ASC")
+    List<Enrollment> findEnrollmentsWithDetailsByUserId(@Param("userId") Long userId);
 
-    @Query("SELECT e FROM Enrollment e JOIN FETCH e.user u JOIN FETCH e.classSchedule cs JOIN FETCH cs.course c ORDER BY cs.startDate DESC, u.fullName ASC")
-    List<Enrollment> findAllEnrollmentsWithDetails(); // MỚI: Dùng cho admin list
+    @Query("SELECT e FROM Enrollment e " +
+            "JOIN FETCH e.user u " +
+            "JOIN FETCH e.classSchedule cs " +
+            "JOIN FETCH cs.course c " +
+            "LEFT JOIN FETCH cs.instructor i " +
+            "ORDER BY cs.startDate DESC, u.fullName ASC")
+    List<Enrollment> findAllEnrollmentsWithDetails();
 
-    @Query("SELECT e FROM Enrollment e JOIN FETCH e.user u JOIN FETCH e.classSchedule cs JOIN FETCH cs.course c WHERE e.id = :enrollmentId")
-    Optional<Enrollment> findByIdWithDetails(@Param("enrollmentId") Long enrollmentId); // MỚI: Dùng cho admin form
+    @Query("SELECT e FROM Enrollment e " +
+            "JOIN FETCH e.user u " +
+            "JOIN FETCH e.classSchedule cs " +
+            "JOIN FETCH cs.course c " +
+            "LEFT JOIN FETCH cs.instructor i " +
+            "WHERE e.id = :enrollmentId")
+    Optional<Enrollment> findByIdWithDetails(@Param("enrollmentId") Long enrollmentId);
 }

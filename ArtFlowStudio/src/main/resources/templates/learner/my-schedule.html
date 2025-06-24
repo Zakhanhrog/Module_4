@@ -1,10 +1,56 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header(pageTitle=${pageTitle})}"></head>
 <body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
 
+<main class="container mt-4 flex-grow-1">
+    <div class="learner-main-content">
+        <h1 th:text="${pageTitle}">Các Lớp Học Đã Đăng Ký</h1>
+
+        <div th:if="${#lists.isEmpty(enrollments)}" class="alert alert-info mt-3">
+            Bạn chưa đăng ký tham gia lớp học/khóa học nào.
+        </div>
+
+        <div class="accordion learner-accordion" id="myRegisteredCoursesAccordion" th:unless="${#lists.isEmpty(enrollments)}">
+            <div th:each="enrollment, iterStat : ${enrollments}" class="accordion-item mb-2 shadow-sm">
+                <h2 class="accordion-header" th:id="'headingEnroll' + ${iterStat.count}">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" th:data-bs-target="'#collapseEnroll' + ${iterStat.count}" aria-expanded="false" th:aria-controls="'collapseEnroll' + ${iterStat.count}">
+                        <span class="fw-bold me-2" th:text="${enrollment.classSchedule.course.name}">Tên Khóa học</span>
+                        <span class="badge bg-info me-2" th:text="'Lớp ID: ' + ${enrollment.classSchedule.id}"></span>
+                        <span class="text-muted">Khai giảng: <span class="fw-normal" th:text="${#temporals.format(enrollment.classSchedule.startDate, 'dd/MM/yyyy')}"></span></span>
+                    </button>
+                </h2>
+                <div th:id="'collapseEnroll' + ${iterStat.count}" class="accordion-collapse collapse" th:aria-labelledby="'headingEnroll' + ${iterStat.count}" data-bs-parent="#myRegisteredCoursesAccordion">
+                    <div class="accordion-body">
+                        <div class="row">
+                            <div class="col-md-3" th:if="${enrollment.classSchedule.course.imageUrl}">
+                                <img th:src="@{${enrollment.classSchedule.course.imageUrl}}" class="img-fluid rounded" th:alt="${enrollment.classSchedule.course.name}" style="max-height: 150px; object-fit: cover;">
+                            </div>
+                            <div th:classappend="${enrollment.classSchedule.course.imageUrl} ? 'col-md-9' : 'col-md-12'">
+                                <h5><a th:href="@{/courses/{id}(id=${enrollment.classSchedule.course.id})}" th:text="${enrollment.classSchedule.course.name}">Link tới chi tiết khóa học</a></h5>
+                                <p class="small text-muted" th:text="${#strings.abbreviate(enrollment.classSchedule.course.description, 200)}"></p>
+                            </div>
+                        </div>
+                        <hr>
+                        <h6>Thông tin Lớp học Chi Tiết:</h6>
+                        <ul class="list-unstyled">
+                            <li><strong>Ngày khai giảng:</strong> <span th:text="${#temporals.format(enrollment.classSchedule.startDate, 'dd/MM/yyyy')}"></span></li>
+                            <li><strong>Thời gian học:</strong> <span th:text="${#temporals.format(enrollment.classSchedule.startTime, 'HH:mm')} + ' - ' + ${#temporals.format(enrollment.classSchedule.endTime, 'HH:mm')}"></span></li>
+                            <li><strong>Lịch học (Thứ):</strong> <span th:text="${enrollment.classSchedule.daysOfWeek ?: 'Theo lịch trung tâm'}"></span></li>
+                            <li th:if="${enrollment.classSchedule.instructor}"><strong>Giảng viên:</strong> <span th:text="${enrollment.classSchedule.instructor.name}"></span></li>
+                            <li th:unless="${enrollment.classSchedule.instructor}"><strong>Giảng viên:</strong> <span class="text-muted">Chưa cập nhật</span></li>
+                            <li><strong>Tổng số buổi:</strong> <span th:text="${enrollment.classSchedule.numberOfSessions}"></span></li>
+                        </ul>
+                        <p class="mt-2"><em>Ngày bạn đăng ký vào lớp: <span th:text="${#temporals.format(enrollment.enrollmentDate, 'dd/MM/yyyy HH:mm')}"></span></em></p>
+                        <a th:href="@{/learner/my-grades}" class="btn btn-outline-primary btn-sm mt-2">Xem Điểm/Đánh giá Khóa Học Này</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>

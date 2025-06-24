@@ -1,10 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header(pageTitle=${pageTitle})}"></head>
 <body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
 
+<main class="container mt-4 flex-grow-1">
+    <div class="learner-main-content">
+        <h1 th:text="${pageTitle}">Thông tin cá nhân</h1>
+
+        <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+        <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+        <div class="card learner-profile-card">
+            <div class="card-body">
+                <p><strong>Họ tên:</strong> <span th:text="${learner.fullName}"></span></p>
+                <p><strong>Email (Tên đăng nhập):</strong> <span th:text="${learner.username}"></span></p>
+                <p><strong>Số điện thoại:</strong> <span th:text="${learner.phoneNumber ?: 'Chưa cập nhật'}"></span></p>
+                <p><strong>Tuổi:</strong> <span th:text="${learner.age ?: 'Chưa cập nhật'}"></span></p>
+                <p>
+                    <a th:href="@{/learner/change-password}" class="btn btn-primary">Đổi mật khẩu</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>

@@ -299,7 +299,7 @@ public class AdminController {
             bookingRequestService.rejectBooking(id);
             redirectAttributes.addFlashAttribute("successMessage", "Đăng ký đã được từ chối.");
         } catch (Exception e) {
-            // Log e.printStackTrace();
+                e.printStackTrace();
             redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi từ chối đăng ký: " + e.getMessage());
         }
         return "redirect:/admin/booking-requests";
@@ -314,12 +314,25 @@ public class AdminController {
 
     @GetMapping("/learners/view/{id}")
     public String viewLearner(@PathVariable("id") Long id, Model model, RedirectAttributes redirectAttributes) {
+        System.out.println("ADMIN CONTROLLER - viewLearner - Received learner ID: " + id); // LOG 1
         Optional<User> learnerOpt = userService.findById(id);
+
         if (learnerOpt.isPresent() && learnerOpt.get().getRoles().contains(com.artflowstudio.enums.Role.LEARNER)) {
-            model.addAttribute("learner", learnerOpt.get());
-            model.addAttribute("pageTitle", "Chi tiết Học viên: " + learnerOpt.get().getFullName());
+            User learner = learnerOpt.get();
+            model.addAttribute("learner", learner);
+            model.addAttribute("pageTitle", "Chi tiết Học viên: " + learner.getFullName());
+
+            List<Enrollment> enrollments = enrollmentService.findEnrollmentsWithDetailsByUserId(id);
+            System.out.println("ADMIN CONTROLLER - viewLearner - Number of enrollments found: " + (enrollments != null ? enrollments.size() : "NULL")); // LOG 2
+            if (enrollments != null && !enrollments.isEmpty()) {
+                System.out.println("ADMIN CONTROLLER - viewLearner - First enrollment course: " + enrollments.get(0).getClassSchedule().getCourse().getName()); // LOG 3
+            }
+
+            model.addAttribute("enrollments", enrollments);
+
             return "admin/learners/view";
         } else {
+            System.out.println("ADMIN CONTROLLER - viewLearner - Learner not found or not a learner for ID: " + id); // LOG 4
             redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy học viên hoặc người dùng không phải là học viên.");
             return "redirect:/admin/learners";
         }

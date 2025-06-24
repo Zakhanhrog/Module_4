@@ -4,39 +4,64 @@
 <body>
 <div th:replace="~{fragments/navbar :: navbar}"></div>
 
-<main class="container mt-4 flex-grow-1">
-    <div class="p-5 mb-4 bg-light rounded-3">
-        <div class="container-fluid py-5">
-            <h1 class="display-5 fw-bold">Chào mừng đến với ArtFlow Studio!</h1>
-            <p class="col-md-8 fs-4">Nơi khơi nguồn sáng tạo và đam mê nghệ thuật. Khám phá các khóa học mỹ thuật đa dạng và chất lượng của chúng tôi.</p>
-            <a th:href="@{/courses}" class="btn btn-primary btn-lg" type="button">Xem Khóa Học</a>
-        </div>
-    </div>
-
-    <div class="row align-items-md-stretch">
-        <div class="col-md-6 mb-3">
-            <div class="h-100 p-5 text-white bg-dark rounded-3">
-                <h2>Lịch học linh hoạt</h2>
-                <p>Chúng tôi cung cấp nhiều khung giờ học phù hợp với mọi đối tượng, từ trẻ em đến người lớn.</p>
-                <a th:href="@{/schedule}" class="btn btn-outline-light" type="button">Xem Lịch Học</a>
+<!-- Hero Section -->
+<header class="artflow-hero-section text-center text-white d-flex">
+    <div class="container my-auto">
+        <div class="row">
+            <div class="col-lg-10 mx-auto">
+                <h1 class="artflow-hero-title" th:text="'Khơi Nguồn Sáng Tạo Tại ArtFlow Studio'"></h1>
+                <hr class="artflow-divider my-4 mx-auto" />
             </div>
-        </div>
-        <div class="col-md-6 mb-3">
-            <div class="h-100 p-5 bg-light border rounded-3">
-                <h2>Đội ngũ Giảng viên</h2>
-                <p>Giảng viên giàu kinh nghiệm, tận tâm và đầy nhiệt huyết sẽ đồng hành cùng bạn trên con đường nghệ thuật.</p>
-                <!-- <button class="btn btn-outline-secondary" type="button">Tìm hiểu thêm</button> -->
+            <div class="col-lg-8 mx-auto">
+                <p class="artflow-hero-subtitle mb-5">Khám phá niềm đam mê nghệ thuật, phát triển kỹ năng và tạo nên những tác phẩm độc đáo cùng chúng tôi.</p>
+                <a class="btn btn-primary btn-xl artflow-btn-hero" th:href="@{/courses}">Khám Phá Các Khóa Học</a>
             </div>
         </div>
     </div>
+</header>
 
-    <div sec:authorize="isAuthenticated()" class="mt-4">
-        <h4>Thông tin người dùng đang đăng nhập:</h4>
-        <p>Xin chào, <strong sec:authentication="principal.username"></strong>!</p>
-        <p>Vai trò: <span th:each="auth : ${#authentication.getAuthorities()}" th:text="${auth.getAuthority().replace('ROLE_', '') + ' '}" class="badge bg-info me-1"></span></p>
+<!-- About Section (Ví dụ) -->
+<section class="artflow-page-section bg-light" id="about">
+    <div class="container px-4 px-lg-5">
+        <div class="row gx-4 gx-lg-5 justify-content-center">
+            <div class="col-lg-8 text-center">
+                <h2 class="mt-0">Không Gian Nghệ Thuật Truyền Cảm Hứng</h2>
+                <hr class="artflow-divider artflow-divider-dark my-4 mx-auto" />
+                <p class="text-muted mb-4">ArtFlow Studio không chỉ là nơi học vẽ, mà còn là một cộng đồng nơi mọi người cùng chia sẻ, học hỏi và thăng hoa trong nghệ thuật. Với không gian mở, trang thiết bị hiện đại và đội ngũ giảng viên tận tâm, chúng tôi cam kết mang đến trải nghiệm học tập tốt nhất.</p>
+                <a class="btn btn-secondary btn-xl" th:href="@{/schedule}">Xem Lịch Học</a>
+            </div>
+        </div>
     </div>
+</section>
 
-</main>
+<!-- (Phần features cũ có thể giữ lại hoặc thay đổi) -->
+<section class="artflow-page-section" id="features">
+    <div class="container px-4 px-lg-5">
+        <div class="row gx-4 gx-lg-5">
+            <div class="col-lg-4 col-md-6 text-center mb-5 mb-lg-0">
+                <div class="mt-0">
+                    <div class="mb-2"><i class="artflow-feature-icon bi-palette-fill"></i></div>
+                    <h3 class="h4 mb-2">Khóa Học Đa Dạng</h3>
+                    <p class="text-muted mb-0">Từ cơ bản đến nâng cao, cho mọi lứa tuổi và trình độ.</p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 text-center mb-5 mb-lg-0">
+                <div class="mt-0">
+                    <div class="mb-2"><i class="artflow-feature-icon bi-easel2-fill"></i></div>
+                    <h3 class="h4 mb-2">Giảng Viên Kinh Nghiệm</h3>
+                    <p class="text-muted mb-0">Đội ngũ tận tâm, giàu kinh nghiệm và truyền cảm hứng.</p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 text-center">
+                <div class="mt-0">
+                    <div class="mb-2"><i class="artflow-feature-icon bi-people-fill"></i></div>
+                    <h3 class="h4 mb-2">Cộng Đồng Sáng Tạo</h3>
+                    <p class="text-muted mb-0">Giao lưu, học hỏi và cùng nhau phát triển đam mê.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
 <div th:replace="~{fragments/footer :: footer}"></div>
 </body>

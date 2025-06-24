@@ -7,4 +7,5 @@ import java.util.Optional;
 public interface EnrollmentService {
     List<Enrollment> findAllEnrollmentsForGrading();
     Optional<Enrollment> findEnrollmentByIdWithDetails(Long enrollmentId);
+    List<Enrollment> findEnrollmentsWithDetailsByUserId(Long userId);
 }

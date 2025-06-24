@@ -5,61 +5,65 @@
 <div th:replace="~{fragments/navbar :: navbar}"></div>
 
 <main class="container mt-4 flex-grow-1">
-    <h1 th:text="${pageTitle}">Thêm/Sửa Khóa học</h1>
-    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+        <div class="admin-main-content">
+        <h1 th:text="${pageTitle}">Thêm/Sửa Khóa học</h1>
+            <div class="card admin-form-card">
+                <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
 
-    <form th:action="@{/admin/courses/save}" th:object="${course}" method="post" enctype="multipart/form-data">
-        <input type="hidden" th:field="*{id}" />
-        <input type="hidden" th:field="*{imageUrl}" />
+                <form th:action="@{/admin/courses/save}" th:object="${course}" method="post" enctype="multipart/form-data">
+                    <input type="hidden" th:field="*{id}" />
+                    <input type="hidden" th:field="*{imageUrl}" />
 
-        <div class="mb-3">
-            <label for="name" class="form-label">Tên Khóa học <span class="text-danger">*</span></label>
-            <input type="text" class="form-control" id="name" th:field="*{name}" required
-                   th:classappend="${#fields.hasErrors('name') ? 'is-invalid' : ''}">
-            <div th:if="${#fields.hasErrors('name')}" class="invalid-feedback" th:errors="*{name}"></div>
-        </div>
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Tên Khóa học <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="name" th:field="*{name}" required
+                               th:classappend="${#fields.hasErrors('name') ? 'is-invalid' : ''}">
+                        <div th:if="${#fields.hasErrors('name')}" class="invalid-feedback" th:errors="*{name}"></div>
+                    </div>
 
-        <div class="mb-3">
-            <label for="description" class="form-label">Mô tả</label>
-            <textarea class="form-control" id="description" th:field="*{description}" rows="5"
-                      th:classappend="${#fields.hasErrors('description') ? 'is-invalid' : ''}"></textarea>
-            <div th:if="${#fields.hasErrors('description')}" class="invalid-feedback" th:errors="*{description}"></div>
-        </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Mô tả</label>
+                        <textarea class="form-control" id="description" th:field="*{description}" rows="5"
+                                  th:classappend="${#fields.hasErrors('description') ? 'is-invalid' : ''}"></textarea>
+                        <div th:if="${#fields.hasErrors('description')}" class="invalid-feedback" th:errors="*{description}"></div>
+                    </div>
 
-        <div class="mb-3">
-            <label for="imageFile" class="form-label">Hình ảnh</label>
-            <input type="file" class="form-control" id="imageFile" name="imageFile" accept="image/png, image/jpeg, image/gif">
-            <small class="form-text text-muted">Để trống nếu không muốn thay đổi ảnh hiện tại (khi sửa).</small>
-            <div th:if="${course.imageUrl != null && !course.imageUrl.isEmpty()}" class="mt-2">
-                <img th:src="@{${course.imageUrl}}" alt="Current Image" width="150" class="img-thumbnail"/>
-                <p class="small">Ảnh hiện tại</p>
+                    <div class="mb-3">
+                        <label for="imageFile" class="form-label">Hình ảnh</label>
+                        <input type="file" class="form-control" id="imageFile" name="imageFile" accept="image/png, image/jpeg, image/gif">
+                        <small class="form-text text-muted">Để trống nếu không muốn thay đổi ảnh hiện tại (khi sửa).</small>
+                        <div th:if="${course.imageUrl != null && !course.imageUrl.isEmpty()}" class="mt-2">
+                            <img th:src="@{${course.imageUrl}}" alt="Current Image" width="150" class="img-thumbnail"/>
+                            <p class="small">Ảnh hiện tại</p>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="tuitionFee" class="form-label">Học phí <span class="text-danger">*</span></label>
+                        <input type="number" step="any" class="form-control" id="tuitionFee" th:field="*{tuitionFee}" required min="0"
+                               th:classappend="${#fields.hasErrors('tuitionFee') ? 'is-invalid' : ''}">
+                        <div th:if="${#fields.hasErrors('tuitionFee')}" class="invalid-feedback" th:errors="*{tuitionFee}"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="targetAudience" class="form-label">Đối tượng</label>
+                        <input type="text" class="form-control" id="targetAudience" th:field="*{targetAudience}"
+                               th:classappend="${#fields.hasErrors('targetAudience') ? 'is-invalid' : ''}">
+                        <div th:if="${#fields.hasErrors('targetAudience')}" class="invalid-feedback" th:errors="*{targetAudience}"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="duration" class="form-label">Thời lượng</label>
+                        <input type="text" class="form-control" id="duration" th:field="*{duration}"
+                               th:classappend="${#fields.hasErrors('duration') ? 'is-invalid' : ''}">
+                        <div th:if="${#fields.hasErrors('duration')}" class="invalid-feedback" th:errors="*{duration}"></div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Lưu Khóa học</button>
+                    <a th:href="@{/admin/courses}" class="btn btn-secondary">Hủy</a>
+                </form>
             </div>
         </div>
-
-        <div class="mb-3">
-            <label for="tuitionFee" class="form-label">Học phí <span class="text-danger">*</span></label>
-            <input type="number" step="any" class="form-control" id="tuitionFee" th:field="*{tuitionFee}" required min="0"
-                   th:classappend="${#fields.hasErrors('tuitionFee') ? 'is-invalid' : ''}">
-            <div th:if="${#fields.hasErrors('tuitionFee')}" class="invalid-feedback" th:errors="*{tuitionFee}"></div>
-        </div>
-
-        <div class="mb-3">
-            <label for="targetAudience" class="form-label">Đối tượng</label>
-            <input type="text" class="form-control" id="targetAudience" th:field="*{targetAudience}"
-                   th:classappend="${#fields.hasErrors('targetAudience') ? 'is-invalid' : ''}">
-            <div th:if="${#fields.hasErrors('targetAudience')}" class="invalid-feedback" th:errors="*{targetAudience}"></div>
-        </div>
-
-        <div class="mb-3">
-            <label for="duration" class="form-label">Thời lượng</label>
-            <input type="text" class="form-control" id="duration" th:field="*{duration}"
-                   th:classappend="${#fields.hasErrors('duration') ? 'is-invalid' : ''}">
-            <div th:if="${#fields.hasErrors('duration')}" class="invalid-feedback" th:errors="*{duration}"></div>
-        </div>
-
-        <button type="submit" class="btn btn-primary">Lưu Khóa học</button>
-        <a th:href="@{/admin/courses}" class="btn btn-secondary">Hủy</a>
-    </form>
 </main>
 
 <div th:replace="~{fragments/footer :: footer}"></div>

@@ -11,4 +11,5 @@ public interface UserService {
     List<User> findAllUsers(); // Lấy tất cả user
     List<User> findAllLearners(); // Lấy user có vai trò LEARNER
     User updateUserStatus(Long userId, boolean enabled);
+    void changePassword(User user, String newPassword);
 }

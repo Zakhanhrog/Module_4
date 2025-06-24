@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <body>
-<nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
-    <div class="container-fluid">
-        <a class="navbar-brand" th:href="@{/}">ArtFlow Studio</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+<nav th:fragment="navbar" class="navbar navbar-expand-lg fixed-top navbar-light bg-light shadow-sm artflow-navbar">
+    <div class="container">
+        <a class="navbar-brand artflow-navbar-brand" th:href="@{/}">
+            ArtFlow Studio
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavMain"
+                aria-controls="navbarNavMain" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
+        <div class="collapse navbar-collapse" id="navbarNavMain">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
                     <a class="nav-link" th:classappend="${currentUri != null && currentUri.startsWith(contextPath + '/courses') ? 'active' : ''}" th:href="@{/courses}">Khóa học</a>
@@ -17,25 +19,38 @@
                     <a class="nav-link" th:classappend="${currentUri != null && currentUri.startsWith(contextPath + '/schedule') ? 'active' : ''}" th:href="@{/schedule}">Lịch học</a>
                 </li>
                 <li sec:authorize="hasRole('ADMIN')" class="nav-item">
-                    <a class="nav-link" th:classappend="${currentUri != null && currentUri.startsWith(contextPath + '/admin') ? 'active' : ''}" th:href="@{/admin/dashboard}">Admin</a>
+                    <a class="nav-link" th:classappend="${currentUri != null && currentUri.startsWith(contextPath + '/admin') ? 'active' : ''}" th:href="@{/admin/dashboard}">Quản trị</a>
+                </li>
+                <li sec:authorize="hasRole('LEARNER')" class="nav-item">
+                    <a class="nav-link" th:classappend="${currentUri != null && currentUri.startsWith(contextPath + '/learner') ? 'active' : ''}" th:href="@{/learner/profile}">Trang Học Viên</a>
                 </li>
             </ul>
             <ul class="navbar-nav">
                 <li sec:authorize="!isAuthenticated()" class="nav-item">
-                    <a class="btn btn-outline-light me-2" th:href="@{/login}">Đăng nhập</a>
+                    <a class="btn btn-outline-primary artflow-btn-outline me-2" th:href="@{/login}">Đăng nhập</a>
                 </li>
                 <li sec:authorize="isAuthenticated()" class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownUser" role="button"
+                    <a class="nav-link dropdown-toggle artflow-navbar-user" href="#" id="navbarDropdownUser" role="button"
                        data-bs-toggle="dropdown" aria-expanded="false">
                         <span sec:authentication="principal.username">Username</span>
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownUser">
+                    <ul class="dropdown-menu dropdown-menu-end artflow-dropdown-menu" aria-labelledby="navbarDropdownUser">
                         <li sec:authorize="hasRole('LEARNER')"><a class="dropdown-item" th:href="@{/learner/profile}">Thông tin cá nhân</a></li>
+                        <li sec:authorize="hasRole('LEARNER')"><a class="dropdown-item" th:href="@{/learner/my-schedule}">Lớp học của tôi</a></li>
+                        <li sec:authorize="hasRole('LEARNER')"><a class="dropdown-item" th:href="@{/learner/my-grades}">Điểm số & Đánh giá</a></li>
+
                         <li sec:authorize="hasRole('ADMIN')"><a class="dropdown-item" th:href="@{/admin/dashboard}">Dashboard Admin</a></li>
+                        <li sec:authorize="hasRole('ADMIN')"><a class="dropdown-item" th:href="@{/admin/courses}">Quản lý Khóa học</a></li>
+                        <li sec:authorize="hasRole('ADMIN')"><a class="dropdown-item" th:href="@{/admin/class-schedules}">Quản lý Lớp học</a></li>
+                        <li sec:authorize="hasRole('ADMIN')"><a class="dropdown-item" th:href="@{/admin/instructors}">Quản lý Giảng viên</a></li>
+                        <li sec:authorize="hasRole('ADMIN')"><a class="dropdown-item" th:href="@{/admin/booking-requests}">Duyệt Đăng ký</a></li>
+                        <li sec:authorize="hasRole('ADMIN')"><a class="dropdown-item" th:href="@{/admin/learners}">Quản lý Học viên</a></li>
+                        <li sec:authorize="hasRole('ADMIN')"><a class="dropdown-item" th:href="@{/admin/grades/manage}">Quản lý Điểm</a></li>
+
                         <li><hr class="dropdown-divider"></li>
                         <li>
                             <form th:action="@{/logout}" method="post" class="d-inline">
-                                <button type="submit" class="dropdown-item" style="border:none; background:none; padding-left: 1rem; width:100%; text-align:left;">Đăng xuất</button>
+                                <button type="submit" class="dropdown-item artflow-logout-btn">Đăng xuất</button>
                             </form>
                         </li>
                     </ul>

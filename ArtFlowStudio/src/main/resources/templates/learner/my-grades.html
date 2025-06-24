@@ -1,10 +1,42 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header(pageTitle=${pageTitle})}"></head>
 <body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
 
+<main class="container mt-4 flex-grow-1">
+    <div class="learner-main-content">
+        <h1 th:text="${pageTitle}">Điểm số & Đánh giá</h1>
+
+        <div th:if="${#lists.isEmpty(enrollmentsWithGrades)}" class="alert alert-info mt-3">
+            Bạn chưa có điểm hoặc đánh giá nào.
+        </div>
+
+        <div class="list-group" th:unless="${#lists.isEmpty(enrollmentsWithGrades)}">
+            <div th:each="enrollment : ${enrollmentsWithGrades}" class="list-group-item mb-3">
+                <h5 class="mb-1" th:text="${enrollment.classSchedule.course.name}">Tên Khóa học</h5>
+                <p class="mb-1">Lớp khai giảng: <span th:text="${#temporals.format(enrollment.classSchedule.startDate, 'dd/MM/yyyy')}"></span></p>
+
+                <div th:if="${enrollment.grade != null}" class="mt-2 p-2 border rounded bg-light">
+                    <p class="mb-1"><strong>Điểm số:</strong>
+                        <span th:if="${enrollment.grade.score != null}" th:text="${#numbers.formatDecimal(enrollment.grade.score, 1, 1)}" class="fw-bold"></span>
+                        <span th:unless="${enrollment.grade.score != null}" class="text-muted fst-italic">Chưa có điểm</span>
+                    </p>
+                    <p class="mb-1"><strong>Đánh giá/Nhận xét:</strong></p>
+                    <blockquote class="blockquote_small mb-0">
+                        <p th:if="${enrollment.grade.feedback != null && !enrollment.grade.feedback.isEmpty()}" th:text="${enrollment.grade.feedback}"></p>
+                        <p th:unless="${enrollment.grade.feedback != null && !enrollment.grade.feedback.isEmpty()}" class="text-muted fst-italic">Chưa có nhận xét.</p>
+                    </blockquote>
+                    <small class="text-muted" th:if="${enrollment.grade.evaluationDate != null}">Ngày đánh giá: <span th:text="${#temporals.format(enrollment.grade.evaluationDate, 'dd/MM/yyyy')}"></span></small>
+                </div>
+                <div th:unless="${enrollment.grade != null}" class="alert alert-secondary mt-2" role="alert">
+                    Chưa có điểm hoặc đánh giá cho khóa học này.
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>

@@ -31,4 +31,10 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     public Optional<Enrollment> findEnrollmentByIdWithDetails(Long enrollmentId) {
         return enrollmentRepository.findByIdWithDetails(enrollmentId);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Enrollment> findEnrollmentsWithDetailsByUserId(Long userId) {
+        return enrollmentRepository.findEnrollmentsWithDetailsByUserId(userId);
+    }
 }

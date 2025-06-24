@@ -5,41 +5,72 @@
 <div th:replace="~{fragments/navbar :: navbar}"></div>
 
 <main class="container mt-4 flex-grow-1">
-  <h1 th:text="${pageTitle}">Chi tiết Học viên</h1>
+  <div class="admin-main-content">
+    <h1 th:text="${pageTitle}">Chi tiết Học viên</h1>
 
-  <div th:if="${learner}" class="card">
-    <div class="card-header">
-      Thông tin Học viên ID: <span th:text="${learner.id}"></span>
-    </div>
-    <div class="card-body">
-      <p><strong>Họ tên:</strong> <span th:text="${learner.fullName}"></span></p>
-      <p><strong>Email (Username):</strong> <span th:text="${learner.username}"></span></p>
-      <p><strong>Số điện thoại:</strong> <span th:text="${learner.phoneNumber ?: 'N/A'}"></span></p>
-      <p><strong>Tuổi:</strong> <span th:text="${learner.age ?: 'N/A'}"></span></p>
-      <p><strong>Trạng thái tài khoản:</strong>
-        <span th:if="${learner.enabled}" class="badge bg-success">Hoạt động</span>
-        <span th:unless="${learner.enabled}" class="badge bg-danger">Vô hiệu hóa</span>
-      </p>
-      <p><strong>Vai trò:</strong>
-        <span th:each="role : ${learner.roles}" th:text="${role}" class="badge bg-info me-1"></span>
-      </p>
+    <div th:if="${learner}" class="card learner-details-card">
+      <div class="card-header">
+        Thông tin Học viên ID: <strong th:text="${learner.id}"></strong>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6">
+            <p><strong>Họ tên:</strong> <span th:text="${learner.fullName ?: 'Chưa cập nhật'}"></span></p>
+            <p><strong>Email (Username):</strong> <span th:text="${learner.username}"></span></p>
+            <p><strong>Số điện thoại:</strong> <span th:text="${learner.phoneNumber ?: 'Chưa cập nhật'}"></span></p>
+            <p><strong>Tuổi:</strong> <span th:text="${learner.age ?: 'Chưa cập nhật'}"></span></p>
+          </div>
+          <div class="col-md-6">
+            <p><strong>Trạng thái tài khoản:</strong>
+              <span th:if="${learner.enabled}" class="badge bg-success">Hoạt động</span>
+              <span th:unless="${learner.enabled}" class="badge bg-danger">Vô hiệu hóa</span>
+            </p>
+            <p><strong>Vai trò:</strong>
+              <span th:each="role : ${learner.roles}" th:text="${role.name()}" class="badge bg-info me-1"></span>
+            </p>
+          </div>
+        </div>
 
-      <h4>Các khóa học đã tham gia:</h4>
-      <ul th:if="${enrollments != null && !#lists.isEmpty(enrollments)}">
-          <li th:each="enrollment : ${enrollments}">
-              <span th:text="${enrollment.classSchedule.course.name}"></span> -
-              Ngày đăng ký: <span th:text="${#temporals.format(enrollment.enrollmentDate, 'dd/MM/yyyy')}"></span>
-          </li>
-      </ul>
+        <hr class="my-4">
 
-      <p th:if="${enrollments == null || #lists.isEmpty(enrollments)}">Chưa tham gia khóa học nào.</p>
+        <h4 class="mb-3">Các Lớp Học/Khóa Học Đã Tham Gia:</h4>
+        <div th:if="${enrollments != null && !#lists.isEmpty(enrollments)}">
+          <ul class="list-group list-group-flush">
+            <li th:each="enrollment : ${enrollments}" class="list-group-item px-0 py-2">
+              <div class="d-flex w-100 justify-content-between">
+                <h6 class="mb-1">
+                  <a th:href="@{/courses/{id}(id=${enrollment.classSchedule.course.id})}" target="_blank" class="text-decoration-none" th:text="${enrollment.classSchedule.course.name}">Tên Khóa Học</a>
+                  <span class="text-muted small" th:text="'(Lớp ID: ' + ${enrollment.classSchedule.id} + ')'"></span>
+                </h6>
+                <small class="text-muted" th:text="'Khai giảng: ' + ${#temporals.format(enrollment.classSchedule.startDate, 'dd/MM/yyyy')}"></small>
+              </div>
+              <p class="mb-1 small">
+                                    <span th:if="${enrollment.classSchedule.instructor != null}">
+                                        Giảng viên: <strong th:text="${enrollment.classSchedule.instructor.name}"></strong> |
+                                    </span>
+                Thời gian: <span th:text="${#temporals.format(enrollment.classSchedule.startTime, 'HH:mm')} + ' - ' + ${#temporals.format(enrollment.classSchedule.endTime, 'HH:mm')}"></span> |
+                Lịch: <span th:text="${enrollment.classSchedule.daysOfWeek ?: 'N/A'}"></span>
+              </p>
+              <small class="text-muted">Ngày đăng ký: <span th:text="${#temporals.format(enrollment.enrollmentDate, 'dd/MM/yyyy HH:mm')}"></span></small>
+              <span th:if="${enrollment.grade != null && enrollment.grade.score != null}" class="badge rounded-pill bg-primary float-end ms-2">
+                                    Điểm: <span th:text="${#numbers.formatDecimal(enrollment.grade.score, 1, 1)}"></span>
+                                </span>
+              <a th:href="@{/admin/grades/form/{enrollmentId}(enrollmentId=${enrollment.id})}" class="btn btn-outline-secondary btn-sm float-end">
+                <span th:if="${enrollment.grade == null || enrollment.grade.score == null}">Nhập điểm</span>
+                <span th:unless="${enrollment.grade == null || enrollment.grade.score == null}">Sửa điểm</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+        <p th:if="${enrollments == null || #lists.isEmpty(enrollments)}" class="text-muted fst-italic">Học viên này chưa tham gia khóa học nào.</p>
+      </div>
+      <div class="card-footer text-end">
+        <a th:href="@{/admin/learners}" class="btn btn-secondary"><i class="bi bi-arrow-left-circle me-2"></i>Quay lại Danh sách Học viên</a>
+      </div>
     </div>
-    <div class="card-footer">
-      <a th:href="@{/admin/learners}" class="btn btn-secondary">Quay lại Danh sách</a>
+    <div th:unless="${learner}" class="alert alert-warning mt-3">
+      Không tìm thấy thông tin học viên được yêu cầu.
     </div>
-  </div>
-  <div th:unless="${learner}" class="alert alert-warning">
-    Không tìm thấy thông tin học viên.
   </div>
 </main>
 

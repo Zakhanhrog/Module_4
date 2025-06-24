@@ -4,58 +4,67 @@
 <body>
 <div th:replace="~{fragments/navbar :: navbar}"></div>
 
-<main class="container mt-4 flex-grow-1">
+<main class="container mt-5 mb-5 flex-grow-1 artflow-page-section">
     <div class="row justify-content-center">
-        <div class="col-md-8 col-lg-6">
-            <h1 th:text="${pageTitle}">Đặt chỗ Lớp học</h1>
-            <hr>
-            <h4>Thông tin lớp học:</h4>
-            <p><strong>Khóa học:</strong> <span th:text="${classSchedule.course.name}"></span></p>
-            <p><strong>Ngày khai giảng:</strong> <span th:text="${#temporals.format(classSchedule.startDate, 'dd/MM/yyyy')}"></span></p>
-            <p><strong>Giờ học:</strong> <span th:text="${#temporals.format(classSchedule.startTime, 'HH:mm')} + ' - ' + ${#temporals.format(classSchedule.endTime, 'HH:mm')}"></span></p>
-            <p><strong>Còn lại:</strong> <span th:text="${classSchedule.availableSlots}" class="fw-bold text-success"></span> chỗ</p>
-            <hr>
+        <div class="col-lg-7 col-md-9">
+            <div class="text-center mb-4">
+                <h1 th:text="${pageTitle}">Đặt chỗ Lớp học</h1>
+                <hr class="artflow-divider artflow-divider-dark my-4 mx-auto" />
+            </div>
+
+            <div class="card p-4 mb-4 shadow-sm artflow-form-info-box">
+                <h5 class="card-title text-center mb-3">Thông tin Lớp học Đăng ký</h5>
+                <p><strong><i class="bi bi-bookmark-star-fill me-2 artflow-info-icon"></i>Khóa học:</strong> <span th:text="${classSchedule.course.name}"></span></p>
+                <p><strong><i class="bi bi-calendar3 me-2 artflow-info-icon"></i>Ngày khai giảng:</strong> <span th:text="${#temporals.format(classSchedule.startDate, 'dd/MM/yyyy')}"></span></p>
+                <p><strong><i class="bi bi-clock me-2 artflow-info-icon"></i>Giờ học:</strong> <span th:text="${#temporals.format(classSchedule.startTime, 'HH:mm')} + ' - ' + ${#temporals.format(classSchedule.endTime, 'HH:mm')}"></span></p>
+                <p><strong><i class="bi bi-person-check-fill me-2 artflow-info-icon"></i>Còn lại:</strong> <span th:text="${classSchedule.availableSlots}" class="fw-bold text-success"></span> chỗ</p>
+            </div>
+
 
             <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
 
-            <form th:action="@{/book}" th:object="${bookingRequestDto}" method="post">
+            <form th:action="@{/book}" th:object="${bookingRequestDto}" method="post" class="artflow-styled-form">
                 <input type="hidden" name="classScheduleId" th:value="${classSchedule.id}" />
 
                 <div class="mb-3">
                     <label for="fullName" class="form-label">Họ tên người học <span class="text-danger">*</span></label>
                     <input type="text" class="form-control" id="fullName" th:field="*{fullName}"
-                           th:classappend="${#fields.hasErrors('fullName') ? 'is-invalid' : ''}">
+                           th:classappend="${#fields.hasErrors('fullName') ? 'is-invalid' : ''}" placeholder="Nguyễn Văn A">
                     <div th:if="${#fields.hasErrors('fullName')}" class="invalid-feedback" th:errors="*{fullName}"></div>
                 </div>
 
                 <div class="mb-3">
                     <label for="age" class="form-label">Tuổi <span class="text-danger">*</span></label>
                     <input type="number" class="form-control" id="age" th:field="*{age}"
-                           th:classappend="${#fields.hasErrors('age') ? 'is-invalid' : ''}">
+                           th:classappend="${#fields.hasErrors('age') ? 'is-invalid' : ''}" placeholder="Ví dụ: 25">
                     <div th:if="${#fields.hasErrors('age')}" class="invalid-feedback" th:errors="*{age}"></div>
                 </div>
 
                 <div class="mb-3">
                     <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
                     <input type="email" class="form-control" id="email" th:field="*{email}"
-                           th:classappend="${#fields.hasErrors('email') ? 'is-invalid' : ''}">
+                           th:classappend="${#fields.hasErrors('email') ? 'is-invalid' : ''}" placeholder="your.email@example.com">
                     <div th:if="${#fields.hasErrors('email')}" class="invalid-feedback" th:errors="*{email}"></div>
                 </div>
 
                 <div class="mb-3">
                     <label for="phoneNumber" class="form-label">Số điện thoại <span class="text-danger">*</span></label>
                     <input type="tel" class="form-control" id="phoneNumber" th:field="*{phoneNumber}"
-                           th:classappend="${#fields.hasErrors('phoneNumber') ? 'is-invalid' : ''}">
+                           th:classappend="${#fields.hasErrors('phoneNumber') ? 'is-invalid' : ''}" placeholder="09xxxxxxxx">
                     <div th:if="${#fields.hasErrors('phoneNumber')}" class="invalid-feedback" th:errors="*{phoneNumber}"></div>
                 </div>
 
                 <div class="mb-3">
                     <label for="message" class="form-label">Lời nhắn (nếu có)</label>
-                    <textarea class="form-control" id="message" th:field="*{message}" rows="3"></textarea>
+                    <textarea class="form-control" id="message" th:field="*{message}" rows="4" placeholder="Ví dụ: Mong muốn tìm hiểu thêm về kỹ thuật vẽ..."></textarea>
                 </div>
 
-                <button type="submit" class="btn btn-primary">Gửi Đăng ký</button>
-                <a th:href="@{/courses/{id}(id=${classSchedule.course.id})}" class="btn btn-secondary">Hủy</a>
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary btn-lg artflow-btn-submit">Gửi Đăng ký</button>
+                </div>
+                <div class="text-center mt-3">
+                    <a th:href="@{/courses/{id}(id=${classSchedule.course.id})}" class="btn btn-link text-muted">Hủy và Quay lại</a>
+                </div>
             </form>
         </div>
     </div>

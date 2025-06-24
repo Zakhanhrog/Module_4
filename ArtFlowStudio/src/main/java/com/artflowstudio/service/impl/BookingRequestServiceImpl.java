@@ -85,7 +85,6 @@ public class BookingRequestServiceImpl implements BookingRequestService {
     @Override
     @Transactional(readOnly = true)
     public Optional<BookingRequest> findById(Long id) {
-        // Cũng nên JOIN FETCH nếu cần hiển thị chi tiết
         return bookingRequestRepository.findById(id);
     }
 
@@ -101,7 +100,7 @@ public class BookingRequestServiceImpl implements BookingRequestService {
 
         ClassSchedule classSchedule = bookingRequest.getClassSchedule();
         if (classSchedule.getAvailableSlots() <= 0) {
-            bookingRequest.setStatus(BookingStatus.REJECTED); // Tự động từ chối nếu lớp đầy
+            bookingRequest.setStatus(BookingStatus.REJECTED);
             bookingRequestRepository.save(bookingRequest);
             emailService.sendSimpleMessage(
                     bookingRequest.getEmail(),
@@ -122,7 +121,8 @@ public class BookingRequestServiceImpl implements BookingRequestService {
         if (existingUserOpt.isEmpty()) {
             learner = new User();
             learner.setUsername(bookingRequest.getEmail());
-            generatedPassword = UUID.randomUUID().toString().substring(0, 8); // Mật khẩu ngẫu nhiên
+//            generatedPassword = UUID.randomUUID().toString().substring(0, 8);
+            generatedPassword = "123123";
             learner.setPassword(passwordEncoder.encode(generatedPassword));
             learner.setFullName(bookingRequest.getFullName());
             learner.setAge(bookingRequest.getAge());
@@ -131,10 +131,10 @@ public class BookingRequestServiceImpl implements BookingRequestService {
             roles.add(Role.LEARNER);
             learner.setRoles(roles);
             learner.setEnabled(true);
-            userService.saveUser(learner); // Lưu learner mới
+            userService.saveUser(learner);
         } else {
             learner = existingUserOpt.get();
-            if (!learner.getRoles().contains(Role.LEARNER)) { // Nếu user đã có nhưng chưa phải learner
+            if (!learner.getRoles().contains(Role.LEARNER)) {
                 learner.getRoles().add(Role.LEARNER);
                 userService.saveUser(learner);
             }

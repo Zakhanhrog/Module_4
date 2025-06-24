@@ -1,28 +1,825 @@
+:root {
+    --primary-color: #2c3e50;
+    --secondary-color: #f3f0e9;
+    --accent-color: #b08d57;
+    --text-color: #343a40;
+    --light-text-color: #6c757d;
+    --background-color: #FFFFFF;
+    --navbar-background: #FFFFFF;
+    --navbar-text-color: var(--primary-color);
+    --navbar-brand-color: var(--primary-color);
+    --footer-background: var(--secondary-color);
+    --footer-text-color: var(--text-color);
+
+    --font-script: 'Dancing Script', cursive;
+    --font-body: 'Montserrat', sans-serif;
+
+    --border-radius-sm: .2rem;
+    --border-radius: .375rem;
+    --border-radius-lg: .5rem;
+    --box-shadow-sm: 0 .125rem .25rem rgba(0,0,0,.075);
+    --box-shadow: 0 .5rem 1rem rgba(0,0,0,.15);
+    --box-shadow-lg: 0 1rem 3rem rgba(0,0,0,.175);
+}
+
+/* === BASE & TYPOGRAPHY === */
 body {
+    font-family: var(--font-body);
+    font-weight: 400;
+    color: var(--text-color);
+    background-color: var(--background-color);
+    line-height: 1.7;
+    padding-top: 70px;
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    padding-top: 56px; /* Height of the navbar */
 }
 
 .flex-grow-1 {
     flex-grow: 1;
+    animation: fadeIn 0.5s ease-out forwards;
 }
 
-.navbar {
-    margin-bottom: 1rem; /* Add some space below navbar */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-.card-img-top {
-    width: 100%;
-    height: 200px; /* Or your preferred height */
-    object-fit: cover; /* This will make sure images cover the area without distortion */
+h1, .font-script-header {
+    font-family: var(--font-script);
+    color: var(--primary-color);
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-weight: 700;
+    line-height: 1.3;
 }
 
-.footer {
-    background-color: #f8f9fa; /* Light grey background */
-    padding: 1rem 0;
-    margin-top: auto; /* Push footer to the bottom */
+h2, h3, h4, h5, h6 {
+    font-family: var(--font-body);
+    color: var(--primary-color);
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+h1 { font-size: 3.5rem; letter-spacing: 1px;}
+h2 { font-size: 2.2rem; }
+h3 { font-size: 1.8rem; }
+h4 { font-size: 1.5rem; }
+h5 { font-size: 1.2rem; }
+h6 { font-size: 1.0rem; }
+
+p {
+    margin-bottom: 1rem;
+}
+
+a {
+    color: var(--accent-color);
+    text-decoration: none;
+    transition: color 0.2s ease-in-out;
+}
+
+a:hover {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.container {
+    max-width: 1140px;
+}
+
+/* === BUTTONS === */
+.btn {
+    font-family: var(--font-body);
+    font-weight: 600;
+    border-radius: var(--border-radius);
+    padding: .6rem 1.2rem;
+    transition: all 0.3s ease;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.btn-primary {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+    color: #fff;
+}
+
+.btn-primary:hover, .btn-primary:focus {
+    background-color: #9c7b4c;
+    border-color: #9c7b4c;
+    color: #fff;
+    box-shadow: var(--box-shadow-sm);
+}
+
+.btn-secondary {
+    background-color: var(--light-text-color);
+    border-color: var(--light-text-color);
+    color: #fff;
+}
+.btn-secondary:hover, .btn-secondary:focus {
+    background-color: #5a6268;
+    border-color: #545b62;
+    color: #fff;
+}
+
+.btn-xl {
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+}
+
+/* === NAVBAR === */
+.artflow-navbar {
+    background-color: var(--navbar-background) !important;
+    padding-top: 0.8rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.artflow-navbar .navbar-brand.artflow-navbar-brand {
+    font-family: var(--font-script);
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--navbar-brand-color) !important;
+}
+.artflow-navbar .navbar-brand.artflow-navbar-brand:hover {
+    text-decoration: none;
+}
+
+.artflow-navbar .nav-link {
+    color: var(--navbar-text-color) !important;
+    font-weight: 500;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    transition: color 0.2s ease;
+    text-decoration: none !important;
+}
+
+.artflow-navbar .nav-link:hover,
+.artflow-navbar .nav-link.active {
+    color: var(--accent-color) !important;
+    text-decoration: none !important;
+}
+.artflow-navbar .nav-link.active:hover {
+    text-decoration: none !important;
+}
+
+.artflow-navbar .artflow-navbar-user {
+    font-weight: 600;
+    color: var(--navbar-text-color) !important;
+}
+.artflow-navbar .artflow-navbar-user:hover {
+    color: var(--accent-color) !important;
+    text-decoration: none;
+}
+
+.artflow-navbar .btn-outline-primary.artflow-btn-outline {
+    color: var(--accent-color);
+    border-color: var(--accent-color);
+    font-weight: 600;
+    text-transform: uppercase;
+}
+.artflow-navbar .btn-outline-primary.artflow-btn-outline:hover {
+    background-color: var(--accent-color);
+    color: #fff;
+}
+
+.artflow-dropdown-menu {
+    border-radius: var(--border-radius-sm);
+    border: 1px solid #e0e0e0;
+    box-shadow: var(--box-shadow-sm);
+}
+.artflow-dropdown-menu .dropdown-item {
+    font-family: var(--font-body);
+    font-weight: 500;
+    color: var(--text-color);
+    transition: background-color 0.2s ease, color 0.2s ease;
+    text-decoration: none !important;
+}
+.artflow-dropdown-menu .dropdown-item:hover,
+.artflow-dropdown-menu .dropdown-item:focus {
+    background-color: var(--secondary-color);
+    color: var(--primary-color);
+    text-decoration: none !important;
+}
+
+.artflow-logout-btn {
+    border:none !important;
+    background:none !important;
+    padding-left: 1rem !important;
+    width:100% !important;
+    text-align:left !important;
+    color: var(--text-color) !important;
+    font-family: var(--font-body) !important;
+    text-decoration: none !important;
+}
+.artflow-logout-btn:hover {
+    background-color: var(--secondary-color) !important;
+    color: var(--primary-color) !important;
+    text-decoration: none !important;
+}
+
+/* === HERO SECTION (HOMEPAGE) === */
+.artflow-hero-section {
+    padding-top: 8rem;
+    padding-bottom: 8rem;
+    background: linear-gradient(to bottom, rgba(44, 62, 80, 0.7) 0%, rgba(44, 62, 80, 0.7) 100%), url('../images/hero-bg.jpg');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: scroll;
+    background-size: cover;
+    min-height: 75vh;
+}
+
+.artflow-hero-title {
+    font-family: var(--font-script);
+    font-size: 4rem;
+    font-weight: 700;
+    color: #fff;
+}
+
+.artflow-hero-subtitle {
+    font-size: 1.25rem;
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.artflow-btn-hero {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+    color: #fff;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.artflow-btn-hero:hover {
+    background-color: #9c7b4c;
+    border-color: #9c7b4c;
+    color: #fff;
+}
+
+/* === GENERAL PAGE SECTIONS & DIVIDERS === */
+.artflow-page-section {
+    padding: 6rem 0;
+}
+
+.artflow-divider {
+    height: 0.2rem;
+    max-width: 3.25rem;
+    background-color: var(--accent-color);
+    opacity: 1;
+    border: none;
+}
+.artflow-divider-dark {
+    background-color: var(--primary-color);
+}
+
+.artflow-feature-icon {
+    font-size: 3rem;
+    color: var(--accent-color);
+    display: block;
+    margin-bottom: 1rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* === COURSE CARDS (GUEST/LIST-COURSES) === */
+.artflow-course-card-custom {
+    border: none;
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+    background-color: #fff;
+    transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
+    display: flex;
+    flex-direction: column;
+}
+
+.artflow-course-card-custom:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--box-shadow-lg);
+}
+
+.artflow-course-card-custom .course-card-img-link {
+    display: block;
+    overflow: hidden;
+}
+
+.artflow-course-card-custom .card-img-top {
+    height: 220px;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+    border-bottom: 3px solid var(--accent-color);
+}
+
+.artflow-course-card-custom:hover .card-img-top {
+    transform: scale(1.05);
+}
+
+.artflow-course-card-custom .card-body {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.artflow-course-card-custom .card-title a {
+    font-family: var(--font-body);
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    text-decoration: none !important;
+}
+.artflow-course-card-custom .card-title a:hover {
+    color: var(--accent-color);
+    text-decoration: none !important;
+}
+
+.artflow-course-card-custom .card-text.small {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    min-height: 60px;
+}
+
+.artflow-course-card-custom .course-card-details {
+    padding-top: 1rem;
+    border-top: 1px solid var(--secondary-color);
+}
+.artflow-course-card-custom .course-card-details p {
+    margin-bottom: 0.3rem;
+    font-size: 0.9rem;
+}
+
+.artflow-course-card-custom .btn.artflow-btn-view-details {
+    background-color: transparent;
+    color: var(--accent-color);
+    border: 1px solid var(--accent-color);
+    padding: 0.4rem 1rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+.artflow-course-card-custom .btn.artflow-btn-view-details:hover {
+    background-color: var(--accent-color);
+    color: #fff;
+}
+
+/* === COURSE DETAIL PAGE (GUEST/COURSE-DETAIL) === */
+.artflow-course-detail-header .course-title-main {
+    font-family: var(--font-script);
+    font-size: 3.8rem;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+.artflow-course-detail-header .lead {
+    font-family: var(--font-body);
+    font-size: 1.1rem;
+    color: var(--light-text-color);
+}
+
+.artflow-course-image-wrapper img {
+    border-radius: var(--border-radius-lg);
+    border: 5px solid var(--secondary-color);
+}
+
+.artflow-course-content .content-section-title,
+.artflow-course-content .content-section-title-small {
+    font-family: var(--font-body);
+    font-weight: 600;
+    color: var(--primary-color);
+}
+.artflow-course-content .content-section-title {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--accent-color);
+    display: inline-block;
+}
+.artflow-course-content .content-section-title-small {
+    font-size: 1.4rem;
+    margin-bottom: 0.75rem;
+}
+
+.artflow-course-content .course-description-text {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: var(--text-color);
+}
+.artflow-course-content .course-description-text p {
+    margin-bottom: 1rem;
+}
+
+.artflow-course-content .course-additional-info li {
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+}
+.artflow-course-content .course-additional-info strong {
+    font-weight: 600;
+}
+.artflow-course-content .artflow-info-icon {
+    color: var(--accent-color);
+    width: 20px;
+    display: inline-block;
     text-align: center;
-    border-top: 1px solid #e7e7e7;
+}
+
+/* Sidebar for Class Schedules (Course Detail) */
+.artflow-sidebar-sticky {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 90px;
+    height: fit-content;
+}
+
+.artflow-sidebar-box {
+    background-color: var(--secondary-color);
+    border: 1px solid #e0d8c7;
+    padding: 1.5rem; /* Giảm padding một chút */
+}
+.artflow-sidebar-box h4 { /* Tiêu đề trong sidebar */
+    font-family: var(--font-body);
+    font-weight: 600;
+}
+
+.artflow-class-list .artflow-class-item {
+    background-color: #fff;
+    border-radius: var(--border-radius);
+    border: 1px solid #e0e0e0;
+    transition: box-shadow 0.2s ease-in-out;
+}
+.artflow-class-list .artflow-class-item:hover {
+    box-shadow: var(--box-shadow);
+}
+
+.artflow-class-list .class-item-course-name {
+    font-family: var(--font-body);
+    font-weight: 600;
+    color: var(--primary-color);
+}
+.artflow-class-list .class-item-date {
+    font-size: 0.85rem;
+    color: var(--light-text-color);
+}
+.artflow-class-list .class-item-details {
+    font-size: 0.9rem;
+    color: var(--text-color);
+    line-height: 1.6;
+}
+.artflow-class-list .class-item-details i {
+    color: var(--accent-color);
+    width: 18px;
+}
+.artflow-class-list .class-item-slots {
+    font-size: 0.9rem;
+}
+.artflow-class-list .btn.artflow-btn-register-sidebar {
+    font-size: 0.85rem;
+    padding: .3rem .8rem;
+}
+
+/* === SCHEDULE OVERVIEW PAGE (GUEST/SCHEDULE-OVERVIEW) === */
+.artflow-schedule-accordion .artflow-schedule-item {
+    margin-bottom: 1rem;
+    border: 1px solid #e0e0e0;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--box-shadow-sm);
+    overflow: hidden;
+}
+
+.artflow-schedule-accordion .artflow-accordion-button {
+    font-family: var(--font-body);
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    background-color: #fff;
+    padding: 1rem 1.5rem;
+    text-align: left;
+    width: 100%;
+    border: none;
+    box-shadow: none !important;
+}
+
+.artflow-schedule-accordion .artflow-accordion-button:not(.collapsed) {
+    color: var(--primary-color);
+    background-color: var(--secondary-color);
+    border-bottom: 1px solid #d1ccc0;
+}
+
+.artflow-schedule-accordion .artflow-accordion-button::after {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%232c3e50'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+    transition: transform .2s ease-in-out;
+}
+.artflow-schedule-accordion .artflow-accordion-button:not(.collapsed)::after {
+    transform: rotate(-180deg);
+}
+
+.artflow-schedule-accordion .artflow-schedule-course-name {
+    font-family: var(--font-body); /* Đổi theo yêu cầu */
+    font-size: 1.3rem;
+    font-weight: 600; /* Đậm hơn */
+    color: var(--primary-color);
+}
+
+.artflow-schedule-accordion .artflow-schedule-date {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    color: var(--light-text-color);
+}
+.artflow-schedule-accordion .artflow-schedule-date strong {
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.artflow-schedule-accordion .artflow-accordion-body {
+    padding: 1.5rem;
+    background-color: #fdfcf7;
+    font-size: 0.95rem;
+}
+
+.artflow-schedule-accordion .artflow-accordion-body h5 { /* Tiêu đề trong accordion body */
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--primary-color);
+    margin-bottom: 0.75rem;
+}
+
+.artflow-schedule-accordion .artflow-accordion-body ul li {
+    margin-bottom: 0.4rem;
+}
+.artflow-schedule-accordion .artflow-accordion-body ul li strong {
+    font-weight: 600;
+    min-width: 120px;
+    display: inline-block;
+}
+
+.artflow-schedule-accordion .artflow-schedule-meta {
+    border-left: 1px solid #e0e0e0;
+    padding-left: 1.5rem;
+}
+@media (max-width: 767.98px) {
+    .artflow-schedule-accordion .artflow-schedule-meta {
+        border-left: none;
+        padding-left: 0;
+        margin-top: 1.5rem;
+        text-align: left !important;
+    }
+}
+
+.artflow-schedule-accordion .btn.artflow-btn-register {
+    font-weight: 600;
+    padding: 0.5rem 1.2rem;
+}
+
+/* === FORMS (GUEST/BOOK-FORM, LEARNER/CHANGE-PASSWORD, ADMIN FORMS) === */
+.artflow-styled-form .form-label {
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 0.3rem;
+}
+.artflow-styled-form .form-control {
+    border-radius: var(--border-radius-sm);
+    border: 1px solid #ced4da;
+    padding: .75rem 1rem;
+    font-size: 1rem;
+    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+.artflow-styled-form .form-control:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 .25rem rgba(176, 141, 87, 0.25);
+}
+.artflow-styled-form .form-control.is-invalid {
+    border-color: #dc3545;
+}
+.artflow-styled-form .form-control.is-invalid:focus {
+    box-shadow: 0 0 0 .25rem rgba(220,53,69,.25);
+}
+.artflow-styled-form .invalid-feedback {
+    font-size: 0.875em;
+}
+.artflow-styled-form .btn-lg.artflow-btn-submit {
+    font-size: 1.1rem;
+    padding: 0.8rem 1.5rem;
+    font-weight: 600;
+}
+
+/* Info Box for Booking Form */
+.artflow-form-info-box {
+    background-color: var(--secondary-color);
+    border: 1px solid #e0d8c7;
+    border-radius: var(--border-radius-lg);
+    padding: 1.5rem; /* Giảm padding */
+}
+.artflow-form-info-box .card-title { /* Tiêu đề trong box này */
+    font-family: var(--font-body);
+    font-weight: 600;
+    color: var(--primary-color);
+    font-size: 1.2rem; /* Điều chỉnh */
+}
+.artflow-form-info-box p {
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+}
+.artflow-form-info-box p strong i {
+    width: 20px;
+}
+
+/* === ADMIN PAGES === */
+.admin-main-content {
+    background-color: #f8f9fa;
+    padding: 2rem;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--box-shadow-sm);
+}
+
+.admin-main-content h1 { /* Tiêu đề chính trang admin dùng font script */
+    font-family: var(--font-script);
+    border-bottom: 2px solid var(--accent-color);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Admin Tables */
+.admin-table {
+    background-color: #fff;
+    box-shadow: var(--box-shadow-sm);
+}
+.admin-table th {
+    font-family: var(--font-body);
+    font-weight: 600;
+    color: var(--primary-color);
+    background-color: var(--secondary-color) !important;
+    border-bottom-width: 2px;
+    border-color: #d1ccc0 !important;
+}
+.admin-table td {
+    vertical-align: middle;
+}
+.admin-table .btn-sm {
+    font-size: 0.8rem;
+    padding: .25rem .6rem;
+}
+
+/* Admin Forms */
+.admin-form-card {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--box-shadow);
+}
+.admin-form-card .form-label {
+    font-weight: 500;
+    color: var(--text-color);
+    font-family: var(--font-body);
+}
+.admin-form-card .form-control,
+.admin-form-card .form-select {
+    border-radius: var(--border-radius-sm);
+    font-family: var(--font-body);
+}
+.admin-form-card .btn-primary {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+}
+.admin-form-card .btn-primary:hover {
+    background-color: #9c7b4c;
+    border-color: #9c7b4c;
+}
+.admin-form-card .btn-secondary {
+    background-color: var(--light-text-color);
+    border-color: var(--light-text-color);
+}
+.admin-form-card .btn-secondary:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+}
+
+/* Admin Dashboard Links */
+.admin-dashboard-links .list-group-item {
+    font-family: var(--font-body);
+    font-size: 1.1rem;
+    color: var(--primary-color);
+    border-left: 4px solid transparent;
+    transition: all 0.2s ease-in-out;
+    padding-top: 0.8rem;
+    padding-bottom: 0.8rem;
+}
+.admin-dashboard-links .list-group-item:hover,
+.admin-dashboard-links .list-group-item.active {
+    background-color: var(--secondary-color);
+    color: var(--accent-color);
+    border-left-color: var(--accent-color);
+    font-weight: 600;
+}
+
+/* === LEARNER PAGES === */
+.learner-main-content {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: var(--border-radius-lg);
+}
+
+.learner-main-content h1 { /* Tiêu đề chính trang learner dùng font script */
+    font-family: var(--font-script);
+    border-bottom: 2px solid var(--accent-color);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Learner Profile Card */
+.learner-profile-card {
+    background-color: var(--secondary-color);
+    border: 1px solid #e0d8c7;
+    padding: 2rem;
+}
+.learner-profile-card p strong {
+    min-width: 150px;
+    display: inline-block;
+    font-weight: 600;
+    color: var(--primary-color);
+    font-family: var(--font-body);
+}
+
+/* Learner Accordion (my-schedule, my-grades) */
+.learner-accordion .accordion-item {
+    margin-bottom: 1rem;
+    border: 1px solid #e0e0e0;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--box-shadow-sm);
+    overflow: hidden;
+}
+.learner-accordion .accordion-button {
+    font-family: var(--font-body);
+    font-weight: 600;
+    color: var(--primary-color);
+    background-color: #fff;
+}
+.learner-accordion .accordion-button:not(.collapsed) {
+    color: var(--primary-color);
+    background-color: var(--secondary-color);
+}
+.learner-accordion .accordion-button::after {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%232c3e50'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+}
+.learner-accordion .accordion-body {
+    background-color: #fdfcf7;
+    font-size: 0.95rem;
+}
+
+/* === FOOTER === */
+.artflow-footer {
+    background-color: var(--footer-background);
+    color: var(--footer-text-color);
+    padding: 3rem 0;
+    margin-top: auto;
+    border-top: 1px solid #dcdcdc;
+}
+
+.artflow-footer a {
+    color: var(--primary-color);
+    font-weight: 500;
+    text-decoration: none !important;
+    font-family: var(--font-body);
+}
+.artflow-footer a:hover {
+    color: var(--accent-color);
+    text-decoration: none !important;
+}
+.artflow-footer .small.text-muted {
+    color: var(--light-text-color) !important;
+}
+
+/* Admin Learner Detail Page */
+.learner-details-card {
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+}
+
+.learner-details-card .card-header {
+    background-color: var(--secondary-color);
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.learner-details-card .card-body p strong {
+    font-weight: 600;
+    color: var(--primary-color);
+    min-width: 150px; /* Giúp căn chỉnh */
+    display: inline-block;
+}
+
+.learner-details-card .list-group-item {
+    border-left: none;
+    border-right: none;
+}
+
+.learner-details-card .list-group-item h6 a {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+.learner-details-card .list-group-item h6 a:hover {
+    color: var(--accent-color);
+}
+
+.learner-details-card .list-group-item .badge.bg-primary { /* Badge điểm */
+    background-color: var(--accent-color) !important;
 }
