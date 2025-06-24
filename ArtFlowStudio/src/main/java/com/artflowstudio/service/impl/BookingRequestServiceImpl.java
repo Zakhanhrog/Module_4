@@ -5,7 +5,7 @@ import com.artflowstudio.entity.*;
 import com.artflowstudio.enums.BookingStatus;
 import com.artflowstudio.enums.Role;
 import com.artflowstudio.exception.ClassFullException;
-import com.artflowstudio.exception.InvalidOperationException; // Tạo exception này
+import com.artflowstudio.exception.InvalidOperationException;
 import com.artflowstudio.exception.ResourceNotFoundException;
 import com.artflowstudio.repository.BookingRequestRepository;
 import com.artflowstudio.repository.ClassScheduleRepository;
@@ -13,7 +13,7 @@ import com.artflowstudio.repository.EnrollmentRepository;
 import com.artflowstudio.repository.UserRepository;
 import com.artflowstudio.service.BookingRequestService;
 import com.artflowstudio.service.EmailService;
-import com.artflowstudio.service.UserService; // Sử dụng UserService
+import com.artflowstudio.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -23,7 +23,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID; // For generating random password
+import java.util.UUID;
 
 @Service
 public class BookingRequestServiceImpl implements BookingRequestService {
@@ -34,7 +34,7 @@ public class BookingRequestServiceImpl implements BookingRequestService {
     private final EnrollmentRepository enrollmentRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
-    private final UserService userService; // Thêm UserService
+    private final UserService userService;
 
     @Autowired
     public BookingRequestServiceImpl(BookingRequestRepository bookingRequestRepository,
@@ -43,20 +43,19 @@ public class BookingRequestServiceImpl implements BookingRequestService {
                                      EnrollmentRepository enrollmentRepository,
                                      PasswordEncoder passwordEncoder,
                                      EmailService emailService,
-                                     UserService userService) { // Cập nhật constructor
+                                     UserService userService) {
         this.bookingRequestRepository = bookingRequestRepository;
         this.classScheduleRepository = classScheduleRepository;
         this.userRepository = userRepository;
         this.enrollmentRepository = enrollmentRepository;
         this.passwordEncoder = passwordEncoder;
         this.emailService = emailService;
-        this.userService = userService; // Gán UserService
+        this.userService = userService;
     }
 
     @Override
     @Transactional
     public BookingRequest createBookingRequest(BookingRequestDto dto, Long classScheduleId) {
-        // ... (code đã có) ...
         ClassSchedule classSchedule = classScheduleRepository.findById(classScheduleId)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy lớp học với ID: " + classScheduleId));
 
@@ -121,8 +120,8 @@ public class BookingRequestServiceImpl implements BookingRequestService {
         if (existingUserOpt.isEmpty()) {
             learner = new User();
             learner.setUsername(bookingRequest.getEmail());
-//            generatedPassword = UUID.randomUUID().toString().substring(0, 8);
-            generatedPassword = "123123";
+            generatedPassword = UUID.randomUUID().toString().substring(0, 8);
+//            generatedPassword = "123123";
             learner.setPassword(passwordEncoder.encode(generatedPassword));
             learner.setFullName(bookingRequest.getFullName());
             learner.setAge(bookingRequest.getAge());
@@ -184,7 +183,7 @@ public class BookingRequestServiceImpl implements BookingRequestService {
         bookingRequest.setStatus(BookingStatus.REJECTED);
         BookingRequest rejectedRequest = bookingRequestRepository.save(bookingRequest);
 
-        // Gửi email thông báo từ chối (tùy chọn)
+        // Gửi email thông báo từ chối
         String emailSubject = "ArtFlow Studio - Thông báo về Yêu cầu Đăng ký Lớp học";
         String emailText = "Chào " + bookingRequest.getFullName() + ",\n\n" +
                 "Chúng tôi rất tiếc phải thông báo rằng yêu cầu đăng ký của bạn cho lớp học '" +

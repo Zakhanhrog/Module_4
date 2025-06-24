@@ -20,7 +20,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
                                    @NonNull HttpServletResponse response,
                                    @NonNull Object handler,
                                    ModelAndView modelAndView) throws Exception {
-                if (modelAndView != null) { // Chỉ thêm vào Model nếu có ModelAndView (tránh lỗi với API calls)
+                if (modelAndView != null) {
                     modelAndView.addObject("currentUri", request.getRequestURI());
                     modelAndView.addObject("contextPath", request.getContextPath());
                 }
