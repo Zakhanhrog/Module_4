@@ -267,7 +267,6 @@ public class AdminController {
             instructorService.deleteInstructor(id);
             redirectAttributes.addFlashAttribute("successMessage", "Giảng viên đã được xóa thành công.");
         } catch (Exception e) {
-            // Ví dụ: DataIntegrityViolationException nếu giảng viên đang dạy lớp
             redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi xóa giảng viên: " + e.getMessage() + ". Có thể giảng viên đang được gán cho một lớp học.");
         }
         return "redirect:/admin/instructors";

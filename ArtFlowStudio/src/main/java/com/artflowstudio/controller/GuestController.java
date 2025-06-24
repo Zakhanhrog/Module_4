@@ -20,8 +20,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Controller
 public class GuestController {
@@ -44,7 +46,11 @@ public class GuestController {
 
     @GetMapping("/")
     public String homePage(Model model) {
-        model.addAttribute("pageTitle", "Trang Chủ ArtFlow Studio");
+        List<Course> allCourses = courseService.findAllCourses();
+        List<Course> featuredCourses = allCourses.stream().limit(3).collect(Collectors.toList());
+
+        model.addAttribute("featuredCourses", featuredCourses);
+        model.addAttribute("pageTitle", "ArtFlow Studio - Khơi Nguồn Sáng Tạo");
         return "index";
     }
 
@@ -165,4 +171,6 @@ public class GuestController {
             return "guest/book-form";
         }
     }
+
+
 }

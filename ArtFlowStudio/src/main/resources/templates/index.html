@@ -1,65 +1,126 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head th:replace="~{fragments/header :: header(pageTitle=${pageTitle})}"></head>
+<head th:replace="~{fragments/header :: header(pageTitle='ArtFlow Studio - Khơi Nguồn Sáng Tạo')}"></head>
 <body>
 <div th:replace="~{fragments/navbar :: navbar}"></div>
 
-<!-- Hero Section -->
+<!-- HERO SECTION -->
 <header class="artflow-hero-section text-center text-white d-flex">
     <div class="container my-auto">
         <div class="row">
             <div class="col-lg-10 mx-auto">
-                <h1 class="artflow-hero-title" th:text="'Khơi Nguồn Sáng Tạo Tại ArtFlow Studio'"></h1>
+                <h1 class="artflow-hero-title display-3">ArtFlow Studio</h1>
                 <hr class="artflow-divider my-4 mx-auto" />
             </div>
             <div class="col-lg-8 mx-auto">
-                <p class="artflow-hero-subtitle mb-5">Khám phá niềm đam mê nghệ thuật, phát triển kỹ năng và tạo nên những tác phẩm độc đáo cùng chúng tôi.</p>
+                <p class="artflow-hero-subtitle lead mb-5">Nơi đam mê nghệ thuật được thắp sáng và tài năng được chắp cánh. Khám phá thế giới màu sắc và sự sáng tạo vô tận cùng chúng tôi.</p>
                 <a class="btn btn-primary btn-xl artflow-btn-hero" th:href="@{/courses}">Khám Phá Các Khóa Học</a>
             </div>
         </div>
     </div>
 </header>
 
-<!-- About Section (Ví dụ) -->
-<section class="artflow-page-section bg-light" id="about">
+<!-- ABOUT US SNIPPET SECTION -->
+<section class="artflow-page-section bg-light" id="about-snippet">
     <div class="container px-4 px-lg-5">
-        <div class="row gx-4 gx-lg-5 justify-content-center">
-            <div class="col-lg-8 text-center">
-                <h2 class="mt-0">Không Gian Nghệ Thuật Truyền Cảm Hứng</h2>
-                <hr class="artflow-divider artflow-divider-dark my-4 mx-auto" />
-                <p class="text-muted mb-4">ArtFlow Studio không chỉ là nơi học vẽ, mà còn là một cộng đồng nơi mọi người cùng chia sẻ, học hỏi và thăng hoa trong nghệ thuật. Với không gian mở, trang thiết bị hiện đại và đội ngũ giảng viên tận tâm, chúng tôi cam kết mang đến trải nghiệm học tập tốt nhất.</p>
-                <a class="btn btn-secondary btn-xl" th:href="@{/schedule}">Xem Lịch Học</a>
+        <div class="row gx-0 gx-lg-5 align-items-center">
+            <div class="col-lg-6 mb-5 mb-lg-0">
+                <img src="/images/about-studio.jpg" class="img-fluid rounded shadow-lg" alt="Không gian ArtFlow Studio">
+                <!-- Bạn cần thay thế bằng ảnh thực tế của studio hoặc ảnh minh họa không gian nghệ thuật -->
+            </div>
+            <div class="col-lg-6 ps-lg-5">
+                <h2 class="section-heading-alt">Chào Mừng Đến ArtFlow</h2>
+                <hr class="artflow-divider artflow-divider-dark mb-4" />
+                <p class="text-muted">Tại ArtFlow Studio, chúng tôi tin rằng mỗi người đều ẩn chứa một nghệ sĩ. Sứ mệnh của chúng tôi là tạo ra một không gian nuôi dưỡng sự sáng tạo, nơi bạn có thể tự do khám phá, học hỏi và thể hiện bản thân qua từng nét vẽ, mảng màu.</p>
+                <p class="text-muted">Với các khóa học được thiết kế chuyên nghiệp, đội ngũ giảng viên tận tâm và một cộng đồng đầy cảm hứng, ArtFlow Studio là điểm đến lý tưởng cho hành trình nghệ thuật của bạn.</p>
+                <a class="btn btn-secondary btn-lg mt-3" th:href="@{/schedule}">Xem Lịch Khai Giảng</a>
             </div>
         </div>
     </div>
 </section>
 
-<!-- (Phần features cũ có thể giữ lại hoặc thay đổi) -->
-<section class="artflow-page-section" id="features">
+<!-- FEATURED COURSES SECTION -->
+<section class="artflow-page-section" id="featured-courses">
     <div class="container px-4 px-lg-5">
-        <div class="row gx-4 gx-lg-5">
-            <div class="col-lg-4 col-md-6 text-center mb-5 mb-lg-0">
-                <div class="mt-0">
-                    <div class="mb-2"><i class="artflow-feature-icon bi-palette-fill"></i></div>
-                    <h3 class="h4 mb-2">Khóa Học Đa Dạng</h3>
-                    <p class="text-muted mb-0">Từ cơ bản đến nâng cao, cho mọi lứa tuổi và trình độ.</p>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6 text-center mb-5 mb-lg-0">
-                <div class="mt-0">
-                    <div class="mb-2"><i class="artflow-feature-icon bi-easel2-fill"></i></div>
-                    <h3 class="h4 mb-2">Giảng Viên Kinh Nghiệm</h3>
-                    <p class="text-muted mb-0">Đội ngũ tận tâm, giàu kinh nghiệm và truyền cảm hứng.</p>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6 text-center">
-                <div class="mt-0">
-                    <div class="mb-2"><i class="artflow-feature-icon bi-people-fill"></i></div>
-                    <h3 class="h4 mb-2">Cộng Đồng Sáng Tạo</h3>
-                    <p class="text-muted mb-0">Giao lưu, học hỏi và cùng nhau phát triển đam mê.</p>
+        <div class="text-center">
+            <h2 class="section-heading-alt">Khóa Học Nổi Bật</h2>
+            <hr class="artflow-divider artflow-divider-dark my-4 mx-auto" />
+        </div>
+        <!-- Giả sử bạn truyền một list 'featuredCourses' từ controller -->
+        <!-- Nếu không, bạn có thể fetch 3-4 khóa học đầu tiên hoặc một số khóa học được đánh dấu đặc biệt -->
+        <div class="row gx-4 gx-lg-5" th:if="${featuredCourses != null and not #lists.isEmpty(featuredCourses)}">
+            <div th:each="course : ${featuredCourses}" class="col-lg-4 col-md-6 mb-4 d-flex align-items-stretch">
+                <div class="card h-100 course-card artflow-course-card-custom artflow-featured-card">
+                    <th:block th:with="imageUrlToDisplay=${(course.imageUrl != null && !course.imageUrl.isEmpty()) ? course.imageUrl : '/images/course_placeholder.png'}">
+                        <a th:href="@{/courses/{id}(id=${course.id})}" class="course-card-img-link">
+                            <img th:src="@{${imageUrlToDisplay}}" class="card-img-top" th:alt="${course.name}">
+                        </a>
+                    </th:block>
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">
+                            <a th:href="@{/courses/{id}(id=${course.id})}" th:text="${course.name}" class="text-decoration-none">Tên Khóa học</a>
+                        </h5>
+                        <p class="card-text small text-muted flex-grow-1" th:text="${#strings.abbreviate(course.description, 80)}"></p>
+                        <div class="mt-auto text-center">
+                            <a th:href="@{/courses/{id}(id=${course.id})}" class="btn btn-sm btn-outline-primary artflow-btn-view-details-featured">Xem Chi Tiết</a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+        <div class="text-center mt-4" th:if="${featuredCourses == null or #lists.isEmpty(featuredCourses)}">
+            <p class="text-muted">Các khóa học nổi bật đang được cập nhật. <a th:href="@{/courses}">Xem tất cả khóa học</a>.</p>
+        </div>
+        <div class="text-center mt-5" th:if="${featuredCourses != null and not #lists.isEmpty(featuredCourses)}">
+            <a th:href="@{/courses}" class="btn btn-primary btn-xl artflow-btn-hero">Xem Tất Cả Khóa Học</a>
+        </div>
+    </div>
+</section>
+
+<!-- WHY CHOOSE US SECTION (Thiết kế lại phần "Features" cũ) -->
+<section class="artflow-page-section bg-primary-soft" id="why-choose-us">
+    <div class="container px-4 px-lg-5">
+        <div class="text-center">
+            <h2 class="section-heading-alt text-white">Tại Sao Chọn ArtFlow Studio?</h2>
+            <hr class="artflow-divider artflow-divider-light my-4 mx-auto" />
+        </div>
+        <div class="row gx-4 gx-lg-5">
+            <div class="col-lg-3 col-md-6 text-center mb-5 mb-lg-0">
+                <div class="mt-0 artflow-benefit-item">
+                    <div class="mb-2"><i class="artflow-benefit-icon bi-palette"></i></div>
+                    <h3 class="h5 mb-2 text-white">Chương Trình Đa Dạng</h3>
+                    <p class="text-white-75 mb-0">Nhiều cấp độ, phù hợp mọi lứa tuổi và mục tiêu nghệ thuật.</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 text-center mb-5 mb-lg-0">
+                <div class="mt-0 artflow-benefit-item">
+                    <div class="mb-2"><i class="artflow-benefit-icon bi-easel3"></i></div>
+                    <h3 class="h5 mb-2 text-white">Giảng Viên Chuyên Môn Cao</h3>
+                    <p class="text-white-75 mb-0">Đội ngũ tận tâm, giàu kinh nghiệm thực tế và sư phạm.</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 text-center mb-5 mb-md-0">
+                <div class="mt-0 artflow-benefit-item">
+                    <div class="mb-2"><i class="artflow-benefit-icon bi-lightbulb"></i></div>
+                    <h3 class="h5 mb-2 text-white">Môi Trường Truyền Cảm Hứng</h3>
+                    <p class="text-white-75 mb-0">Không gian mở, sáng tạo, đầy đủ họa cụ chất lượng.</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 text-center">
+                <div class="mt-0 artflow-benefit-item">
+                    <div class="mb-2"><i class="artflow-benefit-icon bi-calendar-check"></i></div>
+                    <h3 class="h5 mb-2 text-white">Lịch Học Linh Hoạt</h3>
+                    <p class="text-white-75 mb-0">Nhiều khung giờ, dễ dàng sắp xếp theo lịch trình cá nhân.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="artflow-page-section artflow-cta-section">
+    <div class="container px-4 px-lg-5 text-center">
+        <h2 class="mb-4 section-heading-alt">Sẵn Sàng Bắt Đầu Hành Trình Nghệ Thuật Của Bạn?</h2>
+        <a class="btn btn-primary btn-xl artflow-btn-hero" th:href="@{/courses}">Tìm Khóa Học Ngay!</a>
     </div>
 </section>
 
