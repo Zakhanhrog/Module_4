@@ -1,84 +1,178 @@
-body {
-    background-color: #f8f9fa;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --primary-color: #3B82F6;
+    --primary-hover: #2563EB;
+    --secondary-color: #64748B;
+    --heading-color: #1E293B;
+    --background-color: #F8FAFC;
+    --surface-color: #FFFFFF;
+    --border-color: #E2E8F0;
+    --success-color: #10B981;
+    --danger-color: #EF4444;
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --border-radius: 0.5rem;
+    --transition: all 0.3s ease-in-out;
 }
 
-main {
-    flex: 1;
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--background-color);
+    color: var(--secondary-color);
+    line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--heading-color);
+    font-weight: 600;
+}
+
+a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: var(--transition);
+}
+a:hover {
+    color: var(--primary-hover);
+}
+
+.navbar.navbar-light {
+    background-color: var(--surface-color) !important;
+    box-shadow: var(--shadow-md);
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: var(--heading-color) !important;
+}
+
+.navbar .nav-link {
+    font-weight: 500;
+    color: var(--secondary-color);
+}
+.navbar .nav-link.active, .navbar .nav-link:hover {
+    color: var(--primary-color);
+}
+.navbar .dropdown-menu {
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-lg);
+}
+.navbar .dropdown-item:hover {
+    background-color: var(--background-color);
+    color: var(--primary-color);
+}
+
+.btn {
+    border-radius: var(--border-radius);
+    font-weight: 500;
+    transition: var(--transition);
+    box-shadow: var(--shadow-sm);
+}
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+.btn-primary:hover {
+    background-color: var(--primary-hover);
+    border-color: var(--primary-hover);
+}
+
+.card {
+    border: none;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-md);
+    background-color: var(--surface-color);
+}
+.card-header {
+    background-color: transparent;
+    border-bottom: 1px solid var(--border-color);
+    padding: 1rem 1.25rem;
+    font-weight: 600;
+}
+
+.form-control, .form-select {
+    border: 1px solid var(--border-color);
+    border-radius: 0.375rem;
+    transition: var(--transition);
+}
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.table {
+    border-color: var(--border-color);
+}
+.table > :not(caption) > * > * {
+    padding: 0.8rem;
+    vertical-align: middle;
+}
+
+.alert {
+    border-radius: var(--border-radius);
+    border-width: 0;
+    border-left-width: 4px;
+}
+.alert-success { border-color: var(--success-color); }
+.alert-danger { border-color: var(--danger-color); }
+.alert-info { border-color: #3B82F6; }
+.alert-warning { border-color: #F59E0B; }
+
+.food-item-body-small .card-title {
+    font-weight: 500;
+}
+.food-item-body-small .card-text {
+    font-weight: 600;
+    color: var(--primary-color) !important;
+}
+.card-footer .form-check {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.375rem;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+}
+.card-footer .form-check:hover {
+    background-color: var(--background-color);
+    border-color: var(--primary-color);
+}
+.card-footer .form-check-input:checked + .form-check-label {
+    font-weight: 500;
+    color: var(--primary-hover);
 }
 
 .auth-card {
     max-width: 450px;
-    margin: 2rem auto;
+    margin: 3rem auto;
 }
 
-.error-message {
-    color: #dc3545;
-    font-size: 0.875em;
-    margin-top: 0.25rem;
-}
-/* Tinh chỉnh ô chọn món ăn trên trang menu */
-.card-footer .form-check {
-    padding: 0.5rem 0.75rem;
-    border: 1px solid #dee2e6; /* Thêm viền mờ */
-    border-radius: 0.375rem;   /* Bo tròn góc */
-    cursor: pointer;
-    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
-    display: flex;
-    align-items: center;
-}
-
-/* Hiệu ứng khi di chuột vào */
-.card-footer .form-check:hover {
-    background-color: #e9ecef;
-}
-
-/* Thu nhỏ checkbox một chút */
-.card-footer .form-check-input {
-    transform: scale(0.9);
-    margin-top: 0; /* Reset margin top của bootstrap */
-}
-
-/* Làm cho chữ "Chọn món này" nhỏ và thanh thoát hơn */
-.card-footer .form-check-label {
-    font-size: 0.9rem;
-    color: #495057;
-    padding-left: 0.5rem; /* Tạo khoảng cách với checkbox */
-}
-
-/* Khi checkbox được chọn, làm nổi bật cả khu vực */
-.card-footer .form-check-input:checked + .form-check-label {
-    font-weight: bold;
-}
-
-.card-footer .form-check-input:checked ~ .form-check {
-    border-color: #0d6efd;
-    background-color: #e7f1ff;
-}
-/* -- Cải thiện thẻ món ăn nhỏ gọn hơn -- */
-
-/* Giảm chiều cao ảnh mặc định */
 .card-img-top.food-item-image-small {
-    height: 120px; /* Chiều cao cũ là 180px */
+    height: 120px;
     object-fit: cover;
 }
 .food-item-no-image-small {
-    height: 120px; /* Chiều cao cũ là 180px */
+    height: 120px;
     background-color: #e9ecef;
 }
-
-/* Giảm kích thước tên món và giá */
 .card-body.food-item-body-small .card-title {
-    font-size: 1rem; /* Cỡ chữ cũ là ~1.25rem */
+    font-size: 1rem;
     margin-bottom: 0.25rem;
 }
 .card-body.food-item-body-small .card-text {
-    font-size: 0.9rem; /* Cỡ chữ cũ là 1rem */
+    font-size: 0.9rem;
 }
-
-/* Giảm padding của card body và card footer */
 .card-body.food-item-body-small {
     padding: 0.75rem;
 }
@@ -86,4 +180,62 @@ main {
     padding: 0 0.75rem 0.75rem 0.75rem;
     background-color: #fff;
     border-top: none;
+}
+.food-card {
+    transition: all 0.2s ease-in-out;
+}
+
+.food-card:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-lg) !important;
+}
+
+.food-card .card-body {
+    padding: 0.75rem;
+}
+
+.food-card__image {
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-top-left-radius: var(--border-radius);
+    border-top-right-radius: var(--border-radius);
+}
+
+.food-card__no-image {
+    aspect-ratio: 16 / 9;
+    background-color: #f1f5f9;
+    border-top-left-radius: var(--border-radius);
+    border-top-right-radius: var(--border-radius);
+}
+
+.food-card__title {
+    font-weight: 600;
+    color: var(--heading-color);
+    font-size: 0.9rem;
+    line-height: 1.3;
+    min-height: 2.3rem;
+    margin-bottom: 0.25rem;
+}
+
+.food-card__price {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--primary-color);
+}
+
+.food-card_disabled {
+    background-color: #f8fafc;
+}
+
+.food-card_disabled .food-card__image,
+.food-card_disabled .card-title,
+.food-card_disabled .card-text {
+    filter: grayscale(80%);
+    opacity: 0.7;
+}
+
+.btn-check:disabled + .btn {
+    pointer-events: none;
+    filter: none;
+    opacity: 0.65;
 }
