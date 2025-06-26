@@ -1,7 +1,10 @@
 package com.artflowstudio.service.impl;
 
 import com.artflowstudio.dto.BookingRequestDto;
-import com.artflowstudio.entity.*;
+import com.artflowstudio.entity.BookingRequest;
+import com.artflowstudio.entity.ClassSchedule;
+import com.artflowstudio.entity.Enrollment;
+import com.artflowstudio.entity.User;
 import com.artflowstudio.enums.BookingStatus;
 import com.artflowstudio.enums.Role;
 import com.artflowstudio.exception.ClassFullException;
@@ -91,28 +94,13 @@ public class BookingRequestServiceImpl implements BookingRequestService {
     @Transactional
     public BookingRequest approveBooking(Long bookingRequestId) throws Exception {
         BookingRequest bookingRequest = bookingRequestRepository.findById(bookingRequestId)
-                .orElseThrow(() -> new ResourceNotFoundException("BookingRequest not found with id: " + bookingRequestId));
+                .orElseThrow(() -> new ResourceNotFoundException("Yêu cầu đăng ký không tồn tại với ID: " + bookingRequestId));
 
         if (bookingRequest.getStatus() != BookingStatus.PENDING) {
             throw new InvalidOperationException("Chỉ có thể duyệt các đăng ký đang ở trạng thái 'Chờ duyệt'.");
         }
 
         ClassSchedule classSchedule = bookingRequest.getClassSchedule();
-        if (classSchedule.getAvailableSlots() <= 0) {
-            bookingRequest.setStatus(BookingStatus.REJECTED);
-            bookingRequestRepository.save(bookingRequest);
-            emailService.sendSimpleMessage(
-                    bookingRequest.getEmail(),
-                    "ArtFlow Studio - Đăng ký Lớp học bị Từ chối do Hết chỗ",
-                    "Chào " + bookingRequest.getFullName() + ",\n\n" +
-                            "Rất tiếc, yêu cầu đăng ký lớp học '" + classSchedule.getCourse().getName() +
-                            "' của bạn đã bị từ chối do lớp học đã đủ số lượng học viên khi chúng tôi xử lý yêu cầu của bạn.\n\n" +
-                            "Vui lòng theo dõi các lớp học khác của chúng tôi.\n\n" +
-                            "Trân trọng,\nArtFlow Studio"
-            );
-            throw new ClassFullException("Lớp học '" + classSchedule.getCourse().getName() + "' đã đầy chỗ khi duyệt đăng ký.");
-        }
-
         Optional<User> existingUserOpt = userService.findByUsername(bookingRequest.getEmail());
         User learner;
         String generatedPassword = null;
@@ -121,7 +109,6 @@ public class BookingRequestServiceImpl implements BookingRequestService {
             learner = new User();
             learner.setUsername(bookingRequest.getEmail());
             generatedPassword = UUID.randomUUID().toString().substring(0, 8);
-//            generatedPassword = "123123";
             learner.setPassword(passwordEncoder.encode(generatedPassword));
             learner.setFullName(bookingRequest.getFullName());
             learner.setAge(bookingRequest.getAge());
@@ -137,6 +124,28 @@ public class BookingRequestServiceImpl implements BookingRequestService {
                 learner.getRoles().add(Role.LEARNER);
                 userService.saveUser(learner);
             }
+        }
+
+        Optional<Enrollment> existingEnrollment = enrollmentRepository.findByUserAndClassScheduleId(learner, classSchedule.getId());
+        if (existingEnrollment.isPresent()) {
+            bookingRequest.setStatus(BookingStatus.APPROVED);
+            bookingRequestRepository.save(bookingRequest);
+            throw new InvalidOperationException("Học viên '" + learner.getFullName() + "' đã được ghi danh vào lớp học '" + classSchedule.getCourse().getName() + " (ID: " + classSchedule.getId() + ")' này trước đó.");
+        }
+
+        if (classSchedule.getAvailableSlots() <= 0) {
+            bookingRequest.setStatus(BookingStatus.REJECTED);
+            bookingRequestRepository.save(bookingRequest);
+            emailService.sendSimpleMessage(
+                    bookingRequest.getEmail(),
+                    "ArtFlow Studio - Đăng ký Lớp học bị Từ chối do Hết chỗ",
+                    "Chào " + bookingRequest.getFullName() + ",\n\n" +
+                            "Rất tiếc, yêu cầu đăng ký lớp học '" + classSchedule.getCourse().getName() +
+                            "' của bạn đã bị từ chối do lớp học đã đủ số lượng học viên khi chúng tôi xử lý yêu cầu của bạn.\n\n" +
+                            "Vui lòng theo dõi các lớp học khác của chúng tôi.\n\n" +
+                            "Trân trọng,\nArtFlow Studio"
+            );
+            throw new ClassFullException("Lớp học '" + classSchedule.getCourse().getName() + "' đã đầy chỗ khi duyệt đăng ký.");
         }
 
         Enrollment enrollment = new Enrollment();
@@ -174,7 +183,7 @@ public class BookingRequestServiceImpl implements BookingRequestService {
     @Transactional
     public BookingRequest rejectBooking(Long bookingRequestId) throws Exception {
         BookingRequest bookingRequest = bookingRequestRepository.findById(bookingRequestId)
-                .orElseThrow(() -> new ResourceNotFoundException("BookingRequest not found with id: " + bookingRequestId));
+                .orElseThrow(() -> new ResourceNotFoundException("Yêu cầu đăng ký không tồn tại với ID: " + bookingRequestId));
 
         if (bookingRequest.getStatus() != BookingStatus.PENDING) {
             throw new InvalidOperationException("Chỉ có thể từ chối các đăng ký đang ở trạng thái 'Chờ duyệt'.");
@@ -183,7 +192,6 @@ public class BookingRequestServiceImpl implements BookingRequestService {
         bookingRequest.setStatus(BookingStatus.REJECTED);
         BookingRequest rejectedRequest = bookingRequestRepository.save(bookingRequest);
 
-        // Gửi email thông báo từ chối
         String emailSubject = "ArtFlow Studio - Thông báo về Yêu cầu Đăng ký Lớp học";
         String emailText = "Chào " + bookingRequest.getFullName() + ",\n\n" +
                 "Chúng tôi rất tiếc phải thông báo rằng yêu cầu đăng ký của bạn cho lớp học '" +

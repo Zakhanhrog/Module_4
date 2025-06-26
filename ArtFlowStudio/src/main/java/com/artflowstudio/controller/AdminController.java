@@ -24,11 +24,11 @@ import java.util.Optional;
 public class AdminController {
 
     private final CourseService courseService;
-    private final ClassScheduleService classScheduleService; // Thêm vào
+    private final ClassScheduleService classScheduleService;
     private final InstructorService instructorService;
     private final BookingRequestService bookingRequestService;
     private final UserService userService;
-    private final EnrollmentService enrollmentService; // Thêm
+    private final EnrollmentService enrollmentService;
     private final GradeService gradeService;
 
     @Autowired
@@ -122,16 +122,16 @@ public class AdminController {
 
     @GetMapping("/class-schedules")
     public String listClassSchedules(Model model) {
-        List<ClassSchedule> schedules = classScheduleService.findAllSchedulesForAdmin(); // Lấy tất cả lịch
+        List<ClassSchedule> schedules = classScheduleService.findAllSchedulesForAdmin();
         model.addAttribute("schedules", schedules);
         model.addAttribute("pageTitle", "Quản lý Lớp học");
-        return "admin/class-schedules/list"; // Sẽ tạo view này
+        return "admin/class-schedules/list";
     }
 
     @GetMapping("/class-schedules/new")
     public String newClassScheduleForm(Model model) {
         model.addAttribute("classScheduleDto", new ClassScheduleDto());
-        model.addAttribute("courses", courseService.findAllCourses()); // Để chọn khóa học
+        model.addAttribute("courses", courseService.findAllCourses());
         model.addAttribute("instructors", instructorService.findAllInstructors()); // Để chọn giảng viên (sẽ làm InstructorService sau)
         model.addAttribute("pageTitle", "Thêm Lớp học Mới");
         return "admin/class-schedules/form"; // Sẽ tạo view này
@@ -313,7 +313,7 @@ public class AdminController {
 
     @GetMapping("/learners/view/{id}")
     public String viewLearner(@PathVariable("id") Long id, Model model, RedirectAttributes redirectAttributes) {
-        System.out.println("ADMIN CONTROLLER - viewLearner - Received learner ID: " + id); // LOG 1
+        System.out.println("ADMIN CONTROLLER - viewLearner - Received learner ID: " + id);
         Optional<User> learnerOpt = userService.findById(id);
 
         if (learnerOpt.isPresent() && learnerOpt.get().getRoles().contains(com.artflowstudio.enums.Role.LEARNER)) {
@@ -331,7 +331,7 @@ public class AdminController {
 
             return "admin/learners/view";
         } else {
-            System.out.println("ADMIN CONTROLLER - viewLearner - Learner not found or not a learner for ID: " + id); // LOG 4
+            System.out.println("ADMIN CONTROLLER - viewLearner - Learner not found or not a learner for ID: " + id);
             redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy học viên hoặc người dùng không phải là học viên.");
             return "redirect:/admin/learners";
         }
@@ -377,7 +377,7 @@ public class AdminController {
         }
 
         model.addAttribute("gradeDto", gradeDto);
-        model.addAttribute("enrollment", enrollment); // Để hiển thị thông tin học viên/lớp
+        model.addAttribute("enrollment", enrollment);
         model.addAttribute("pageTitle", "Nhập Điểm/Đánh giá cho: " + enrollment.getUser().getFullName() + " - Lớp: " + enrollment.getClassSchedule().getCourse().getName());
         return "admin/grades/form";
     }
@@ -393,7 +393,7 @@ public class AdminController {
             if (enrollmentOpt.isPresent()) {
                 model.addAttribute("enrollment", enrollmentOpt.get());
                 model.addAttribute("pageTitle", "Nhập Điểm/Đánh giá cho: " + enrollmentOpt.get().getUser().getFullName() + " - Lớp: " + enrollmentOpt.get().getClassSchedule().getCourse().getName() + " - Lỗi");
-            } else { // Should not happen if form is correct
+            } else {
                 model.addAttribute("pageTitle", "Nhập Điểm/Đánh giá - Lỗi");
             }
             return "admin/grades/form";

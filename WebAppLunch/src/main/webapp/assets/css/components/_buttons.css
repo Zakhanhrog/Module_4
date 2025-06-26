@@ -1,0 +1,62 @@
+.btn {
+    display: inline-block;
+    font-weight: 500;
+    color: var(--white-color);
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+    user-select: none;
+    background-color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+    padding: 0.65rem 1.25rem; /* Tăng padding */
+    font-size: var(--font-size-base);
+    line-height: 1.5;
+    border-radius: var(--border-radius);
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.btn:hover {
+    color: var(--white-color);
+    background-color: var(--primary-color-hover);
+    border-color: var(--primary-color-hover);
+    text-decoration: none;
+}
+
+.btn:focus, .btn.focus {
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* Focus state */
+}
+
+.btn:disabled, .btn.disabled {
+    opacity: 0.65;
+    pointer-events: none;
+}
+
+.btn-primary { /* Class này có thể trùng với .btn mặc định, nhưng để rõ ràng */
+    color: var(--white-color);
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+.btn-primary:hover {
+    background-color: var(--primary-color-hover);
+    border-color: var(--primary-color-hover);
+}
+
+.btn-warning {
+    color: var(--warning-text-color);
+    background-color: var(--warning-color);
+    border-color: var(--warning-color);
+}
+.btn-warning:hover {
+    color: var(--warning-text-color);
+    background-color: #e0a800; /* Darker warning */
+    border-color: #d39e00;
+}
+/* Thêm các loại button khác: .btn-success, .btn-danger, .btn-secondary, .btn-light, .btn-dark, .btn-link */
+/* Ví dụ cho nút submit trên trang menu */
+.btn-submit-order { /* Class này có thể được thay bằng .btn .btn-primary */
+    /* Giữ lại nếu có style đặc thù, nếu không thì dùng .btn và .btn-primary */
+}
+.btn-cancel-reorder { /* Class này có thể được thay bằng .btn .btn-warning */
+    /* Giữ lại nếu có style đặc thù, nếu không thì dùng .btn và .btn-warning */
+}

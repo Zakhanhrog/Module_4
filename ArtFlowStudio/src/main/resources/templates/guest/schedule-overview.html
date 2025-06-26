@@ -43,17 +43,11 @@
                             <p class="mb-2"><strong>Còn trống:</strong>
                                 <strong th:text="${schedule.availableSlots}" th:classappend="${schedule.availableSlots > 0 ? 'text-success' : 'text-danger'}"></strong> chỗ
                             </p>
-                            <th:block th:if="${schedule.availableSlots > 0}">
-                                <a sec:authorize="!isAuthenticated() or (isAuthenticated() and !hasRole('LEARNER'))"
-                                   th:href="@{/book/{classScheduleId}(classScheduleId=${schedule.id})}"
-                                   class="btn btn-success btn-sm artflow-btn-register">Đăng ký Giữ Chỗ</a>
-                                <form sec:authorize="isAuthenticated() and hasRole('LEARNER')"
-                                      th:action="@{/learner/enroll-class/{classScheduleId}(classScheduleId=${schedule.id})}"
-                                      method="post" class="d-inline">
-                                    <button type="submit" class="btn btn-primary btn-sm artflow-btn-register"
-                                            th:attr="onclick='return confirm(\'Xác nhận đăng ký lớp: ' + ${#strings.escapeJavaScript(schedule.course.name)} + ' - ID: ' + ${schedule.id} + '?\');'">Đăng ký Học Ngay</button>
-                                </form>
-                            </th:block>
+
+                            <a th:if="${schedule.availableSlots > 0}"
+                               th:href="@{/book/{classScheduleId}(classScheduleId=${schedule.id})}"
+                               class="btn btn-primary btn-sm artflow-btn-register">Đăng ký Lớp</a>
+
                             <button th:if="${schedule.availableSlots <= 0}" class="btn btn-secondary btn-sm" disabled>Đã Hết Chỗ</button>
                         </div>
                     </div>

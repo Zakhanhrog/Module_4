@@ -37,13 +37,8 @@ body {
 
 .flex-grow-1 {
     flex-grow: 1;
-    animation: fadeIn 0.5s ease-out forwards;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
 
 h1, .font-script-header {
     font-family: var(--font-script);
@@ -88,6 +83,14 @@ a:hover {
 .container {
     max-width: 1140px;
 }
+.container-fluid {
+    width: 100%;
+    padding-right: var(--bs-gutter-x, 0.75rem);
+    padding-left: var(--bs-gutter-x, 0.75rem);
+    margin-right: auto;
+    margin-left: auto;
+}
+
 
 /* === BUTTONS === */
 .btn {
@@ -263,6 +266,11 @@ a:hover {
 .artflow-page-section {
     padding: 6rem 0;
 }
+#student-artwork.artflow-page-section {
+    padding-top: 0;
+    padding-bottom: 6rem;
+}
+
 
 .artflow-divider {
     height: 0.2rem;
@@ -433,9 +441,9 @@ a:hover {
 .artflow-sidebar-box {
     background-color: var(--secondary-color);
     border: 1px solid #e0d8c7;
-    padding: 1.5rem; /* Giảm padding một chút */
+    padding: 1.5rem;
 }
-.artflow-sidebar-box h4 { /* Tiêu đề trong sidebar */
+.artflow-sidebar-box h4 {
     font-family: var(--font-body);
     font-weight: 600;
 }
@@ -513,9 +521,9 @@ a:hover {
 }
 
 .artflow-schedule-accordion .artflow-schedule-course-name {
-    font-family: var(--font-body); /* Đổi theo yêu cầu */
+    font-family: var(--font-body);
     font-size: 1.3rem;
-    font-weight: 600; /* Đậm hơn */
+    font-weight: 600;
     color: var(--primary-color);
 }
 
@@ -535,7 +543,7 @@ a:hover {
     font-size: 0.95rem;
 }
 
-.artflow-schedule-accordion .artflow-accordion-body h5 { /* Tiêu đề trong accordion body */
+.artflow-schedule-accordion .artflow-accordion-body h5 {
     font-family: var(--font-body);
     font-weight: 600;
     font-size: 1.1rem;
@@ -607,13 +615,13 @@ a:hover {
     background-color: var(--secondary-color);
     border: 1px solid #e0d8c7;
     border-radius: var(--border-radius-lg);
-    padding: 1.5rem; /* Giảm padding */
+    padding: 1.5rem;
 }
-.artflow-form-info-box .card-title { /* Tiêu đề trong box này */
+.artflow-form-info-box .card-title {
     font-family: var(--font-body);
     font-weight: 600;
     color: var(--primary-color);
-    font-size: 1.2rem; /* Điều chỉnh */
+    font-size: 1.2rem;
 }
 .artflow-form-info-box p {
     font-size: 0.95rem;
@@ -631,7 +639,7 @@ a:hover {
     box-shadow: var(--box-shadow-sm);
 }
 
-.admin-main-content h1 { /* Tiêu đề chính trang admin dùng font script */
+.admin-main-content h1 {
     font-family: var(--font-script);
     border-bottom: 2px solid var(--accent-color);
     padding-bottom: 0.5rem;
@@ -718,7 +726,7 @@ a:hover {
     border-radius: var(--border-radius-lg);
 }
 
-.learner-main-content h1 { /* Tiêu đề chính trang learner dùng font script */
+.learner-main-content h1 {
     font-family: var(--font-script);
     border-bottom: 2px solid var(--accent-color);
     padding-bottom: 0.5rem;
@@ -803,7 +811,7 @@ a:hover {
 .learner-details-card .card-body p strong {
     font-weight: 600;
     color: var(--primary-color);
-    min-width: 150px; /* Giúp căn chỉnh */
+    min-width: 150px;
     display: inline-block;
 }
 
@@ -820,7 +828,7 @@ a:hover {
     color: var(--accent-color);
 }
 
-.learner-details-card .list-group-item .badge.bg-primary { /* Badge điểm */
+.learner-details-card .list-group-item .badge.bg-primary {
     background-color: var(--accent-color) !important;
 }
 
@@ -840,8 +848,8 @@ a:hover {
 .admin-table .artflow-action-btn-separated i {
 }
 
-.artflow-hero-title.display-3 { /* Cho tiêu đề chính của Hero section */
-    font-size: 4.5rem; /* Lớn hơn */
+.artflow-hero-title.display-3 {
+    font-size: 4.5rem;
     letter-spacing: 0.05em;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
 }
@@ -849,26 +857,26 @@ a:hover {
     font-size: 1.3rem;
 }
 
-/* === ABOUT US SNIPPET SECTION === */
+/* === ABOUT US SNIPPET SECTION (HOMEPAGE) === */
 #about-snippet .section-heading-alt {
     font-family: var(--font-script);
     font-size: 3rem;
     color: var(--primary-color);
 }
 #about-snippet .artflow-divider-dark {
-    margin-left: 0; /* Căn trái divider cho section này */
+    margin-left: 0;
 }
 #about-snippet img {
-    border: 8px solid #fff; /* Tạo hiệu ứng viền cho ảnh */
+    border: 8px solid #fff;
 }
 
-/* === FEATURED COURSES SECTION === */
+/* === FEATURED COURSES SECTION (HOMEPAGE) === */
 #featured-courses .section-heading-alt {
     font-family: var(--font-script);
     font-size: 3rem;
     color: var(--primary-color);
 }
-.artflow-featured-card .card-title a { /* Tiêu đề khóa học nổi bật có thể nhỏ hơn một chút */
+.artflow-featured-card .card-title a {
     font-size: 1.25rem;
 }
 .artflow-featured-card .btn.artflow-btn-view-details-featured {
@@ -882,32 +890,32 @@ a:hover {
 }
 
 
-.bg-primary-soft { /* Màu nền mới cho section này */
-    background-color: rgba(44, 62, 80, 0.9); /* Primary color với độ mờ */
+.bg-primary-soft {
+    background-color: rgba(44, 62, 80, 0.9);
 }
 #why-choose-us .section-heading-alt.text-white,
 #why-choose-us .artflow-benefit-item h3.text-white {
-    font-family: var(--font-script); /* Hoặc var(--font-body) với font-weight lớn */
-    color: #fff !important; /* Đảm bảo chữ trắng */
+    font-family: var(--font-script);
+    color: #fff !important;
 }
 #why-choose-us .section-heading-alt.text-white {
     font-size: 3rem;
 }
 #why-choose-us .artflow-benefit-item h3.text-white {
-    font-size: 1.5rem; /* Cho tiêu đề lợi ích */
+    font-size: 1.5rem;
     font-family: var(--font-body);
     font-weight: 600;
 }
 
 .artflow-divider-light {
-    background-color: #fff; /* Divider màu trắng trên nền tối */
+    background-color: #fff;
 }
 .text-white-75 {
     color: rgba(255, 255, 255, 0.75) !important;
 }
 .artflow-benefit-icon {
     font-size: 3.5rem;
-    color: var(--accent-color); /* Màu nhấn cho icon */
+    color: var(--accent-color);
     display: block;
     margin-bottom: 1.5rem;
     margin-left: auto;
@@ -919,9 +927,9 @@ a:hover {
 }
 
 
-/* === CALL TO ACTION SECTION === */
+/* === CALL TO ACTION SECTION (HOMEPAGE) === */
 .artflow-cta-section {
-    background-color: var(--secondary-color); /* Nền màu be */
+    background-color: var(--secondary-color);
     padding: 4rem 0;
 }
 .artflow-cta-section .section-heading-alt {
@@ -932,8 +940,8 @@ a:hover {
 
 /* === FOOTER (Site Footer) === */
 .artflow-site-footer {
-    background-color: var(--primary-color); /* Nền màu xanh đậm chủ đạo */
-    color: #d8dde3; /* MÀU CHỮ MẶC ĐỊNH SÁNG HƠN CHO FOOTER, ví dụ: một màu xám rất nhạt */
+    background-color: var(--primary-color);
+    color: #d8dde3;
     padding: 4rem 0 2rem 0;
     margin-top: auto;
     font-size: 0.9rem;
@@ -943,7 +951,7 @@ a:hover {
     font-family: var(--font-body);
     font-size: 1.1rem;
     font-weight: 600;
-    color: #fff; /* Chữ trắng tinh cho tiêu đề cột */
+    color: #fff;
     margin-bottom: 0.5rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -957,27 +965,24 @@ a:hover {
     opacity: 0.8;
 }
 
-/* Phần text mô tả studio */
 .artflow-site-footer p.text-muted.small {
-    color: #c5cbd2 !important; /* Sáng hơn nữa cho phần mô tả này */
-    line-height: 1.6; /* Có thể tăng line-height nếu cần */
+    color: #c5cbd2 !important;
+    line-height: 1.6;
 }
 
-/* Logo dạng text trong footer */
-.artflow-site-footer .footer-brand-link-text { /* Đảm bảo bạn dùng class này trong HTML nếu là text */
-    font-family: var(--font-script); /* Hoặc var(--font-body) nếu muốn font thường */
+.artflow-site-footer .footer-brand-link-text {
+    font-family: var(--font-script);
     font-size: 1.8rem;
-    font-weight: 700; /* Nếu dùng Dancing Script thì 700 là đậm nhất */
-    color: var(--accent-color); /* Màu nhấn cho logo text để nổi bật */
+    font-weight: 700;
+    color: var(--accent-color);
     text-decoration: none;
-    display: inline-block; /* Để margin-top có tác dụng nếu cần */
-    margin-top: 0.5rem; /* Thêm khoảng cách trên nếu cần */
+    display: inline-block;
+    margin-top: 0.5rem;
 }
 .artflow-site-footer .footer-brand-link-text:hover {
-    color: #fff; /* Đổi sang trắng khi hover */
+    color: #fff;
 }
-/* Nếu bạn vẫn dùng thẻ <a> chung cho logo text, thì cần đảm bảo màu của nó được ưu tiên */
-.artflow-site-footer a.footer-brand-link-text { /* Ưu tiên hơn nếu là thẻ a */
+.artflow-site-footer a.footer-brand-link-text {
     color: var(--accent-color);
 }
 .artflow-site-footer a.footer-brand-link-text:hover {
@@ -989,7 +994,7 @@ a:hover {
     margin-bottom: 0.5rem;
 }
 .artflow-site-footer .footer-links a {
-    color: #d8dde3; /* Sáng hơn */
+    color: #d8dde3;
     text-decoration: none;
     transition: color 0.2s ease, padding-left 0.2s ease;
 }
@@ -1003,7 +1008,7 @@ a:hover {
     margin-bottom: 0.6rem;
     display: flex;
     align-items: flex-start;
-    color: #d8dde3; /* Sáng hơn */
+    color: #d8dde3;
 }
 .artflow-site-footer .footer-contact-info i {
     color: var(--accent-color);
@@ -1015,7 +1020,7 @@ a:hover {
 }
 
 .artflow-site-footer .footer-social-icons a {
-    color: #c5cbd2; /* Sáng hơn */
+    color: #c5cbd2;
     font-size: 1.5rem;
     margin-right: 1rem;
     transition: color 0.2s ease, transform 0.2s ease;
@@ -1029,7 +1034,6 @@ a:hover {
     margin-right: 0;
 }
 
-/* Newsletter Form (Nếu dùng) */
 .artflow-site-footer .footer-newsletter-form .form-control-sm {
     background-color: rgba(255,255,255,0.1);
     border-color: rgba(255,255,255,0.2);
@@ -1037,7 +1041,7 @@ a:hover {
     font-size: 0.85rem;
 }
 .artflow-site-footer .footer-newsletter-form .form-control-sm::placeholder {
-    color: #b0b8c2; /* Sáng hơn */
+    color: #b0b8c2;
 }
 .artflow-site-footer .footer-newsletter-form .btn-primary.btn-sm {
     background-color: var(--accent-color);
@@ -1052,39 +1056,332 @@ a:hover {
 
 
 .artflow-site-footer .footer-bottom-divider {
-    border-top: 1px solid rgba(255, 255, 255, 0.2); /* Rõ hơn chút */
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.artflow-site-footer .small.text-muted, /* Áp dụng cho copyright */
+.artflow-site-footer .small.text-muted,
 .artflow-site-footer .footer-bottom-links a {
-    color: #b0b8c2; /* Sáng hơn */
+    color: #b0b8c2;
     font-size: 0.85rem;
 }
 .artflow-site-footer .footer-bottom-links a:hover {
     color: #fff;
 }
 
+
+/* === START: NEW SECTIONS FOR HOMEPAGE === */
+
+/* --- OUR INSTRUCTORS SECTION --- */
+#our-instructors .section-heading-alt {
+    font-family: var(--font-script);
+    font-size: 3rem;
+    color: var(--primary-color);
+}
+#our-instructors .text-muted.mb-5 {
+    color: var(--light-text-color) !important;
+    font-size: 1.05rem;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+}
+#our-instructors .img-fluid.rounded-circle {
+    width: 180px;
+    height: 180px;
+    object-fit: cover;
+    object-position: center;
+    border: 5px solid #fff;
+    box-shadow: var(--box-shadow);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+#our-instructors .col-lg-4:hover .img-fluid.rounded-circle {
+    transform: scale(1.05);
+    box-shadow: var(--box-shadow-lg);
+}
+#our-instructors h5.fw-bold {
+    font-family: var(--font-body);
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-top: 1rem;
+    font-size: 1.3rem;
+}
+#our-instructors p.text-muted.small {
+    color: var(--accent-color) !important;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 0.8rem;
+    margin-bottom: 0.5rem;
+}
+#our-instructors p.small.text-muted.px-3 {
+    color: var(--text-color) !important;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    min-height: 80px;
+}
+#our-instructors .btn-outline-primary {
+    color: var(--accent-color);
+    border-color: var(--accent-color);
+    font-weight: 600;
+}
+#our-instructors .btn-outline-primary:hover {
+    background-color: var(--accent-color);
+    color: #fff;
+}
+
+/* --- STUDENT ARTWORK SHOWCASE SECTION (MASONRY WITH JS) --- */
+#student-artwork .py-5 {
+    background-color: var(--secondary-color);
+    padding-top: 4rem !important;
+    padding-bottom: 4rem !important;
+    margin-bottom: 3rem;
+}
+#student-artwork .section-heading-alt {
+    font-family: var(--font-script);
+    font-size: 3rem;
+    color: var(--primary-color);
+}
+#student-artwork .text-muted.mb-5 {
+    color: var(--light-text-color) !important;
+    font-size: 1.05rem;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.artflow-gallery-container {
+    max-width: 1000px; /* Điều chỉnh để có không gian hai bên */
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.artflow-masonry-grid {
+    margin: 0 auto; /* Cần thiết cho fitWidth: true của Masonry */
+}
+.artflow-masonry-grid:after {
+    content: '';
+    display: block;
+    clear: both;
+}
+.artflow-masonry-grid-sizer {
+    width: calc((100% - 30px) / 3); /* (100% - (số cột - 1) * gutter) / số cột */
+    /* Ví dụ: 3 cột, gutter 15px -> (100% - 2*15px) / 3. Điều chỉnh nếu gutter thay đổi */
+    /* Hoặc đặt một kích thước cố định nhỏ, ví dụ: width: 10%; */
+}
+
+
+.artflow-masonry-item {
+    width: calc((100% - 30px) / 3); /* Chiều rộng mặc định cho 1 cột. gutter = 15px */
+    margin-bottom: 15px;
+    overflow: hidden;
+    border-radius: var(--border-radius-sm);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    opacity: 0;
+    transform: translateY(25px) scale(0.98);
+    animation: flyInArtwork 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    position: relative; /* Để caption định vị bên trong */
+}
+
+/* Item chiếm 2 cột */
+.artflow-masonry-item.artflow-masonry-item--width2 {
+    width: calc(((100% - 30px) / 3) * 2 + 15px); /* (chiều rộng 1 cột * 2) + 1 gutter */
+}
+/* Item chiếm 1.5 cột (ví dụ, nếu muốn đa dạng hơn) - ít dùng */
+/* .artflow-masonry-item.artflow-masonry-item--width1_5 {
+    width: calc(((100% - 30px) / 3) * 1.5 + 7.5px);
+} */
+
+
+.artflow-masonry-item img {
+    display: block;
+    width: 100%;
+    height: auto;
+    transition: transform 0.35s ease, filter 0.35s ease;
+}
+.artflow-masonry-item:hover img {
+    transform: scale(1.06);
+    filter: brightness(0.85);
+}
+
+.artflow-gallery-caption {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to top, rgba(20, 30, 40, 0.8) 0%, rgba(20, 30, 40, 0) 60%);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    text-align: center;
+    padding: 10px;
+}
+.artflow-masonry-item:hover .artflow-gallery-caption {
+    opacity: 1;
+}
+.artflow-gallery-caption-content {
+    color: #fff;
+    transform: translateY(8px);
+    transition: transform 0.3s ease-out 0.05s;
+}
+.artflow-masonry-item:hover .artflow-gallery-caption-content {
+    transform: translateY(0);
+}
+.artflow-gallery-project-category {
+    font-family: var(--font-body);
+    font-size: 0.7rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: rgba(255, 255, 255, 0.75) !important;
+    margin-bottom: 2px;
+}
+.artflow-gallery-project-name {
+    font-family: var(--font-script);
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.15;
+    text-shadow: 1px 1px 1px rgba(0,0,0,0.6);
+}
+
+
+@media (max-width: 991.98px) { /* Tablet */
+    .artflow-masonry-grid-sizer,
+    .artflow-masonry-item {
+        width: calc((100% - 15px) / 2); /* 2 cột, gutter 15px */
+    }
+    .artflow-masonry-item.artflow-masonry-item--width2 {
+        width: 100%; /* Chiếm toàn bộ chiều rộng khi chỉ có 2 cột (hoặc giữ nguyên nếu muốn nó vẫn to hơn) */
+    }
+}
+@media (max-width: 575.98px) { /* Mobile */
+    .artflow-gallery-container {
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+    .artflow-masonry-grid-sizer,
+    .artflow-masonry-item,
+    .artflow-masonry-item.artflow-masonry-item--width2 {
+        width: 100%; /* 1 cột */
+        margin-bottom: 10px;
+    }
+    .artflow-gallery-project-name {
+        font-size: 1.3rem;
+    }
+    .artflow-gallery-caption {
+        padding: 8px;
+    }
+}
+
+
+/* --- TESTIMONIALS SECTION --- */
+#testimonials .section-heading-alt {
+    font-family: var(--font-script);
+    font-size: 3rem;
+    color: var(--primary-color);
+}
+.artflow-testimonial-card {
+    border: 1px solid #e0e0e0;
+    border-radius: var(--border-radius-lg);
+    background-color: #fff;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+.artflow-testimonial-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--box-shadow-lg);
+}
+.artflow-testimonial-card .card-body {
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+.artflow-testimonial-card img.rounded-circle {
+    width: 90px;
+    height: 90px;
+    object-fit: cover;
+    border: 3px solid var(--accent-color);
+    margin-bottom: 1.5rem !important;
+}
+.artflow-testimonial-card p.fst-italic.text-muted {
+    font-family: var(--font-body);
+    color: var(--text-color) !important;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+    flex-grow: 1;
+}
+.artflow-testimonial-card p.fst-italic.text-muted::before {
+    content: "“";
+    font-family: var(--font-script);
+    font-size: 2.5rem;
+    color: var(--accent-color);
+    display: block;
+    margin-bottom: -0.5rem;
+    margin-left: -0.5rem;
+    opacity: 0.7;
+}
+.artflow-testimonial-card h6.fw-bold {
+    font-family: var(--font-body);
+    font-weight: 700;
+    color: var(--primary-color);
+    font-size: 1.1rem;
+    margin-bottom: 0.25rem;
+    margin-top: auto;
+}
+.artflow-testimonial-card p.small.text-primary {
+    font-family: var(--font-body);
+    color: var(--accent-color) !important;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+/* === END: NEW SECTIONS FOR HOMEPAGE === */
+
+
 /* LoginPage Specific Styles */
 body.d-flex.flex-column.min-vh-100 main.flex-grow-1.d-flex {
-    /* Đảm bảo main có thể giãn nở và căn giữa nội dung của nó */
+
 }
 
 .artflow-login-card {
-    border: none; /* Bỏ border mặc định của card */
+    border: none;
     border-radius: var(--border-radius-lg);
 }
 
 .artflow-login-card .card-body {
-    /* padding đã được set trong html, có thể điều chỉnh ở đây nếu muốn */
+
 }
 
 .artflow-login-card .login-card-title {
-    font-family: var(--font-script); /* Font script cho tiêu đề form */
-    font-size: 2.5rem; /* Điều chỉnh kích thước */
+    font-family: var(--font-script);
+    font-size: 2.5rem;
     color: var(--primary-color);
 }
 
-.artflow-styled-form .form-control-lg { /* Làm input to hơn */
+.artflow-styled-form .form-control-lg {
     padding: .8rem 1.2rem;
     font-size: 1rem;
+}
+
+/* Animation cho gallery items */
+@keyframes flyInArtwork {
+    from {
+        opacity: 0;
+        transform: translateY(25px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
 }

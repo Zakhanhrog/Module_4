@@ -26,7 +26,6 @@
         <div class="row gx-0 gx-lg-5 align-items-center">
             <div class="col-lg-6 mb-5 mb-lg-0">
                 <img src="/images/about-studio.jpg" class="img-fluid rounded shadow-lg" alt="Không gian ArtFlow Studio">
-                <!-- Bạn cần thay thế bằng ảnh thực tế của studio hoặc ảnh minh họa không gian nghệ thuật -->
             </div>
             <div class="col-lg-6 ps-lg-5">
                 <h2 class="section-heading-alt">Chào Mừng Đến ArtFlow</h2>
@@ -46,8 +45,6 @@
             <h2 class="section-heading-alt">Khóa Học Nổi Bật</h2>
             <hr class="artflow-divider artflow-divider-dark my-4 mx-auto" />
         </div>
-        <!-- Giả sử bạn truyền một list 'featuredCourses' từ controller -->
-        <!-- Nếu không, bạn có thể fetch 3-4 khóa học đầu tiên hoặc một số khóa học được đánh dấu đặc biệt -->
         <div class="row gx-4 gx-lg-5" th:if="${featuredCourses != null and not #lists.isEmpty(featuredCourses)}">
             <div th:each="course : ${featuredCourses}" class="col-lg-4 col-md-6 mb-4 d-flex align-items-stretch">
                 <div class="card h-100 course-card artflow-course-card-custom artflow-featured-card">
@@ -77,7 +74,187 @@
     </div>
 </section>
 
-<!-- WHY CHOOSE US SECTION (Thiết kế lại phần "Features" cũ) -->
+<!-- OUR INSTRUCTORS SECTION -->
+<section class="artflow-page-section bg-light" id="our-instructors">
+    <div class="container px-4 px-lg-5">
+        <div class="text-center">
+            <h2 class="section-heading-alt">Gặp Gỡ Đội Ngũ Giảng Viên</h2>
+            <hr class="artflow-divider artflow-divider-dark my-4 mx-auto" />
+            <p class="text-muted mb-5">Những người truyền lửa đam mê và đồng hành cùng bạn trên con đường nghệ thuật.</p>
+        </div>
+        <div class="row gx-4 gx-lg-5">
+            <div class="col-lg-4 col-md-6 mb-5 text-center">
+                <img src="/images/giang-vien-A.jpg" class="img-fluid rounded-circle mb-3 shadow" alt="Giảng viên A">
+                <h5 class="fw-bold">Nguyễn Văn An</h5>
+                <p class="text-muted small">Chuyên gia Màu nước & Ký họa</p>
+                <p class="small text-muted px-3">Với hơn 10 năm kinh nghiệm, thầy An sẽ giúp bạn nắm vững kỹ thuật và khơi gợi cảm hứng sáng tạo.</p>
+            </div>
+            <div class="col-lg-4 col-md-6 mb-5 text-center">
+                <img src="/images/giang-vien-B.jpg" class="img-fluid rounded-circle mb-3 shadow" alt="Giảng viên B">
+                <h5 class="fw-bold">Trần Thị Bình</h5>
+                <p class="text-muted small">Nghệ sĩ Sơn dầu & Trừu tượng</p>
+                <p class="small text-muted px-3">Cô Bình mang đến góc nhìn mới mẻ và phương pháp tiếp cận độc đáo trong từng bài giảng.</p>
+            </div>
+            <div class="col-lg-4 col-md-6 mb-5 text-center">
+                <img src="/images/giang-vien-C.jpg" class="img-fluid rounded-circle mb-3 shadow" alt="Giảng viên C">
+                <h5 class="fw-bold">Lê Minh Cường</h5>
+                <p class="text-muted small">Digital Art & Thiết kế Nhân vật</p>
+                <p class="small text-muted px-3">Thầy Cường là người dẫn dắt bạn khám phá thế giới nghệ thuật số đầy tiềm năng.</p>
+            </div>
+        </div>
+        <div class="text-center mt-3">
+            <a href="#" class="btn btn-outline-primary">Xem Thêm Giảng Viên</a>
+        </div>
+    </div>
+</section>
+
+<!-- STUDENT ARTWORK SHOWCASE SECTION -->
+<section class="artflow-page-section" id="student-artwork">
+    <div class="container-fluid p-0">
+        <div class="text-center py-5">
+            <h2 class="section-heading-alt">Tác Phẩm Từ Học Viên</h2>
+            <hr class="artflow-divider artflow-divider-dark my-4 mx-auto" />
+            <p class="text-muted mb-5">Niềm tự hào và minh chứng cho sự nỗ lực không ngừng.</p>
+        </div>
+        <div class="artflow-gallery-container">
+            <div class="artflow-masonry-grid">
+                <div class="artflow-masonry-grid-sizer"></div>
+                <div class="artflow-masonry-item">
+                    <a href="https://via.placeholder.com/400x600.png?text=Art+1+Tall" data-lightbox="gallery-images" data-title="Tác phẩm Cao 1">
+                        <img src="/images/anh1.jpg" alt="Tác phẩm học viên 1" class="img-fluid"/>
+                        <div class="artflow-gallery-caption">
+                            <div class="artflow-gallery-caption-content">
+                                <div class="artflow-gallery-project-category">Màu Nước</div>
+                                <div class="artflow-gallery-project-name">Chiều Thu</div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="artflow-masonry-item artflow-masonry-item--width2">
+                    <a href="https://via.placeholder.com/800x500.png?text=Art+2+Wide" data-lightbox="gallery-images" data-title="Tác phẩm Rộng 2">
+                        <img src="/images/anh2.jpg" alt="Tác phẩm học viên 2" class="img-fluid"/>
+                        <div class="artflow-gallery-caption">
+                            <div class="artflow-gallery-caption-content">
+                                <div class="artflow-gallery-project-category">Sơn Dầu</div>
+                                <div class="artflow-gallery-project-name">Bình Minh Rực Rỡ</div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="artflow-masonry-item">
+                    <a href="https://via.placeholder.com/500x500.png?text=Art+3+Square" data-lightbox="gallery-images" data-title="Tác phẩm Vuông 3">
+                        <img src="/images/anh3.jpg" alt="Tác phẩm học viên 3" class="img-fluid"/>
+                        <div class="artflow-gallery-caption">
+                            <div class="artflow-gallery-caption-content">
+                                <div class="artflow-gallery-project-category">Ký Họa</div>
+                                <div class="artflow-gallery-project-name">Góc Phố Thân Quen</div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="artflow-masonry-item">
+                    <a href="https://via.placeholder.com/600x450.png?text=Art+4" data-lightbox="gallery-images" data-title="Tác phẩm 4">
+                        <img src="/images/anh5.jpg" alt="Tác phẩm học viên 4" class="img-fluid"/>
+                        <div class="artflow-gallery-caption">
+                            <div class="artflow-gallery-caption-content">
+                                <div class="artflow-gallery-project-category">Digital Art</div>
+                                <div class="artflow-gallery-project-name">Thế Giới Mơ Mộng</div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="artflow-masonry-item artflow-masonry-item--height2">
+                    <a href="https://via.placeholder.com/500x700.png?text=Art+5+Portrait" data-lightbox="gallery-images" data-title="Tác phẩm Chân dung 5">
+                        <img src="/images/anh6.jpg" alt="Tác phẩm học viên 5" class="img-fluid"/>
+                        <div class="artflow-gallery-caption">
+                            <div class="artflow-gallery-caption-content">
+                                <div class="artflow-gallery-project-category">Acrylic</div>
+                                <div class="artflow-gallery-project-name">Nữ Thần Mùa Xuân</div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="artflow-masonry-item">
+                    <a href="https://via.placeholder.com/900x300.png?text=Art+6+Panoramic" data-lightbox="gallery-images" data-title="Tác phẩm Toàn cảnh 6">
+                        <img src="/images/anh4.jpg" alt="Tác phẩm học viên 6" class="img-fluid"/>
+                        <div class="artflow-gallery-caption">
+                            <div class="artflow-gallery-caption-content">
+                                <div class="artflow-gallery-project-category">Tranh Lụa</div>
+                                <div class="artflow-gallery-project-name">Phong Cảnh Hữu Tình</div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="artflow-masonry-item">
+                    <a href="https://via.placeholder.com/450x550.png?text=Art+7" data-lightbox="gallery-images" data-title="Tác phẩm 7">
+                        <img src="/images/anh7.jpg" alt="Tác phẩm học viên 7" class="img-fluid"/>
+                        <div class="artflow-gallery-caption">
+                            <div class="artflow-gallery-caption-content">
+                                <div class="artflow-gallery-project-category">Điêu Khắc</div>
+                                <div class="artflow-gallery-project-name">Dáng Hình Vô Biên</div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="artflow-masonry-item">
+                    <a href="https://via.placeholder.com/300x500.png?text=Art+8+Slim" data-lightbox="gallery-images" data-title="Tác phẩm Mảnh 8">
+                        <img src="/images/anh8.jpg" alt="Tác phẩm học viên 8" class="img-fluid"/>
+                        <div class="artflow-gallery-caption">
+                            <div class="artflow-gallery-caption-content">
+                                <div class="artflow-gallery-project-category">Gốm Sứ</div>
+                                <div class="artflow-gallery-project-name">Nét Xưa</div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- TESTIMONIALS SECTION -->
+<section class="artflow-page-section bg-light" id="testimonials">
+    <div class="container px-4 px-lg-5">
+        <div class="text-center">
+            <h2 class="section-heading-alt">Học Viên Nói Gì Về Chúng Tôi</h2>
+            <hr class="artflow-divider artflow-divider-dark my-4 mx-auto" />
+        </div>
+        <div class="row gx-4 gx-lg-5 justify-content-center">
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card h-100 shadow-sm artflow-testimonial-card">
+                    <div class="card-body text-center">
+                        <img src="/images/hocsinh1.jpg" class="rounded-circle img-thumbnail mb-3" alt="Học viên 1">
+                        <p class="fst-italic text-muted">"ArtFlow Studio thực sự đã thay đổi cách tôi nhìn nhận nghệ thuật. Các thầy cô rất nhiệt tình và bạn bè thì siêu dễ thương. Mình đã tự tin hơn rất nhiều!"</p>
+                        <h6 class="fw-bold mt-3">Phạm Mai Anh</h6>
+                        <p class="small text-primary">Khóa Vẽ Chân Dung</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card h-100 shadow-sm artflow-testimonial-card">
+                    <div class="card-body text-center">
+                        <img src="/images/hocsinh2.jpg" class="rounded-circle img-thumbnail mb-3" alt="Học viên 2">
+                        <p class="fst-italic text-muted">"Không gian học tập tuyệt vời, đầy đủ dụng cụ. Lịch học linh hoạt cũng là một điểm cộng lớn cho người đi làm như mình. Highly recommend!"</p>
+                        <h6 class="fw-bold mt-3">Lê Hoàng Long</h6>
+                        <p class="small text-primary">Khóa Màu Nước Cơ Bản</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card h-100 shadow-sm artflow-testimonial-card">
+                    <div class="card-body text-center">
+                        <img src="/images/hocsinh3.jpg" class="rounded-circle img-thumbnail mb-3" alt="Học viên 3">
+                        <p class="fst-italic text-muted">"Mình đã học được rất nhiều kỹ thuật mới và tìm thấy niềm vui thực sự với cọ vẽ. Cảm ơn ArtFlow đã tạo ra một sân chơi bổ ích."</p>
+                        <h6 class="fw-bold mt-3">Nguyễn Thị Thu Hà</h6>
+                        <p class="small text-primary">Khóa Sơn Dầu Nâng Cao</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- WHY CHOOSE US SECTION -->
 <section class="artflow-page-section bg-primary-soft" id="why-choose-us">
     <div class="container px-4 px-lg-5">
         <div class="text-center">
@@ -125,5 +302,32 @@
 </section>
 
 <div th:replace="~{fragments/footer :: footer}"></div>
+
+<script src="https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js"></script>
+<script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var grid = document.querySelector('.artflow-masonry-grid');
+        if (grid) {
+            var msnry = new Masonry(grid, {
+                itemSelector: '.artflow-masonry-item',
+                columnWidth: '.artflow-masonry-grid-sizer',
+                gutter: 15,
+                percentPosition: true,
+                fitWidth: true
+            });
+
+            imagesLoaded(grid).on('progress', function() {
+                msnry.layout();
+            });
+
+            var items = grid.querySelectorAll('.artflow-masonry-item');
+            items.forEach(function(item, index) {
+                var delay = (index % 6) * 0.08 + 0.05;
+                item.style.animationDelay = delay + 's';
+            });
+        }
+    });
+</script>
 </body>
 </html>

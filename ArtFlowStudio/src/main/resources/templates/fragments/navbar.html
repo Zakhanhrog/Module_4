@@ -12,10 +12,10 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNavMain">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
+                <li sec:authorize="hasAnyRole('ADMIN','LEARNER')" class="nav-item">
                     <a class="nav-link" th:classappend="${currentUri != null && currentUri.startsWith(contextPath + '/courses') ? 'active' : ''}" th:href="@{/courses}">Khóa học</a>
                 </li>
-                <li class="nav-item">
+                <li sec:authorize="hasAnyRole('ADMIN','LEARNER')" class="nav-item">
                     <a class="nav-link" th:classappend="${currentUri != null && currentUri.startsWith(contextPath + '/schedule') ? 'active' : ''}" th:href="@{/schedule}">Lịch học</a>
                 </li>
                 <li sec:authorize="hasRole('ADMIN')" class="nav-item">

@@ -1,0 +1,89 @@
+body {
+    background-color: #f8f9fa;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    flex: 1;
+}
+
+.auth-card {
+    max-width: 450px;
+    margin: 2rem auto;
+}
+
+.error-message {
+    color: #dc3545;
+    font-size: 0.875em;
+    margin-top: 0.25rem;
+}
+/* Tinh chỉnh ô chọn món ăn trên trang menu */
+.card-footer .form-check {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #dee2e6; /* Thêm viền mờ */
+    border-radius: 0.375rem;   /* Bo tròn góc */
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+    display: flex;
+    align-items: center;
+}
+
+/* Hiệu ứng khi di chuột vào */
+.card-footer .form-check:hover {
+    background-color: #e9ecef;
+}
+
+/* Thu nhỏ checkbox một chút */
+.card-footer .form-check-input {
+    transform: scale(0.9);
+    margin-top: 0; /* Reset margin top của bootstrap */
+}
+
+/* Làm cho chữ "Chọn món này" nhỏ và thanh thoát hơn */
+.card-footer .form-check-label {
+    font-size: 0.9rem;
+    color: #495057;
+    padding-left: 0.5rem; /* Tạo khoảng cách với checkbox */
+}
+
+/* Khi checkbox được chọn, làm nổi bật cả khu vực */
+.card-footer .form-check-input:checked + .form-check-label {
+    font-weight: bold;
+}
+
+.card-footer .form-check-input:checked ~ .form-check {
+    border-color: #0d6efd;
+    background-color: #e7f1ff;
+}
+/* -- Cải thiện thẻ món ăn nhỏ gọn hơn -- */
+
+/* Giảm chiều cao ảnh mặc định */
+.card-img-top.food-item-image-small {
+    height: 120px; /* Chiều cao cũ là 180px */
+    object-fit: cover;
+}
+.food-item-no-image-small {
+    height: 120px; /* Chiều cao cũ là 180px */
+    background-color: #e9ecef;
+}
+
+/* Giảm kích thước tên món và giá */
+.card-body.food-item-body-small .card-title {
+    font-size: 1rem; /* Cỡ chữ cũ là ~1.25rem */
+    margin-bottom: 0.25rem;
+}
+.card-body.food-item-body-small .card-text {
+    font-size: 0.9rem; /* Cỡ chữ cũ là 1rem */
+}
+
+/* Giảm padding của card body và card footer */
+.card-body.food-item-body-small {
+    padding: 0.75rem;
+}
+.card-footer.food-item-footer-small {
+    padding: 0 0.75rem 0.75rem 0.75rem;
+    background-color: #fff;
+    border-top: none;
+}

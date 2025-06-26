@@ -1,0 +1,78 @@
+.form-group {
+    margin-bottom: var(--spacing-md);
+}
+
+.form-group label {
+    display: inline-block; /* Hoặc block tùy layout */
+    margin-bottom: var(--spacing-sm);
+    font-weight: 500;
+}
+
+.form-control { /* Class chung cho input, select, textarea */
+    display: block;
+    width: 100%;
+    padding: 0.5rem 0.75rem; /* Điều chỉnh padding */
+    font-size: var(--font-size-base);
+    font-weight: 400;
+    line-height: 1.5;
+    color: var(--text-color);
+    background-color: var(--white-color);
+    background-clip: padding-box;
+    border: 1px solid #ced4da; /* Màu border nhạt hơn */
+    border-radius: var(--border-radius);
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    box-sizing: border-box; /* Quan trọng để width 100% bao gồm padding, border */
+}
+
+.form-control:focus {
+    color: var(--text-color);
+    background-color: var(--white-color);
+    border-color: #80bdff; /* Màu focus của Bootstrap */
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.form-control::placeholder {
+    color: var(--text-muted-color);
+    opacity: 1;
+}
+
+.form-control:disabled, .form-control[readonly] {
+    background-color: #e9ecef; /* Màu nền cho input disabled */
+    opacity: 1;
+}
+
+textarea.form-control {
+    min-height: calc(1.5em + 1rem + 2px); /* Tính toán chiều cao mặc định */
+    resize: vertical; /* Cho phép resize theo chiều dọc */
+}
+
+.form-check { /* Cho checkbox/radio */
+    display: flex; /* Canh chỉnh checkbox và label */
+    align-items: center;
+    position: relative;
+    padding-left: 0; /* Bỏ padding cũ nếu có */
+    margin-bottom: var(--spacing-sm);
+}
+
+.form-check-input {
+    margin-top: 0; /* Reset margin top */
+    margin-right: var(--spacing-sm);
+    transform: scale(1.1); /* Hơi to hơn chút */
+}
+
+.form-check-label {
+    margin-bottom: 0; /* Reset margin bottom */
+    cursor: pointer;
+}
+
+.form-errors { /* Style cho khối lỗi chung của form */
+    color: var(--danger-color);
+    font-size: var(--font-size-sm);
+    margin-top: var(--spacing-xs);
+    list-style-type: none;
+    padding-left: 0;
+}
+.form-errors li {
+    margin-bottom: var(--spacing-xs);
+}
