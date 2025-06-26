@@ -57,7 +57,6 @@
                      onclick="return confirm('Bạn có chắc chắn muốn thay đổi trạng thái của người dùng này?');">
                     <i class="fa-solid" th:classappend="${user.enabled ? 'fa-toggle-off' : 'fa-toggle-on'}"></i>
                   </a>
-                  <a th:href="@{/admin/orders/create-for-user/{userId}(userId=${user.id})}" class="btn btn-sm btn-info" title="Đặt hàng hộ"><i class="fa-solid fa-cart-plus"></i></a>
                 </td>
               </tr>
               </tbody>

@@ -544,6 +544,35 @@ public class AdminController {
 
         return "admin/order-list-by-date";
     }
+
+    @GetMapping("/orders/delete/{orderId}")
+    public String deleteSingleOrder(@PathVariable("orderId") Long orderId,
+                                    @RequestParam(name = "date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+                                    RedirectAttributes redirectAttributes, HttpSession session) {
+        logger.info("AdminController: Accessing /admin/orders/delete/{} for date: {}", orderId, date);
+        User adminUser = getCurrentlyLoggedInAdmin(session);
+        if (adminUser == null) {
+            logger.warn("AdminController: Admin user is null for /admin/orders/delete. Redirecting to /auth/login.");
+            return "redirect:/auth/login";
+        }
+
+        try {
+            orderService.deleteOrderById(orderId);
+            redirectAttributes.addFlashAttribute("successMessage", "Đã xóa thành công đơn hàng (Mã ĐH: " + orderId + ").");
+        } catch (Exception e) {
+            logger.error("AdminController: Error deleting order ID {}: {}", orderId, e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi xóa đơn hàng (Mã ĐH: " + orderId + "): " + e.getMessage());
+        }
+
+        String redirectUrl = "/admin/orders/list";
+        if (date != null) {
+            redirectUrl += "?date=" + date.toString();
+        } else {
+            redirectUrl += "?date=" + LocalDate.now().toString();
+        }
+        return "redirect:" + redirectUrl;
+    }
+
     @GetMapping("/orders/delete-by-date")
     public String deleteOrdersByDate(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
                                      RedirectAttributes redirectAttributes, HttpSession session) {

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap');
 
 :root {
     --primary-color: #14B8A6;
@@ -21,9 +21,12 @@
     --transition: all 0.3s ease-in-out;
 }
 
+html {
+    font-size: 15px; /* Base font size reduced */
+}
 
 body {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Open Sans', sans-serif; /* Changed font */
     background-color: var(--background-color);
     color: var(--secondary-color);
     line-height: 1.6;
@@ -31,7 +34,7 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
     color: var(--heading-color);
-    font-weight: 600;
+    font-weight: 700; /* Bold */
 }
 
 a {
@@ -51,51 +54,45 @@ a:hover {
 }
 
 .navbar-brand {
-    font-weight: 700;
+    font-weight: 700; /* Bold */
     font-size: 1.5rem;
     color: var(--heading-color) !important;
 }
 
 .navbar .nav-link {
-    font-weight: 500;
+    font-weight: 400; /* Normal */
     color: var(--secondary-color);
-    /* Ensure consistent vertical alignment if needed, though Bootstrap usually handles this */
-    /* display: flex; */
-    /* align-items: center; */
 }
 .navbar .nav-link.active, .navbar .nav-link:hover {
     color: var(--primary-color);
 }
 
-/* Add gap for spacing between main nav items on the left */
 .navbar-nav.me-auto {
-    gap: 0.75rem; /* Adjust this value as needed for desired spacing */
+    gap: 0.75rem;
 }
 
 .navbar .dropdown-menu {
     border-radius: var(--border-radius);
     border: 1px solid var(--border-color);
     box-shadow: var(--shadow-lg);
-    margin-top: 0; /* Ensures dropdown appears right below toggle on hover */
+    margin-top: 0;
 }
 .navbar .dropdown-item:hover {
     background-color: var(--background-color);
     color: var(--primary-color);
 }
 
-/* Added for hover dropdown functionality */
 .navbar .nav-item.dropdown:hover > .dropdown-menu {
     display: block;
 }
-/* Ensure the toggle itself doesn't stay active looking if not clicked */
 .navbar .nav-item.dropdown:hover > .nav-link.dropdown-toggle {
-    color: var(--primary-color); /* or your preferred hover color */
+    color: var(--primary-color);
 }
 
 
 .btn {
     border-radius: var(--border-radius);
-    font-weight: 500;
+    font-weight: 600; /* Semibold */
     transition: var(--transition);
     box-shadow: var(--shadow-sm);
 }
@@ -122,7 +119,7 @@ a:hover {
     background-color: transparent;
     border-bottom: 1px solid var(--border-color);
     padding: 1rem 1.25rem;
-    font-weight: 600;
+    font-weight: 600; /* Semibold */
 }
 
 .form-control, .form-select {
@@ -154,10 +151,10 @@ a:hover {
 .alert-warning { border-color: #F59E0B; }
 
 .food-item-body-small .card-title {
-    font-weight: 500;
+    font-weight: 600; /* Semibold */
 }
 .food-item-body-small .card-text {
-    font-weight: 600;
+    font-weight: 600; /* Semibold */
     color: var(--primary-color) !important;
 }
 .card-footer .form-check {
@@ -174,7 +171,7 @@ a:hover {
     border-color: var(--primary-color);
 }
 .card-footer .form-check-input:checked + .form-check-label {
-    font-weight: 500;
+    font-weight: 600; /* Semibold */
     color: var(--primary-hover);
 }
 
@@ -192,11 +189,11 @@ a:hover {
     background-color: #e9ecef;
 }
 .card-body.food-item-body-small .card-title {
-    font-size: 1rem;
+    font-size: 1rem; /* This will be relative to 15px base */
     margin-bottom: 0.25rem;
 }
 .card-body.food-item-body-small .card-text {
-    font-size: 0.9rem;
+    font-size: 0.9rem; /* This will be relative to 15px base */
 }
 .card-body.food-item-body-small {
     padding: 0.75rem;
@@ -234,17 +231,17 @@ a:hover {
 }
 
 .food-card__title {
-    font-weight: 600;
+    font-weight: 600; /* Semibold */
     color: var(--heading-color);
-    font-size: 0.9rem;
+    font-size: 0.9rem; /* This will be relative to 15px base */
     line-height: 1.3;
     min-height: 2.3rem;
     margin-bottom: 0.25rem;
 }
 
 .food-card__price {
-    font-weight: 700;
-    font-size: 1rem;
+    font-weight: 700; /* Bold */
+    font-size: 1rem; /* This will be relative to 15px base */
     color: var(--primary-color);
 }
 
