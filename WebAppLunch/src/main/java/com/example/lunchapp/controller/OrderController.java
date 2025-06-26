@@ -21,11 +21,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
-import javax.validation.Valid;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -61,7 +61,7 @@ public class OrderController {
     }
 
     @GetMapping("/menu")
-    public String showMenu(Model model, HttpSession session) {
+    public String showMenu(Model model, HttpSession session, RedirectAttributes redirectAttributes) {
         UserDto currentUser = (UserDto) session.getAttribute(LOGGED_IN_USER_SESSION_KEY);
         if (currentUser == null) {
             return "redirect:/auth/login";
@@ -69,56 +69,45 @@ public class OrderController {
 
         Map<Category, List<FoodItem>> groupedFoodItems = foodItemService.getGroupedAvailableFoodItemsForToday();
         model.addAttribute("groupedFoodItems", groupedFoodItems);
-        if (!model.containsAttribute("orderRequestDto")) {
+
+        if (!model.containsAttribute("orderRequestDto")) { // Check if not already added by redirect
             model.addAttribute("orderRequestDto", new OrderRequestDto());
         }
+
 
         LocalTime cutoffTime = appSettingService.getOrderCutoffTime();
         boolean orderTimeAllowed = isOrderTimeAllowed();
         model.addAttribute("orderTimeAllowed", orderTimeAllowed);
         model.addAttribute("cutoffTime", cutoffTime);
 
-        boolean hasOrderedToday = false;
-        Optional<Order> todaysOrderOpt = Optional.empty();
+        List<Order> todaysPlacedOrders = orderService.getTodaysOrdersByPlacingUser(currentUser.getId(), LocalDate.now());
+        model.addAttribute("todaysPlacedOrders", todaysPlacedOrders == null ? Collections.emptyList() : todaysPlacedOrders);
+
 
         if (orderTimeAllowed) {
             long secondsRemaining = java.time.Duration.between(LocalDateTime.now(), cutoffTime.atDate(LocalDate.now())).getSeconds();
             model.addAttribute("countdownSeconds", Math.max(0, secondsRemaining));
-
-            LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
-            LocalDateTime endOfDay = LocalDate.now().atTime(LocalTime.MAX);
-            hasOrderedToday = orderService.hasUserOrderedToday(currentUser.getId(), startOfDay, endOfDay);
-            if(hasOrderedToday){
-                todaysOrderOpt = orderService.getTodaysOrderByUser(currentUser.getId(), startOfDay, endOfDay);
-            }
-
-            Object countdownSecondsAttr = model.getAttribute("countdownSeconds");
-            logger.info("OrderController - Current Time: {}", LocalDateTime.now().toLocalTime());
-            logger.info("OrderController - Cutoff Time from Service: {}", cutoffTime);
-            logger.info("OrderController - orderTimeAllowed: {}", orderTimeAllowed);
-            logger.info("OrderController - countdownSeconds from model: {} (Type: {})", countdownSecondsAttr, (countdownSecondsAttr != null ? countdownSecondsAttr.getClass().getName() : "null"));
-            logger.info("OrderController - User {} hasOrderedToday: {}", currentUser.getUsername(), hasOrderedToday);
         } else {
             model.addAttribute("countdownSeconds", 0L);
-            // Nếu đã hết giờ, cũng kiểm tra xem có đơn hàng hôm nay không để hiển thị thông tin
-            LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
-            LocalDateTime endOfDay = LocalDate.now().atTime(LocalTime.MAX);
-            if(orderService.hasUserOrderedToday(currentUser.getId(), startOfDay, endOfDay)){
-                hasOrderedToday = true; // User might have ordered before cutoff
-                todaysOrderOpt = orderService.getTodaysOrderByUser(currentUser.getId(), startOfDay, endOfDay);
+            if (todaysPlacedOrders.isEmpty()){
+                model.addAttribute("noOrderTodayMessage", "Bạn chưa đặt món nào hôm nay và đã hết giờ đặt.");
             }
         }
-        model.addAttribute("hasOrderedToday", hasOrderedToday);
-        todaysOrderOpt.ifPresent(order -> model.addAttribute("todaysOrderId", order.getId()));
-
         return "order/menu";
     }
 
     @PostMapping("/place")
-    public String placeOrder(@RequestParam(name = "selectedItemCheck", required = false) List<Long> selectedFoodItemIds,
-                             @RequestParam(name = "note", required = false) String note,
-                             HttpSession session,
-                             RedirectAttributes redirectAttributes, Model model) {
+    public String placeOrder(
+            @RequestParam(name = "selectedItemCheck", required = false) List<Long> selectedFoodItemIds,
+            @RequestParam(name = "note", required = false) String noteFromForm,
+            @RequestParam(name = "recipientName", required = false) String recipientNameFromParam,
+            HttpSession session,
+            RedirectAttributes redirectAttributes, Model model) {
+
+        logger.info("OrderController @PostMapping(\"/place\") INVOKED.");
+        logger.info("Received selectedFoodItemIds: {}", selectedFoodItemIds);
+        logger.info("Received noteFromForm: {}", noteFromForm);
+        logger.info("Received recipientNameFromParam: {}", recipientNameFromParam);
 
         UserDto currentUser = (UserDto) session.getAttribute(LOGGED_IN_USER_SESSION_KEY);
         if (currentUser == null) {
@@ -126,12 +115,12 @@ public class OrderController {
         }
 
         if (selectedFoodItemIds == null || selectedFoodItemIds.isEmpty()) {
-            logger.warn("Người dùng {} không chọn món nào.", currentUser.getUsername());
+            logger.warn("User {} did not select any items.", currentUser.getUsername());
             redirectAttributes.addFlashAttribute("errorMessage", "Vui lòng chọn ít nhất một món ăn.");
             return "redirect:/order/menu";
         }
 
-        OrderRequestDto orderRequestDto = new OrderRequestDto();
+        OrderRequestDto constructedOrderRequestDto = new OrderRequestDto();
         List<SelectedFoodItemDto> selectedItemsList = new ArrayList<>();
         for (Long foodId : selectedFoodItemIds) {
             SelectedFoodItemDto itemDto = new SelectedFoodItemDto();
@@ -139,91 +128,71 @@ public class OrderController {
             itemDto.setQuantity(1);
             selectedItemsList.add(itemDto);
         }
-        orderRequestDto.setSelectedItems(selectedItemsList);
-        orderRequestDto.setNote(note);
+        constructedOrderRequestDto.setSelectedItems(selectedItemsList);
+        constructedOrderRequestDto.setNote(noteFromForm);
 
-        BindingResult bindingResult = new org.springframework.validation.BeanPropertyBindingResult(orderRequestDto, "orderRequestDto");
-        validator.validate(orderRequestDto, bindingResult);
+        if (recipientNameFromParam != null && !recipientNameFromParam.trim().isEmpty()) {
+            constructedOrderRequestDto.setRecipientName(recipientNameFromParam.trim());
+        }
+
+        BindingResult bindingResult = new org.springframework.validation.BeanPropertyBindingResult(constructedOrderRequestDto, "orderRequestDto");
+        validator.validate(constructedOrderRequestDto, bindingResult);
 
         if (bindingResult.hasErrors()) {
-            logger.warn("Lỗi validation khi người dùng {} đặt món: {}", currentUser.getUsername(), bindingResult.getAllErrors());
-            // Logic để render lại trang menu với lỗi và dữ liệu đã nhập
-            Map<Category, List<FoodItem>> groupedFoodItems = foodItemService.getGroupedAvailableFoodItemsForToday();
-            model.addAttribute("groupedFoodItems", groupedFoodItems);
-            model.addAttribute("cutoffTime", appSettingService.getOrderCutoffTime());
-            boolean currentOrderTimeAllowed = isOrderTimeAllowed();
-            model.addAttribute("orderTimeAllowed", currentOrderTimeAllowed);
-
-            boolean currentHasOrderedToday = false;
-            Optional<Order> currentTodaysOrderOpt = Optional.empty();
-            if (currentOrderTimeAllowed) {
-                long secondsRemaining = java.time.Duration.between(LocalDateTime.now(), appSettingService.getOrderCutoffTime().atDate(LocalDate.now())).getSeconds();
-                model.addAttribute("countdownSeconds", Math.max(0, secondsRemaining));
-                LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
-                LocalDateTime endOfDay = LocalDate.now().atTime(LocalTime.MAX);
-                currentHasOrderedToday = orderService.hasUserOrderedToday(currentUser.getId(), startOfDay, endOfDay);
-                if(currentHasOrderedToday){
-                    currentTodaysOrderOpt = orderService.getTodaysOrderByUser(currentUser.getId(), startOfDay, endOfDay);
-                }
-            } else {
-                model.addAttribute("countdownSeconds", 0L);
-                LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
-                LocalDateTime endOfDay = LocalDate.now().atTime(LocalTime.MAX);
-                if(orderService.hasUserOrderedToday(currentUser.getId(), startOfDay, endOfDay)){
-                    currentHasOrderedToday = true;
-                    currentTodaysOrderOpt = orderService.getTodaysOrderByUser(currentUser.getId(), startOfDay, endOfDay);
-                }
-            }
-            model.addAttribute("hasOrderedToday", currentHasOrderedToday);
-            currentTodaysOrderOpt.ifPresent(o -> model.addAttribute("todaysOrderId", o.getId()));
-
-            model.addAttribute("org.springframework.validation.BindingResult.orderRequestDto", bindingResult);
-            // orderRequestDto đã chứa note và selectedItems nên không cần set lại tường minh trừ khi muốn reset
-            model.addAttribute("orderRequestDto", orderRequestDto);
-            return "order/menu";
+            logger.warn("Validation errors for user {} placing order: {}", currentUser.getUsername(), bindingResult.getAllErrors());
+            redirectAttributes.addFlashAttribute("orderRequestDto", constructedOrderRequestDto);
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.orderRequestDto", bindingResult);
+            redirectAttributes.addFlashAttribute("errorMessage", "Dữ liệu đơn hàng không hợp lệ. Vui lòng thử lại.");
+            return "redirect:/order/menu";
         }
 
         try {
-            Order placedOrder = orderService.placeOrder(currentUser.getId(), orderRequestDto, false);
+            Order placedOrder;
+            String successMessageRecipientPart;
+
+            if (constructedOrderRequestDto.getRecipientName() != null && !constructedOrderRequestDto.getRecipientName().trim().isEmpty()) {
+                logger.info("User {} is placing a proxy order for recipient: {}", currentUser.getUsername(), constructedOrderRequestDto.getRecipientName());
+                placedOrder = orderService.placeOrderForOtherByRegularUser(currentUser.getId(), constructedOrderRequestDto);
+                successMessageRecipientPart = "cho " + placedOrder.getRecipientName();
+            } else {
+                logger.info("User {} is placing an order for self.", currentUser.getUsername());
+                placedOrder = orderService.placeOrderForUser(currentUser.getId(), constructedOrderRequestDto);
+                successMessageRecipientPart = "cho bạn";
+            }
 
             UserDto userAfterOrder = new UserDto(userRepository.findById(currentUser.getId()).orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng sau khi đặt hàng")));
             session.setAttribute(LOGGED_IN_USER_SESSION_KEY, userAfterOrder);
 
             redirectAttributes.addFlashAttribute("successMessage",
-                    String.format("Đặt món thành công! Mã đơn hàng: %d. Tổng tiền: %.2f VND. Số dư mới: %.2f VND",
+                    String.format("Đặt món thành công %s! Mã đơn hàng: %d. Tổng tiền: %.2f VND.",
+                            successMessageRecipientPart,
                             placedOrder.getId(),
-                            placedOrder.getTotalAmount(),
-                            userAfterOrder.getBalance()
+                            placedOrder.getTotalAmount()
                     ));
-            return "redirect:/user/history";
+            return "redirect:/order/menu";
         } catch (Exception e) {
-            logger.error("Lỗi khi người dùng {} đặt món: {}", currentUser.getUsername(), e.getMessage(), e);
+            logger.error("Error when user {} places order (self or proxy): {}", currentUser.getUsername(), e.getMessage(), e);
             redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi đặt món: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("orderRequestDto", constructedOrderRequestDto);
             return "redirect:/order/menu";
         }
     }
 
-    @PostMapping("/cancel-and-reorder")
-    public String cancelAndReorder(HttpSession session, RedirectAttributes redirectAttributes) {
+    @PostMapping("/cancel/{orderId}")
+    public String cancelSpecificOrder(@PathVariable("orderId") Long orderId,
+                                      HttpSession session, RedirectAttributes redirectAttributes) {
         UserDto currentUser = (UserDto) session.getAttribute(LOGGED_IN_USER_SESSION_KEY);
         if (currentUser == null) {
             return "redirect:/auth/login";
         }
 
-        if (!isOrderTimeAllowed()) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Đã hết thời gian cho phép hủy và đặt lại đơn hàng.");
-            return "redirect:/order/menu";
-        }
-
         try {
-            orderService.cancelTodaysOrderAndRefund(currentUser.getId());
-            // Cập nhật lại thông tin user trong session (ví dụ: số dư)
+            orderService.cancelOrderByIdAndRefund(orderId, currentUser.getId());
             UserDto userAfterCancel = new UserDto(userRepository.findById(currentUser.getId()).orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng sau khi hủy đơn")));
             session.setAttribute(LOGGED_IN_USER_SESSION_KEY, userAfterCancel);
-
-            redirectAttributes.addFlashAttribute("successMessage", "Đã hủy đơn hàng hôm nay. Bạn có thể đặt lại. Số dư mới: " + String.format("%.2f VND", userAfterCancel.getBalance()));
+            redirectAttributes.addFlashAttribute("successMessage", "Đã hủy đơn hàng (Mã ĐH: " + orderId + ") thành công.");
         } catch (Exception e) {
-            logger.error("Lỗi khi người dùng {} hủy đơn hàng để đặt lại: {}", currentUser.getUsername(), e.getMessage(), e);
+            logger.error("Lỗi khi người dùng {} hủy đơn hàng ID {}: {}", currentUser.getUsername(), orderId, e.getMessage(), e);
             redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi hủy đơn hàng: " + e.getMessage());
         }
         return "redirect:/order/menu";

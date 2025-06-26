@@ -34,10 +34,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional // Đảm bảo tất cả thao tác trong method này là một transaction
+    @Transactional
     public User registerUser(UserRegistrationDto registrationDto) {
         if (userRepository.existsByUsername(registrationDto.getUsername())) {
-            throw new RuntimeException("Error: Username is already taken!"); // Sẽ cải thiện xử lý lỗi sau
+            throw new RuntimeException("Error: Username is already taken!");
         }
 
         User user = new User();
@@ -48,11 +48,10 @@ public class UserServiceImpl implements UserService {
         user.setEnabled(true);
         user.setCreatedAt(LocalDateTime.now());
 
-        // Gán vai trò mặc định cho người dùng mới (ví dụ: ROLE_USER)
         Role userRole = roleRepository.findByName("ROLE_USER")
                 .orElseGet(() -> {
                     Role newRole = new Role("ROLE_USER");
-                    return roleRepository.save(newRole); // Tạo role nếu chưa có
+                    return roleRepository.save(newRole);
                 });
         Set<Role> roles = new HashSet<>();
         roles.add(userRole);
@@ -82,7 +81,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void changePassword(Long userId, String newPassword) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId)); // Sẽ cải thiện
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
     }
@@ -91,9 +90,9 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public User depositMoney(Long userId, BigDecimal amount) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId)); // Sẽ cải thiện
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
         if (amount.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("Deposit amount must be positive."); // Sẽ cải thiện
+            throw new IllegalArgumentException("Deposit amount must be positive.");
         }
         user.setBalance(user.getBalance().add(amount));
         return userRepository.save(user);
@@ -150,7 +149,11 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
         user.setEnabled(!user.isEnabled());
         userRepository.save(user);
-        // logger.info("User {} status toggled to: {}", user.getUsername(), user.isEnabled() ? "Enabled" : "Disabled");
-        // Bạn có thể thêm logger nếu muốn
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<User> getAllActiveUsers() {
+        return userRepository.findByEnabledTrue();
     }
 }

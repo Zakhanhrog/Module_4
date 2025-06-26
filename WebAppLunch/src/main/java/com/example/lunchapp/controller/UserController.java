@@ -1,6 +1,6 @@
 package com.example.lunchapp.controller;
 
-import com.example.lunchapp.model.dto.ChangePasswordDto; // Sẽ tạo DTO này
+import com.example.lunchapp.model.dto.ChangePasswordDto;
 import com.example.lunchapp.model.dto.UserDto;
 import com.example.lunchapp.model.entity.Order;
 import com.example.lunchapp.model.entity.User;
@@ -36,8 +36,7 @@ public class UserController {
         this.orderService = orderService;
     }
 
-    // --- Lịch sử đặt đồ ---
-    @GetMapping("/history")
+    @GetMapping("/order-history")
     public String showOrderHistory(Model model, HttpSession session) {
         UserDto currentUser = (UserDto) session.getAttribute(LOGGED_IN_USER_SESSION_KEY);
         if (currentUser == null) {
@@ -45,10 +44,9 @@ public class UserController {
         }
         List<Order> orders = orderService.getOrderHistory(currentUser.getId());
         model.addAttribute("orders", orders);
-        return "user/order-history"; // order-history.html trong /templates/user/
+        return "user/order-history";
     }
 
-    // --- Trang Profile (để đổi mật khẩu) ---
     @GetMapping("/profile")
     public String showProfilePage(Model model, HttpSession session) {
         UserDto currentUser = (UserDto) session.getAttribute(LOGGED_IN_USER_SESSION_KEY);
@@ -56,7 +54,7 @@ public class UserController {
             return "redirect:/auth/login";
         }
         model.addAttribute("changePasswordDto", new ChangePasswordDto());
-        return "user/profile"; // profile.html
+        return "user/profile";
     }
 
     @PostMapping("/change-password")
@@ -75,10 +73,7 @@ public class UserController {
 
         if (bindingResult.hasErrors()) {
             logger.warn("Change password form validation errors for user {}: {}", currentUser.getUsername(), bindingResult.getAllErrors());
-            // redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.changePasswordDto", bindingResult);
-            // redirectAttributes.addFlashAttribute("changePasswordDto", changePasswordDto);
-            // return "redirect:/user/profile"; // Redirect có thể làm mất lỗi, nên render lại view
-            return "user/profile"; // Render lại view để hiển thị lỗi
+            return "user/profile";
         }
 
         try {
@@ -92,14 +87,13 @@ public class UserController {
         return "redirect:/user/profile";
     }
 
-    // --- Nạp tiền giả lập ---
     @GetMapping("/deposit")
     public String showDepositForm(Model model, HttpSession session) {
         UserDto currentUser = (UserDto) session.getAttribute(LOGGED_IN_USER_SESSION_KEY);
         if (currentUser == null) {
             return "redirect:/auth/login";
         }
-        return "user/deposit-money"; // deposit-money.html
+        return "user/deposit-money";
     }
 
     @PostMapping("/deposit")
@@ -118,8 +112,8 @@ public class UserController {
 
         try {
             User updatedUserEntity = userService.depositMoney(currentUser.getId(), amount);
-            UserDto updatedUserDto = new UserDto(updatedUserEntity); // Tạo DTO mới từ entity đã cập nhật
-            session.setAttribute(LOGGED_IN_USER_SESSION_KEY, updatedUserDto); // Cập nhật session
+            UserDto updatedUserDto = new UserDto(updatedUserEntity);
+            session.setAttribute(LOGGED_IN_USER_SESSION_KEY, updatedUserDto);
 
             redirectAttributes.addFlashAttribute("successMessage",
                     String.format("Successfully deposited %.2f VND. Your new balance is %.2f VND.",

@@ -1,11 +1,19 @@
 package com.example.lunchapp.controller;
 
 import com.example.lunchapp.model.dto.OrderRequestDto;
-import com.example.lunchapp.model.dto.SelectedFoodItemDto;
+// import com.example.lunchapp.model.dto.SelectedFoodItemDto; // Không dùng trực tiếp trong file này nữa
 import com.example.lunchapp.model.dto.UserDto;
-import com.example.lunchapp.model.entity.*;
+import com.example.lunchapp.model.entity.Category; // Cần cho showOrderFormForAnyone
+import com.example.lunchapp.model.entity.FoodItem;
+import com.example.lunchapp.model.entity.Order;
+import com.example.lunchapp.model.entity.OrderItem; // Cần cho foodItemSummary
+import com.example.lunchapp.model.entity.User;
 import com.example.lunchapp.repository.RoleRepository;
-import com.example.lunchapp.service.*;
+import com.example.lunchapp.service.AppSettingService;
+import com.example.lunchapp.service.CategoryService;
+import com.example.lunchapp.service.FoodItemService;
+import com.example.lunchapp.service.OrderService;
+import com.example.lunchapp.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +42,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
+// import java.util.LinkedHashMap; // Bỏ nếu không dùng ordersByRecipientForDate
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -74,29 +82,80 @@ public class AdminController {
         this.validator = validator;
     }
 
+    private User getCurrentlyLoggedInAdmin(HttpSession session) {
+        logger.debug("AdminController: Attempting to get currently logged-in admin from HttpSession.");
+        UserDto userDtoFromSession = (UserDto) session.getAttribute(LOGGED_IN_USER_SESSION_KEY);
+
+        if (userDtoFromSession == null) {
+            logger.warn("AdminController: No UserDto found in HttpSession with key '{}'.", LOGGED_IN_USER_SESSION_KEY);
+            return null;
+        }
+
+        if (userDtoFromSession.getRoles() == null || !userDtoFromSession.getRoles().contains("ROLE_ADMIN")) {
+            logger.warn("AdminController: User '{}' from session does not have ROLE_ADMIN. Actual roles: {}",
+                    userDtoFromSession.getUsername(), userDtoFromSession.getRoles());
+            return null;
+        }
+        Optional<User> userOpt = userService.findById(userDtoFromSession.getId());
+        if (userOpt.isEmpty()) {
+            logger.error("AdminController: Admin UserDto found in session (ID: {}), but no corresponding User entity in database!", userDtoFromSession.getId());
+            session.removeAttribute(LOGGED_IN_USER_SESSION_KEY);
+            return null;
+        }
+        User adminUser = userOpt.get();
+        logger.debug("AdminController: Logged-in admin (from session & DB): ID={}, Username={}", adminUser.getId(), adminUser.getUsername());
+        return adminUser;
+    }
+
+
     @GetMapping("/dashboard")
     public String showAdminDashboard(Model model, HttpSession session) {
-        UserDto adminUser = (UserDto) session.getAttribute(LOGGED_IN_USER_SESSION_KEY);
-        model.addAttribute("adminUser", adminUser);
+        logger.info("AdminController: Accessing /admin/dashboard");
+        User adminUser = getCurrentlyLoggedInAdmin(session);
+        if (adminUser == null) {
+            logger.warn("AdminController: Admin user is null for /admin/dashboard. Redirecting to /auth/login.");
+            return "redirect:/auth/login";
+        }
+        logger.debug("AdminController: Admin user for dashboard: {}", adminUser.getUsername());
+        model.addAttribute("adminUser", new UserDto(adminUser));
         return "admin/dashboard";
     }
 
+
     @GetMapping("/food/all")
-    public String showAllFoodItems(Model model) {
+    public String showAllFoodItems(Model model, HttpSession session) {
+        logger.info("AdminController: Accessing /admin/food/all");
+        User adminUser = getCurrentlyLoggedInAdmin(session);
+        if (adminUser == null) {
+            logger.warn("AdminController: Admin user is null for /admin/food/all. Redirecting to /auth/login.");
+            return "redirect:/auth/login";
+        }
         List<FoodItem> foodItems = foodItemService.getAllFoodItems();
         model.addAttribute("foodItems", foodItems);
         return "admin/food-list-all";
     }
 
     @GetMapping("/food/add")
-    public String showAddFoodItemForm(Model model) {
+    public String showAddFoodItemForm(Model model, HttpSession session) {
+        logger.info("AdminController: Accessing /admin/food/add");
+        User adminUser = getCurrentlyLoggedInAdmin(session);
+        if (adminUser == null) {
+            logger.warn("AdminController: Admin user is null for /admin/food/add. Redirecting to /auth/login.");
+            return "redirect:/auth/login";
+        }
         model.addAttribute("foodItem", new FoodItem());
         model.addAttribute("categories", categoryService.getAllCategories());
         return "admin/food-form";
     }
 
     @GetMapping("/food/edit/{id}")
-    public String showEditFoodItemForm(@PathVariable("id") Long id, Model model, RedirectAttributes redirectAttributes) {
+    public String showEditFoodItemForm(@PathVariable("id") Long id, Model model, RedirectAttributes redirectAttributes, HttpSession session) {
+        logger.info("AdminController: Accessing /admin/food/edit/{}", id);
+        User adminUser = getCurrentlyLoggedInAdmin(session);
+        if (adminUser == null) {
+            logger.warn("AdminController: Admin user is null for /admin/food/edit. Redirecting to /auth/login.");
+            return "redirect:/auth/login";
+        }
         Optional<FoodItem> foodItemOpt = foodItemService.findById(id);
         if (foodItemOpt.isEmpty()) {
             redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy món ăn với ID: " + id);
@@ -112,9 +171,15 @@ public class AdminController {
                                BindingResult bindingResult,
                                @RequestParam("imageFile") MultipartFile imageFile,
                                Model model,
-                               RedirectAttributes redirectAttributes) {
+                               RedirectAttributes redirectAttributes, HttpSession session) {
+        logger.info("AdminController: Processing POST /admin/food/save for food item ID: {}", foodItem.getId());
+        User adminUser = getCurrentlyLoggedInAdmin(session);
+        if (adminUser == null) {
+            logger.warn("AdminController: Admin user is null for POST /admin/food/save. Redirecting to /auth/login.");
+            return "redirect:/auth/login";
+        }
         if (bindingResult.hasErrors()) {
-            logger.warn("Lỗi validation form món ăn: {}", bindingResult.getAllErrors());
+            logger.warn("Lỗi validation form món ăn khi lưu: {}", bindingResult.getAllErrors());
             model.addAttribute("categories", categoryService.getAllCategories());
             return "admin/food-form";
         }
@@ -133,6 +198,7 @@ public class AdminController {
                         Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
                     }
                     foodItem.setImageUrl("/uploaded-images/food/" + fileName);
+                    logger.debug("AdminController: Saved image {} to path {}", fileName, filePath);
                 } catch (IOException e) {
                     logger.error("Không thể lưu file ảnh: " + originalFilename, e);
                     bindingResult.rejectValue("imageUrl", "error.foodItem", "Không thể tải lên ảnh: " + e.getMessage());
@@ -162,7 +228,13 @@ public class AdminController {
     }
 
     @GetMapping("/food/delete/{id}")
-    public String deleteFoodItem(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
+    public String deleteFoodItem(@PathVariable("id") Long id, RedirectAttributes redirectAttributes, HttpSession session) {
+        logger.info("AdminController: Accessing /admin/food/delete/{}", id);
+        User adminUser = getCurrentlyLoggedInAdmin(session);
+        if (adminUser == null) {
+            logger.warn("AdminController: Admin user is null for /admin/food/delete. Redirecting to /auth/login.");
+            return "redirect:/auth/login";
+        }
         try {
             foodItemService.deleteFoodItem(id);
             redirectAttributes.addFlashAttribute("successMessage", "Xóa món ăn thành công!");
@@ -173,7 +245,13 @@ public class AdminController {
     }
 
     @GetMapping("/food/daily-menu")
-    public String showDailyMenuSetupForm(Model model) {
+    public String showDailyMenuSetupForm(Model model, HttpSession session) {
+        logger.info("AdminController: Accessing /admin/food/daily-menu");
+        User adminUser = getCurrentlyLoggedInAdmin(session);
+        if (adminUser == null) {
+            logger.warn("AdminController: Admin user is null for /admin/food/daily-menu. Redirecting to /auth/login.");
+            return "redirect:/auth/login";
+        }
         List<FoodItem> allFoodItems = foodItemService.getAllFoodItems();
         model.addAttribute("allFoodItems", allFoodItems);
         model.addAttribute("categories", categoryService.getAllCategories());
@@ -183,7 +261,13 @@ public class AdminController {
     @PostMapping("/food/daily-menu/save")
     public String saveDailyMenuSetup(@RequestParam(value = "selectedFoodItemIds", required = false) List<Long> selectedFoodItemIds,
                                      @RequestParam Map<String, String> allRequestParams,
-                                     RedirectAttributes redirectAttributes) {
+                                     RedirectAttributes redirectAttributes, HttpSession session) {
+        logger.info("AdminController: Processing POST /admin/food/daily-menu/save");
+        User adminUser = getCurrentlyLoggedInAdmin(session);
+        if (adminUser == null) {
+            logger.warn("AdminController: Admin user is null for POST /admin/food/daily-menu/save. Redirecting to /auth/login.");
+            return "redirect:/auth/login";
+        }
         Map<Long, Integer> dailyQuantities = new HashMap<>();
         if (selectedFoodItemIds != null) {
             for (Long itemId : selectedFoodItemIds) {
@@ -210,14 +294,26 @@ public class AdminController {
     }
 
     @GetMapping("/config/order-time")
-    public String showOrderTimeConfigForm(Model model) {
+    public String showOrderTimeConfigForm(Model model, HttpSession session) {
+        logger.info("AdminController: Accessing /admin/config/order-time");
+        User adminUser = getCurrentlyLoggedInAdmin(session);
+        if (adminUser == null) {
+            logger.warn("AdminController: Admin user is null for /admin/config/order-time. Redirecting to /auth/login.");
+            return "redirect:/auth/login";
+        }
         model.addAttribute("currentCutoffTime", appSettingService.getOrderCutoffTime());
         return "admin/order-time-config";
     }
 
     @PostMapping("/config/order-time/save")
     public String saveOrderTimeConfig(@RequestParam("cutoffTime") @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime cutoffTime,
-                                      RedirectAttributes redirectAttributes) {
+                                      RedirectAttributes redirectAttributes, HttpSession session) {
+        logger.info("AdminController: Processing POST /admin/config/order-time/save with cutoffTime: {}", cutoffTime);
+        User adminUser = getCurrentlyLoggedInAdmin(session);
+        if (adminUser == null) {
+            logger.warn("AdminController: Admin user is null for POST /admin/config/order-time/save. Redirecting to /auth/login.");
+            return "redirect:/auth/login";
+        }
         if (cutoffTime == null) {
             redirectAttributes.addFlashAttribute("errorMessage", "Định dạng thời gian không hợp lệ.");
             return "redirect:/admin/config/order-time";
@@ -232,14 +328,26 @@ public class AdminController {
     }
 
     @GetMapping("/users/list")
-    public String showUserList(Model model) {
+    public String showUserList(Model model, HttpSession session) {
+        logger.info("AdminController: Accessing /admin/users/list");
+        User adminUser = getCurrentlyLoggedInAdmin(session);
+        if (adminUser == null) {
+            logger.warn("AdminController: Admin user is null for /admin/users/list. Redirecting to /auth/login.");
+            return "redirect:/auth/login";
+        }
         List<User> users = userService.getAllUsers();
         model.addAttribute("users", users);
         return "admin/user-list";
     }
 
     @GetMapping("/users/edit/{id}")
-    public String showEditUserForm(@PathVariable("id") Long id, Model model, RedirectAttributes redirectAttributes) {
+    public String showEditUserForm(@PathVariable("id") Long id, Model model, RedirectAttributes redirectAttributes, HttpSession session) {
+        logger.info("AdminController: Accessing /admin/users/edit/{}", id);
+        User adminUser = getCurrentlyLoggedInAdmin(session);
+        if (adminUser == null) {
+            logger.warn("AdminController: Admin user is null for /admin/users/edit. Redirecting to /auth/login.");
+            return "redirect:/auth/login";
+        }
         Optional<User> userOpt = userService.findById(id);
         if (userOpt.isEmpty()) {
             redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy người dùng với ID: " + id);
@@ -256,8 +364,15 @@ public class AdminController {
                                     @RequestParam(value = "newPassword", required = false) String newPassword,
                                     @RequestParam(value = "roleIds", required = false) List<Long> roleIds,
                                     Model model,
-                                    RedirectAttributes redirectAttributes) {
+                                    RedirectAttributes redirectAttributes, HttpSession session) {
+        logger.info("AdminController: Processing POST /admin/users/update for user ID: {}", userToEdit.getId());
+        User adminUser = getCurrentlyLoggedInAdmin(session);
+        if (adminUser == null) {
+            logger.warn("AdminController: Admin user is null for POST /admin/users/update. Redirecting to /auth/login.");
+            return "redirect:/auth/login";
+        }
         if (bindingResult.hasFieldErrors("username") || bindingResult.hasFieldErrors("department") || bindingResult.hasFieldErrors("balance")) {
+            logger.warn("AdminController: Validation errors when updating user {}: {}", userToEdit.getId(), bindingResult.getAllErrors());
             model.addAttribute("allRoles", roleRepository.findAll());
             return "admin/user-form-edit";
         }
@@ -265,6 +380,7 @@ public class AdminController {
             userService.updateUserByAdmin(userToEdit.getId(), userToEdit, newPassword, roleIds);
             redirectAttributes.addFlashAttribute("successMessage", "Cập nhật người dùng thành công!");
         } catch (RuntimeException e) {
+            logger.error("AdminController: Error updating user {}: {}", userToEdit.getId(), e.getMessage());
             model.addAttribute("userToEdit", userToEdit);
             model.addAttribute("allRoles", roleRepository.findAll());
             model.addAttribute("errorMessage", "Lỗi cập nhật người dùng: " + e.getMessage());
@@ -274,177 +390,169 @@ public class AdminController {
     }
 
     @GetMapping("/users/toggle-status/{id}")
-    public String toggleUserStatus(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
+    public String toggleUserStatus(@PathVariable("id") Long id, RedirectAttributes redirectAttributes, HttpSession session) {
+        logger.info("AdminController: Accessing /admin/users/toggle-status/{}", id);
+        User adminUser = getCurrentlyLoggedInAdmin(session);
+        if (adminUser == null) {
+            logger.warn("AdminController: Admin user is null for /admin/users/toggle-status. Redirecting to /auth/login.");
+            return "redirect:/auth/login";
+        }
         try {
             userService.toggleUserStatus(id);
             redirectAttributes.addFlashAttribute("successMessage", "Cập nhật trạng thái người dùng thành công!");
         } catch (RuntimeException e) {
+            logger.error("AdminController: Error toggling status for user {}: {}", id, e.getMessage());
             redirectAttributes.addFlashAttribute("errorMessage", "Lỗi cập nhật trạng thái người dùng: " + e.getMessage());
         }
         return "redirect:/admin/users/list";
     }
 
-    @GetMapping("/orders/create-for-user/{userId}")
-    public String showOrderFormForUser(@PathVariable("userId") Long userId, Model model, RedirectAttributes redirectAttributes, HttpSession session) {
-        UserDto adminUser = (UserDto) session.getAttribute(LOGGED_IN_USER_SESSION_KEY);
+    @GetMapping("/orders/create-order-for-anyone")
+    public String showOrderFormForAnyone(Model model, HttpSession session) {
+        logger.info("AdminController: Accessing /admin/orders/create-order-for-anyone");
+        User adminUser = getCurrentlyLoggedInAdmin(session);
         if (adminUser == null) {
+            logger.warn("AdminController: Admin user is null for /admin/orders/create-order-for-anyone. Redirecting to /auth/login.");
             return "redirect:/auth/login";
-        }
-        Optional<User> userOpt = userService.findById(userId);
-        if (userOpt.isEmpty()) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy người dùng với ID: " + userId);
-            return "redirect:/admin/users/list";
         }
         Map<Category, List<FoodItem>> groupedFoodItems = foodItemService.getGroupedAvailableFoodItemsForToday();
         model.addAttribute("groupedFoodItems", groupedFoodItems);
-        model.addAttribute("orderRequestDto", new OrderRequestDto());
-        model.addAttribute("targetUser", userOpt.get());
+        OrderRequestDto orderRequestDto = new OrderRequestDto();
+        model.addAttribute("orderRequestDto", orderRequestDto);
+        logger.debug("AdminController: Fetching all active users for order form.");
+        model.addAttribute("allUsers", userService.getAllActiveUsers());
         return "admin/order-form-for-user";
     }
 
-    @PostMapping("/orders/place-for-user/{userId}")
-    public String placeOrderForUser(@PathVariable("userId") Long userId,
-                                    @RequestParam Map<String, String> allParams,
-                                    @RequestParam(name = "note", required = false) String note,
-                                    HttpSession session,
-                                    RedirectAttributes redirectAttributes, Model model) {
-
-        UserDto adminUser = (UserDto) session.getAttribute(LOGGED_IN_USER_SESSION_KEY);
+    @PostMapping("/orders/place-as-admin")
+    public String placeOrderAsAdmin(@Valid @ModelAttribute("orderRequestDto") OrderRequestDto orderRequestDto,
+                                    BindingResult bindingResult,
+                                    Model model,
+                                    RedirectAttributes redirectAttributes, HttpSession session) {
+        logger.info("AdminController: Processing POST /admin/orders/place-as-admin. RecipientName: {}, TargetUserId: {}",
+                orderRequestDto.getRecipientName(), orderRequestDto.getTargetUserId());
+        User adminUser = getCurrentlyLoggedInAdmin(session);
         if (adminUser == null) {
+            logger.warn("AdminController: Admin user is null for POST /admin/orders/place-as-admin. Redirecting to /auth/login.");
             return "redirect:/auth/login";
         }
-
-        Optional<User> targetUserOpt = userService.findById(userId);
-        if (targetUserOpt.isEmpty()) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy người dùng mục tiêu với ID: " + userId);
-            return "redirect:/admin/users/list";
-        }
-
-        OrderRequestDto orderRequestDto = new OrderRequestDto();
-        List<SelectedFoodItemDto> selectedItemsList = new ArrayList<>();
-        Map<String, SelectedFoodItemDto> itemsBeingBuilt = new HashMap<>();
-
-        for (Map.Entry<String, String> entry : allParams.entrySet()) {
-            String key = entry.getKey();
-            String value = entry.getValue();
-
-            if (key.startsWith("selectedItems[") && key.endsWith("].foodItemId")) {
-                String index = key.substring(key.indexOf('[') + 1, key.indexOf(']'));
-                itemsBeingBuilt.putIfAbsent(index, new SelectedFoodItemDto());
-                if (value != null && !value.isEmpty()) {
-                    try {
-                        itemsBeingBuilt.get(index).setFoodItemId(Long.parseLong(value));
-                    } catch (NumberFormatException e) {
-                        logger.warn("Giá trị foodItemId không hợp lệ: {}", value);
-                    }
-                }
-            } else if (key.startsWith("selectedItems[") && key.endsWith("].quantity")) {
-                String index = key.substring(key.indexOf('[') + 1, key.indexOf(']'));
-                itemsBeingBuilt.putIfAbsent(index, new SelectedFoodItemDto());
-                if (value != null && !value.isEmpty()) {
-                    try {
-                        itemsBeingBuilt.get(index).setQuantity(Integer.parseInt(value));
-                    } catch (NumberFormatException e) {
-                        logger.warn("Giá trị số lượng không hợp lệ: {}", value);
-                        itemsBeingBuilt.get(index).setQuantity(0);
-                    }
-                } else {
-                    itemsBeingBuilt.get(index).setQuantity(0);
-                }
-            }
-        }
-
-        for (SelectedFoodItemDto itemDto : itemsBeingBuilt.values()) {
-            if (itemDto.getFoodItemId() != null && itemDto.getQuantity() != null && itemDto.getQuantity() > 0) {
-                selectedItemsList.add(itemDto);
-            }
-        }
-        orderRequestDto.setSelectedItems(selectedItemsList);
-        orderRequestDto.setNote(note);
-
-        BindingResult bindingResult = new org.springframework.validation.BeanPropertyBindingResult(orderRequestDto, "orderRequestDto");
-        validator.validate(orderRequestDto, bindingResult);
-
         if (bindingResult.hasErrors()) {
-            logger.warn("Lỗi validation sau khi xây dựng OrderRequestDto thủ công (Admin đặt hộ): {}", bindingResult.getAllErrors());
+            logger.warn("AdminController: Validation errors when admin places order: {}", bindingResult.getAllErrors());
             model.addAttribute("groupedFoodItems", foodItemService.getGroupedAvailableFoodItemsForToday());
-            model.addAttribute("targetUser", targetUserOpt.get());
-            model.addAttribute("org.springframework.validation.BindingResult.orderRequestDto", bindingResult);
-            model.addAttribute("orderRequestDto", orderRequestDto);
+            model.addAttribute("allUsers", userService.getAllActiveUsers());
             return "admin/order-form-for-user";
         }
 
         if (orderRequestDto.getSelectedItems().isEmpty()) {
-            logger.warn("Admin {} không chọn món nào hợp lệ cho user {}", adminUser.getUsername(), targetUserOpt.get().getUsername());
-            model.addAttribute("errorMessage", "Vui lòng chọn ít nhất một món ăn với số lượng hợp lệ (lớn hơn 0).");
+            logger.warn("AdminController: No items selected by admin for order.");
+            model.addAttribute("errorMessage", "Vui lòng chọn ít nhất một món ăn.");
             model.addAttribute("groupedFoodItems", foodItemService.getGroupedAvailableFoodItemsForToday());
-            model.addAttribute("targetUser", targetUserOpt.get());
-            model.addAttribute("orderRequestDto", new OrderRequestDto()); // Reset DTO
+            model.addAttribute("allUsers", userService.getAllActiveUsers());
+            return "admin/order-form-for-user";
+        }
+
+        if ( (orderRequestDto.getRecipientName() == null || orderRequestDto.getRecipientName().trim().isEmpty()) && orderRequestDto.getTargetUserId() == null) {
+            logger.warn("AdminController: Neither recipientName nor targetUserId provided by admin for order.");
+            model.addAttribute("errorMessage", "Vui lòng nhập tên người nhận hoặc chọn một người dùng có sẵn.");
+            model.addAttribute("groupedFoodItems", foodItemService.getGroupedAvailableFoodItemsForToday());
+            model.addAttribute("allUsers", userService.getAllActiveUsers());
             return "admin/order-form-for-user";
         }
 
         try {
-            Order placedOrder = orderService.placeOrder(userId, orderRequestDto, true);
+            logger.debug("AdminController: Calling orderService.placeOrderAsAdmin for admin ID: {}", adminUser.getId());
+            Order placedOrder = orderService.placeOrderAsAdmin(adminUser.getId(), orderRequestDto);
+            String recipientInfo;
+            if (placedOrder.getRecipientName() != null && !placedOrder.getRecipientName().isEmpty()) {
+                recipientInfo = placedOrder.getRecipientName();
+            } else if (placedOrder.getUser() != null) {
+                recipientInfo = placedOrder.getUser().getUsername() + " (ID: " + placedOrder.getUser().getId() + ")";
+            } else {
+                recipientInfo = "Không xác định";
+            }
+            logger.info("AdminController: Order placed successfully by admin {} for {}. Order ID: {}", adminUser.getUsername(), recipientInfo, placedOrder.getId());
             redirectAttributes.addFlashAttribute("successMessage",
-                    String.format("Đặt món thành công cho người dùng %s (ID: %d)! Mã đơn hàng: %d. Tổng tiền: %.2f VND.",
-                            targetUserOpt.get().getUsername(), userId,
+                    String.format("Đặt món thành công cho %s! Mã đơn hàng: %d. Tổng tiền: %.2f VND.",
+                            recipientInfo,
                             placedOrder.getId(),
                             placedOrder.getTotalAmount()
                     ));
         } catch (Exception e) {
-            logger.error("Lỗi khi Admin {} đặt món cho người dùng {}: {}", adminUser.getUsername(), targetUserOpt.get().getUsername(), e.getMessage(), e);
-            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi đặt món cho người dùng: " + e.getMessage());
-            return "redirect:/admin/orders/create-for-user/" + userId;
+            logger.error("AdminController: Error when Admin {} places order: {}", adminUser.getUsername(), e.getMessage(), e);
+            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi đặt món: " + e.getMessage());
+            model.addAttribute("orderRequestDto", orderRequestDto);
+            model.addAttribute("groupedFoodItems", foodItemService.getGroupedAvailableFoodItemsForToday());
+            model.addAttribute("allUsers", userService.getAllActiveUsers());
+            if(orderRequestDto.getTargetUserId() != null) {
+                userService.findById(orderRequestDto.getTargetUserId()).ifPresent(u -> model.addAttribute("targetUser", u));
+            }
+            model.addAttribute("errorMessage", "Lỗi khi đặt món: " + e.getMessage());
+            return "admin/order-form-for-user";
         }
         return "redirect:/admin/orders/list";
     }
 
+
     @GetMapping("/orders/list")
     public String showOrderListByDate(
             @RequestParam(name = "date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
-            Model model) {
+            Model model, HttpSession session) {
+        logger.info("AdminController: Accessing /admin/orders/list for date: {}", date);
+        User adminUser = getCurrentlyLoggedInAdmin(session);
+        if (adminUser == null) {
+            logger.warn("AdminController: Admin user is null for /admin/orders/list. Redirecting to /auth/login.");
+            return "redirect:/auth/login";
+        }
+
         if (date == null) {
             date = LocalDate.now();
+            logger.debug("AdminController: Date not provided for /admin/orders/list, defaulting to today: {}", date);
         }
         List<Order> ordersForDate = orderService.getOrdersByDate(date);
+        logger.debug("AdminController: Found {} orders for date {}", (ordersForDate != null ? ordersForDate.size() : 0), date);
 
-        // Tính tổng doanh thu
-        BigDecimal totalRevenueForDate = ordersForDate.stream()
-                .map(Order::getTotalAmount)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal totalRevenueForDate = BigDecimal.ZERO;
+        if (ordersForDate != null) {
+            totalRevenueForDate = ordersForDate.stream()
+                    .map(Order::getTotalAmount)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+        }
+        logger.debug("AdminController: Total revenue for date {}: {}", date, totalRevenueForDate);
 
-        // Tính thống kê tổng hợp món ăn
+
         Map<String, Integer> foodItemSummary = new HashMap<>();
         if (ordersForDate != null) {
             for (Order order : ordersForDate) {
-                for (OrderItem item : order.getOrderItems()) {
-                    if (item.getFoodItem() != null) {
-                        String foodName = item.getFoodItem().getName();
-                        int quantity = item.getQuantity();
-                        foodItemSummary.merge(foodName, quantity, Integer::sum);
+                if (order.getOrderItems() != null) {
+                    for (OrderItem item : order.getOrderItems()) {
+                        if (item.getFoodItem() != null) {
+                            String foodName = item.getFoodItem().getName();
+                            int quantity = item.getQuantity();
+                            foodItemSummary.merge(foodName, quantity, Integer::sum);
+                        }
                     }
                 }
             }
         }
+        logger.debug("AdminController: Food item summary for date {}: {}", date, foodItemSummary);
 
-        // Thống kê theo user (nếu cần dùng)
-        Map<User, Order> ordersByUserForDate = new LinkedHashMap<>();
-        for (Order order : ordersForDate) {
-            ordersByUserForDate.put(order.getUser(), order);
-        }
 
-        // Gửi tất cả dữ liệu sang View
         model.addAttribute("ordersForDate", ordersForDate);
         model.addAttribute("selectedDate", date);
         model.addAttribute("totalRevenueForDate", totalRevenueForDate);
-        model.addAttribute("ordersByUserForDate", ordersByUserForDate);
-        model.addAttribute("foodItemSummary", foodItemSummary); // <-- GỬI DỮ LIỆU THỐNG KÊ
+        model.addAttribute("foodItemSummary", foodItemSummary);
 
         return "admin/order-list-by-date";
     }
     @GetMapping("/orders/delete-by-date")
     public String deleteOrdersByDate(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
-                                     RedirectAttributes redirectAttributes) {
+                                     RedirectAttributes redirectAttributes, HttpSession session) {
+        logger.info("AdminController: Accessing /admin/orders/delete-by-date for date: {}", date);
+        User adminUser = getCurrentlyLoggedInAdmin(session);
+        if (adminUser == null) {
+            logger.warn("AdminController: Admin user is null for /admin/orders/delete-by-date. Redirecting to /auth/login.");
+            return "redirect:/auth/login";
+        }
         if (date == null) {
             redirectAttributes.addFlashAttribute("errorMessage", "Cần chọn ngày.");
             return "redirect:/admin/orders/list";
@@ -460,6 +568,7 @@ public class AdminController {
                 redirectAttributes.addFlashAttribute("successMessage", "Tất cả đơn hàng cho ngày " + date.toString() + " đã được xóa.");
             }
         } catch (Exception e) {
+            logger.error("AdminController: Error deleting orders for date {}: {}", date, e.getMessage());
             redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi xóa đơn hàng: " + e.getMessage());
         }
         return "redirect:/admin/orders/list?date=" + date.toString();

@@ -3,7 +3,7 @@ package com.example.lunchapp.service;
 import com.example.lunchapp.model.dto.UserRegistrationDto;
 import com.example.lunchapp.model.entity.User;
 import java.math.BigDecimal;
-import java.util.List; // Thêm import
+import java.util.List;
 import java.util.Optional;
 
 public interface UserService {
@@ -14,8 +14,8 @@ public interface UserService {
     void changePassword(Long userId, String newPassword);
     User depositMoney(Long userId, BigDecimal amount);
 
-    // --- Methods for Admin ---
     List<User> getAllUsers();
-    User updateUserByAdmin(Long userId, User updatedUserPartialInfo, String newPassword, List<Long> roleIds); // Thêm roleIds
+    User updateUserByAdmin(Long userId, User updatedUserPartialInfo, String newPassword, List<Long> roleIds);
     void toggleUserStatus(Long userId);
+    List<User> getAllActiveUsers();
 }

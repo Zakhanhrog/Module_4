@@ -16,4 +16,6 @@ public class OrderRequestDto {
     private List<SelectedFoodItemDto> selectedItems = new ArrayList<>();
 
     private String note;
+    private String recipientName;
+    private Long targetUserId;
 }

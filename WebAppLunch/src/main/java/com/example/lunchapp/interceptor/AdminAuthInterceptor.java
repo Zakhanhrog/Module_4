@@ -19,22 +19,52 @@ public class AdminAuthInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        logger.info("======================================================================");
+        logger.info("AdminAuthInterceptor: preHandle INVOKED for URI: {}", request.getRequestURI());
+
         HttpSession session = request.getSession(false);
 
-        if (session == null || session.getAttribute(LOGGED_IN_USER_SESSION_KEY) == null) {
-            logger.warn("Admin access attempt without login. Redirecting to login page. URI: {}", request.getRequestURI());
+        if (session == null) {
+            logger.warn("AdminAuthInterceptor: Session is NULL. Redirecting to login page. URI: {}", request.getRequestURI());
+            response.sendRedirect(request.getContextPath() + "/auth/login");
+            return false;
+        }
+        logger.debug("AdminAuthInterceptor: Session ID: {}", session.getId());
+
+        Object userObjFromSession = session.getAttribute(LOGGED_IN_USER_SESSION_KEY);
+
+        if (userObjFromSession == null) {
+            logger.warn("AdminAuthInterceptor: No user found in session (key '{}'). Redirecting to login page. URI: {}", LOGGED_IN_USER_SESSION_KEY, request.getRequestURI());
             response.sendRedirect(request.getContextPath() + "/auth/login");
             return false;
         }
 
-        UserDto loggedInUser = (UserDto) session.getAttribute(LOGGED_IN_USER_SESSION_KEY);
-        if (loggedInUser.getRoles() == null || !loggedInUser.getRoles().contains(ADMIN_ROLE_NAME)) {
-            logger.warn("Non-admin user {} attempting to access admin page. URI: {}. Redirecting to home.", loggedInUser.getUsername(), request.getRequestURI());
-            response.sendRedirect(request.getContextPath() + "/"); // Hoặc trang lỗi 403
+        if (!(userObjFromSession instanceof UserDto)) {
+            logger.error("AdminAuthInterceptor: Object in session with key '{}' is NOT an instance of UserDto. Actual type: {}. URI: {}. Forcing logout/redirect.",
+                    LOGGED_IN_USER_SESSION_KEY, userObjFromSession.getClass().getName(), request.getRequestURI());
+            session.invalidate();
+            response.sendRedirect(request.getContextPath() + "/auth/login?error=session_corrupted");
             return false;
         }
 
-        logger.debug("Admin user {} granted access to admin page. URI: {}", loggedInUser.getUsername(), request.getRequestURI());
-        return true; // Cho phép request tiếp tục
+        UserDto loggedInUser = (UserDto) userObjFromSession;
+        logger.debug("AdminAuthInterceptor: User found in session: Username='{}', Roles='{}'", loggedInUser.getUsername(), loggedInUser.getRoles());
+
+        if (loggedInUser.getRoles() == null) {
+            logger.warn("AdminAuthInterceptor: User '{}' has NULL roles. Access denied for URI: {}. Redirecting to home.", loggedInUser.getUsername(), request.getRequestURI());
+            response.sendRedirect(request.getContextPath() + "/");
+            return false;
+        }
+
+        if (!loggedInUser.getRoles().contains(ADMIN_ROLE_NAME)) {
+            logger.warn("AdminAuthInterceptor: User '{}' does NOT have ADMIN_ROLE ('{}'). Actual roles: {}. Access denied for URI: {}. Redirecting to home.",
+                    loggedInUser.getUsername(), ADMIN_ROLE_NAME, loggedInUser.getRoles(), request.getRequestURI());
+            response.sendRedirect(request.getContextPath() + "/");
+            return false;
+        }
+
+        logger.info("AdminAuthInterceptor: Admin user '{}' GRANTED access to admin page. URI: {}", loggedInUser.getUsername(), request.getRequestURI());
+        logger.info("======================================================================");
+        return true;
     }
 }

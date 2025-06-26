@@ -1,21 +1,26 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
 :root {
-    --primary-color: #3B82F6;
-    --primary-hover: #2563EB;
-    --secondary-color: #64748B;
-    --heading-color: #1E293B;
-    --background-color: #F8FAFC;
+    --primary-color: #14B8A6;
+    --primary-hover: #0D9488;
+    --secondary-color: #6B7280;
+    --heading-color: #1F2937;
+    --background-color: #F9FAFB;
     --surface-color: #FFFFFF;
-    --border-color: #E2E8F0;
-    --success-color: #10B981;
+    --border-color: #E5E7EB;
+    --success-color: #22C55E;
     --danger-color: #EF4444;
-    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08),
+    0 2px 4px -2px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08),
+    0 4px 6px -4px rgba(0, 0, 0, 0.08);
+
     --border-radius: 0.5rem;
     --transition: all 0.3s ease-in-out;
 }
+
 
 body {
     font-family: 'Poppins', sans-serif;
@@ -54,19 +59,39 @@ a:hover {
 .navbar .nav-link {
     font-weight: 500;
     color: var(--secondary-color);
+    /* Ensure consistent vertical alignment if needed, though Bootstrap usually handles this */
+    /* display: flex; */
+    /* align-items: center; */
 }
 .navbar .nav-link.active, .navbar .nav-link:hover {
     color: var(--primary-color);
 }
+
+/* Add gap for spacing between main nav items on the left */
+.navbar-nav.me-auto {
+    gap: 0.75rem; /* Adjust this value as needed for desired spacing */
+}
+
 .navbar .dropdown-menu {
     border-radius: var(--border-radius);
     border: 1px solid var(--border-color);
     box-shadow: var(--shadow-lg);
+    margin-top: 0; /* Ensures dropdown appears right below toggle on hover */
 }
 .navbar .dropdown-item:hover {
     background-color: var(--background-color);
     color: var(--primary-color);
 }
+
+/* Added for hover dropdown functionality */
+.navbar .nav-item.dropdown:hover > .dropdown-menu {
+    display: block;
+}
+/* Ensure the toggle itself doesn't stay active looking if not clicked */
+.navbar .nav-item.dropdown:hover > .nav-link.dropdown-toggle {
+    color: var(--primary-color); /* or your preferred hover color */
+}
+
 
 .btn {
     border-radius: var(--border-radius);

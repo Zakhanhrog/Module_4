@@ -10,12 +10,13 @@ import java.util.List;
 import java.util.Optional;
 
 public interface OrderService {
-    Order placeOrder(Long userId, OrderRequestDto orderRequestDto, boolean bypassTimeCheck);
-    List<Order> getOrderHistory(Long userId);
-    List<Order> getOrdersByDate(LocalDate date);
+    Order placeOrderForUser(Long userId, OrderRequestDto orderRequestDto);
+    Order placeOrderAsAdmin(Long adminUserId, OrderRequestDto orderRequestDto);
+    Order placeOrderForOtherByRegularUser(Long placingUserId, OrderRequestDto orderRequestDto);
+    List<Order> getOrderHistory(Long userId); // Lấy toàn bộ lịch sử
+    List<Order> getTodaysOrdersByPlacingUser(Long placingUserId, LocalDate date); // Lấy đơn trong ngày của user thực hiện
+    List<Order> getOrdersByDate(LocalDate date); // Lấy tất cả đơn theo ngày (cho admin)
     List<Order> getAllOrders();
-    void deleteOrderById(Long orderId); // Phương thức này có thể được dùng bởi admin
-    boolean hasUserOrderedToday(Long userId, LocalDateTime startOfDay, LocalDateTime endOfDay);
-    Optional<Order> getTodaysOrderByUser(Long userId, LocalDateTime startOfDay, LocalDateTime endOfDay);
-    void cancelTodaysOrderAndRefund(Long userId); // Phương thức mới cho người dùng hủy đơn hôm nay
+    void deleteOrderById(Long orderId); // Dùng chung cho admin xóa hoặc khi user hủy
+    void cancelOrderByIdAndRefund(Long orderId, Long currentUserId); // User hủy đơn cụ thể của mình
 }

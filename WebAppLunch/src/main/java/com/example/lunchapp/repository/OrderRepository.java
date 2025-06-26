@@ -14,21 +14,29 @@ import java.util.Optional;
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
-    @Query("SELECT DISTINCT o FROM Order o JOIN FETCH o.user u LEFT JOIN FETCH o.orderItems oi LEFT JOIN FETCH oi.foodItem fi WHERE o.user = :user ORDER BY o.orderDate DESC")
-    List<Order> findByUserOrderByOrderDateDescFetchingAll(@Param("user") User user);
+    // Đã có DISTINCT
+    @Query("SELECT DISTINCT o FROM Order o LEFT JOIN FETCH o.user u LEFT JOIN FETCH o.orderedByAdmin oba LEFT JOIN FETCH o.orderItems oi LEFT JOIN FETCH oi.foodItem fi WHERE o.user = :userParam AND o.orderedByAdmin IS NULL ORDER BY o.orderDate DESC")
+    List<Order> findByUserAndOrderedByAdminIsNullOrderByOrderDateDesc(@Param("userParam") User user);
 
-    List<Order> findByOrderDate(LocalDateTime orderDate);
-
-    @Query("SELECT DISTINCT o FROM Order o JOIN FETCH o.user u LEFT JOIN FETCH o.orderItems oi LEFT JOIN FETCH oi.foodItem fi WHERE o.orderDate >= :startDate AND o.orderDate < :endDate ORDER BY o.orderDate DESC")
+    // Thêm DISTINCT ở đây nếu query này được dùng để hiển thị và có fetch orderItems
+    @Query("SELECT DISTINCT o FROM Order o LEFT JOIN FETCH o.user u LEFT JOIN FETCH o.orderedByAdmin oba LEFT JOIN FETCH o.orderItems oi LEFT JOIN FETCH oi.foodItem fi WHERE o.orderDate >= :startDate AND o.orderDate < :endDate ORDER BY o.orderDate DESC")
     List<Order> findByOrderDateBetweenFetchingAll(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 
-    @Query("SELECT o FROM Order o WHERE o.orderDate >= :startOfDay AND o.orderDate < :endOfDay")
-    List<Order> findByOrderDateOn(@Param("startOfDay") LocalDateTime startOfDay, @Param("endOfDay") LocalDateTime endOfDay);
 
-    @Query("SELECT o FROM Order o WHERE o.user = :user AND o.orderDate >= :startOfDay AND o.orderDate < :endOfDay")
-    List<Order> findByUserAndOrderDateOn(@Param("user") User user, @Param("startOfDay") LocalDateTime startOfDay, @Param("endOfDay") LocalDateTime endOfDay);
+    boolean existsByUser_IdAndOrderDateBetweenAndRecipientNameIsNullAndOrderedByAdminIsNull(Long userId, LocalDateTime startOfDay, LocalDateTime endOfDay);
+    Optional<Order> findFirstByUser_IdAndOrderDateBetweenAndRecipientNameIsNullAndOrderedByAdminIsNullOrderByOrderDateDesc(Long userId, LocalDateTime startOfDay, LocalDateTime endOfDay);
+    boolean existsByUser_IdAndOrderDateBetweenAndOrderedByAdminIsNotNull(Long userId, LocalDateTime startOfDay, LocalDateTime endOfDay);
+    boolean existsByUser_IdAndOrderDateBetweenAndOrderedByAdminIsNull(Long userId, LocalDateTime startOfDay, LocalDateTime endOfDay);
+    boolean existsByRecipientNameAndOrderDateBetweenAndOrderedByAdminIsNotNull(String recipientName, LocalDateTime startOfDay, LocalDateTime endOfDay);
+    boolean existsByUser_IdAndOrderDateBetweenAndRecipientNameIsNotNullAndOrderedByAdminIsNull(Long userId, LocalDateTime startOfDay, LocalDateTime endOfDay);
+    boolean existsByRecipientNameAndOrderDateBetweenAndUserIsNotNullAndOrderedByAdminIsNull(String recipientName, LocalDateTime startOfDay, LocalDateTime endOfDay);
+    Optional<Order> findFirstByUser_IdAndOrderDateBetweenAndRecipientNameIsNotNullAndOrderedByAdminIsNullOrderByOrderDateDesc(Long userId, LocalDateTime startOfDay, LocalDateTime endOfDay);
 
-    boolean existsByUser_IdAndOrderDateBetween(Long userId, LocalDateTime startOfDay, LocalDateTime endOfDay);
+    // Thêm DISTINCT ở đây
+    @Query("SELECT DISTINCT o FROM Order o JOIN FETCH o.user u LEFT JOIN FETCH o.orderItems oi LEFT JOIN FETCH oi.foodItem fi WHERE u.id = :placingUserId AND o.orderedByAdmin IS NULL AND o.orderDate >= :startOfDay AND o.orderDate < :endOfDay ORDER BY o.orderDate DESC")
+    List<Order> findAllByUser_IdAndOrderDateBetweenAndOrderedByAdminIsNullOrderByOrderDateDesc(@Param("placingUserId") Long placingUserId, @Param("startOfDay") LocalDateTime startOfDay, @Param("endOfDay") LocalDateTime endOfDay);
 
-    Optional<Order> findFirstByUser_IdAndOrderDateBetweenOrderByOrderDateDesc(Long userId, LocalDateTime startOfDay, LocalDateTime endOfDay);
+    // Đã có DISTINCT
+    @Query("SELECT DISTINCT o FROM Order o LEFT JOIN FETCH o.user u LEFT JOIN FETCH o.orderedByAdmin oba LEFT JOIN FETCH o.orderItems oi LEFT JOIN FETCH oi.foodItem fi WHERE (o.user = :userParam AND o.orderedByAdmin IS NULL) ORDER BY o.orderDate DESC")
+    List<Order> findAllOrdersPlacedByUser(@Param("userParam") User user);
 }
